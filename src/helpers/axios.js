@@ -2,7 +2,7 @@ import store from '../store';
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseUrl: 'localhost:8001/register',
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -12,7 +12,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   config => {
     if (store.state.token) {
-      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${store.state.token}`;
     }
 
@@ -21,12 +20,4 @@ axiosInstance.interceptors.request.use(
   error => Promise.reject(error)
 );
 
-const axiosPlugin = {
-  install(app) {
-    app.config.globalProperties.$axios = axiosInstance;
-  },
-};
-
-export default axiosPlugin;
-
-export { axiosInstance };
+export default axiosInstance;
