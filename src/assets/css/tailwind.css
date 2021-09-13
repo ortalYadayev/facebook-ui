@@ -8,10 +8,6 @@
     --primary-rgb: 24, 119, 241;
 }
 
-body {
-    direction: rtl;
-}
-
 html {
     overflow-x: hidden;
 }
