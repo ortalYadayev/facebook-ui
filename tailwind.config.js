@@ -4,8 +4,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gray_rgb: "var(--gray)",
-        primary: "var(--primary)",
+        gray_rgb: 'var(--gray)',
+        primary: 'var(--primary)',
+        lightblue: 'var(--lightblue)',
       },
     },
   },
@@ -13,4 +14,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}
+};

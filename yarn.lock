@@ -219,6 +219,20 @@
   resolved "https://registry.npmjs.org/@vue/shared/-/shared-3.2.11.tgz"
   integrity sha512-ovfXAsSsCvV9JVceWjkqC/7OF5HbgLOtCWjCIosmPGG8lxbPuavhIxRH1dTx4Dg9xLgRTNLvI3pVxG4ItQZekg==
 
+"@vuelidate/core@^2.0.0-alpha.26":
+  version "2.0.0-alpha.26"
+  resolved "https://registry.yarnpkg.com/@vuelidate/core/-/core-2.0.0-alpha.26.tgz#225ee1f6e4b0500384d5aa46157866925a8ead64"
+  integrity sha512-7mtvWgyrYBydqxDhrDfZTzcWvfXQTKdKnVquPWIyH2q7XfZP/mfISK5DqK8ElS8HlomXsWHr+kBtsQrBzLFD/w==
+  dependencies:
+    vue-demi "^0.11.3"
+
+"@vuelidate/validators@^2.0.0-alpha.22":
+  version "2.0.0-alpha.22"
+  resolved "https://registry.yarnpkg.com/@vuelidate/validators/-/validators-2.0.0-alpha.22.tgz#425c28f4c19c538486f0fb739152ce8de4e17ffe"
+  integrity sha512-5ddlzwqH9CZpbqCU8SGUI10Sh6JhLB99gfh7l1S2c38gi7ZGP3CVfBk4ETFNoDg+o6SHab660kuAqIzmE+X9SQ==
+  dependencies:
+    vue-demi "^0.11.3"
+
 acorn-jsx@^5.2.0, acorn-jsx@^5.3.1:
   version "5.3.2"
   resolved "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz"
@@ -2249,6 +2263,11 @@ vite@^2.4.3:
     rollup "^2.38.5"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vue-demi@^0.11.3:
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.11.4.tgz#6101992fe4724cf5634018a16e953f3052e94e2a"
+  integrity sha512-/3xFwzSykLW2HiiLie43a+FFgNOcokbBJ+fzvFXd0r2T8MYohqvphUyDQ8lbAwzQ3Dlcrb1c9ykifGkhSIAk6A==
 
 vue-eslint-parser@^7.10.0:
   version "7.11.0"
