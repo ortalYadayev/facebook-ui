@@ -1,7 +1,7 @@
 <template>
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
-      class="mb-2 md:mb-8 h-12"
+      class="my-6 md:my-8 h-10"
       src="../assets/logo.png"
       alt="online forms"
     >
@@ -10,7 +10,7 @@
       method="post"
       class="register-form bg-white flex flex-col justify-center rounded-md px-6 sm:px-12 py-10 mb-4"
     >
-      <div class="flex flex-col mb-2 sm:mb-4">
+      <div class="flex flex-col mb-4">
         <label
           for="firstName"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
@@ -22,7 +22,7 @@
           name="firstName"
           placeholder="First name"
           type="text"
-          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-1 sm:mb-2"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-2"
           :class="errors.firstName || v$.firstName.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
         >
         <span
@@ -34,7 +34,7 @@
           class="italic text-xs text-red-500"
         >{{ v$.firstName.$errors[0].$message }}</span>
       </div>
-      <div class="flex flex-col mb-2 sm:mb-4">
+      <div class="flex flex-col mb-4">
         <label
           for="lastName"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
@@ -46,7 +46,7 @@
           name="lastName"
           placeholder="Last name"
           type="text"
-          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-1 sm:mb-2"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-2"
           :class="errors.lastName || v$.lastName.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
         >
         <span
@@ -58,7 +58,7 @@
           class="italic text-xs text-red-500"
         >{{ v$.lastName.$errors[0].$message }}</span>
       </div>
-      <div class="flex flex-col mb-2 sm:mb-4">
+      <div class="flex flex-col mb-4">
         <label
           for="email"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
@@ -70,7 +70,7 @@
           name="email"
           placeholder="Email"
           type="text"
-          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-1 sm:mb-2"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-2"
           :class="errors.email || v$.email.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
         >
         <span
@@ -82,7 +82,7 @@
           class="italic text-xs text-red-500"
         >{{ v$.email.$errors[0].$message }}</span>
       </div>
-      <div class="flex flex-col mb-2 sm:mb-4">
+      <div class="flex flex-col mb-4">
         <label
           for="password"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
@@ -94,7 +94,7 @@
           name="password"
           placeholder="Password"
           type="password"
-          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-1 sm:mb-2"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 :mb-2"
           :class="errors.password || v$.password.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
         >
         <span
@@ -106,7 +106,7 @@
           class="italic text-xs text-red-500"
         >{{ v$.password.$errors[0].$message }}</span>
       </div>
-      <div class="flex flex-col mb-6 sm:mb-8">
+      <div class="flex flex-col mb-6">
         <label
           for="confirm"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
@@ -118,7 +118,7 @@
           name="confirm"
           placeholder="Confirm Password"
           type="password"
-          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-1 sm:mb-2"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-2"
           :class="errors.confirm || v$.confirm.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
         >
         <span
@@ -132,7 +132,7 @@
       </div>
       <div>
         <button
-          class="w-full border-primary bg-primary sm:text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+          class="w-full border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
         >
           Register
         </button>
@@ -222,9 +222,4 @@ export default {
     }
   }
 }
-
 </script>
-
-<style lang="sass" scoped>
-@import "../assets/css/app"
-</style>

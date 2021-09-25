@@ -40,6 +40,13 @@ const store = createStore({
 
       return axiosInstance.post('/register', payload);
     },
+    login({ getters }, payload) {
+      if (getters.isLoggedIn) {
+        return;
+      }
+
+      return axiosInstance.post('/login', payload);
+    },
   },
 });
 
