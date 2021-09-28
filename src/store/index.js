@@ -16,6 +16,7 @@ const store = createStore({
   mutations: {
     setToken(state, token) {
       state.token = token;
+      localStorage.setItem('token', token);
     },
 
     removeToken(state) {
@@ -40,12 +41,16 @@ const store = createStore({
 
       return axiosInstance.post('/register', payload);
     },
-    login({ getters }, payload) {
+
+    async login({ getters, commit }, payload) {
       if (getters.isLoggedIn) {
         return;
       }
 
-      return axiosInstance.post('/login', payload);
+      const request = await axiosInstance.post('/login', payload);
+
+      commit('setToken', request.data.token);
+      commit('setUser', request.data.user);
     },
   },
 });
