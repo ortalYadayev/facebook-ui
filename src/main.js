@@ -10,6 +10,4 @@ createApp(App)
     .use(store)
     .mount('#app');
 
-if (store.getters.isLoggedIn) {
-    store.dispatch('getAuthUser')
-}
+store.dispatch('getAuthUser');
