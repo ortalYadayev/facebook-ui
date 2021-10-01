@@ -52,6 +52,22 @@ const store = createStore({
       commit('setToken', request.data.token);
       commit('setUser', request.data.user);
     },
+
+    async getAuthUser({ getters, commit }) {
+      if (!getters.isLoggedIn) {
+        return;
+      }
+
+      try {
+        const request = await axiosInstance.post('/auth');
+
+        commit('setUser', request.data.user);
+      } catch (error) {
+        if (error.response.status === 401) {
+          commit('removeToken');
+        }
+      }
+    },
   },
 });
 

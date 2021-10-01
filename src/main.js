@@ -5,4 +5,11 @@ import store from './store';
 
 import './assets/css/tailwind.css';
 
-createApp(App).use(router).use(store).mount('#app');
+createApp(App)
+    .use(router)
+    .use(store)
+    .mount('#app');
+
+if (store.getters.isLoggedIn) {
+    store.dispatch('getAuthUser')
+}
