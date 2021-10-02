@@ -59,7 +59,7 @@ const store = createStore({
       }
 
       try {
-        const request = await axiosInstance.post('/auth');
+        const request = await axiosInstance.post('/me');
 
         commit('setUser', request.data.user);
       } catch (error) {
