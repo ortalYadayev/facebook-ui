@@ -63,9 +63,7 @@ const store = createStore({
 
         commit('setUser', request.data.user);
       } catch (error) {
-        if (error.response.status === 401) {
-          commit('removeToken');
-        }
+        commit('removeToken');
       }
     },
   },
