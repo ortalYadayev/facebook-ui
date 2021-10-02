@@ -146,6 +146,7 @@ import { reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
+import router from "../router";
 
 export default {
   setup() {
@@ -194,7 +195,8 @@ export default {
       errors,
       v$,
       register,
-      resetErrors
+      resetErrors,
+      router
     }
 
     async function register() {
@@ -205,10 +207,8 @@ export default {
       }
 
       try {
-        await store.dispatch('register', payload)
-
-         //  @TODO redirect to home page
-
+        await store.dispatch('register', payload);
+        await router.push({ name: "Login" });
       } catch (error) {
         if (error.response.status === 422) {
           errors.value.email = error.response.data.type === 'email' ? error.response.data.message : '';

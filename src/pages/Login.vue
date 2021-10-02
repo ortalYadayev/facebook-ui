@@ -75,6 +75,7 @@ import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
 import store from "../store";
+import router from "../router";
 
 export default {
   setup() {
@@ -119,8 +120,7 @@ export default {
       try {
         await store.dispatch('login', payload)
 
-         //  @TODO redirect to home page
-
+        await router.push({ name: "Home" });
       } catch (error) {
         if (error.response.status === 422) {
           errors.value.message = error.response.data.message;
