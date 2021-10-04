@@ -1,8 +1,8 @@
 <template>
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
-      class="mt-6 mb-12 md:mb-16 h-10"
-      src="../assets/logo.png"
+      class="mt-6 mb-12 h-24"
+      src="../assets/logo.svg"
       alt="online forms"
     >
     <form
