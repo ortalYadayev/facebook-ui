@@ -3,7 +3,7 @@
     v-if="$store.getters.isLoggedIn"
     class=""
   >
-    login
+    <Header />
   </div>
   <div
     v-else
@@ -35,9 +35,13 @@
 </template>
 
 <script>
+import Header from '../components/Header.vue'
 
 export default {
   name: "Home",
+  components: {
+    Header,
+  },
   setup() {
   }
 }

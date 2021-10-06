@@ -7,7 +7,7 @@
     --primary: rgb(24, 119, 241);
     --primary-rgb: 24, 119, 241;
     --lightblue: rgb(158, 208, 255);
-    --unsigned-header-height: 80px;
+    --header-height: 80px;
 }
 
 html {
@@ -27,6 +27,6 @@ textarea:focus {
 }
 
 .unsigned-header {
-    height: var(--unsigned-header-height);
+    height: var(--header-height);
     width: 100%;
 }

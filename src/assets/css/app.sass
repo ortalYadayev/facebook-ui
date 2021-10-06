@@ -1,5 +1,5 @@
 $primary-rgb: 24, 119, 241
-$unsigned-header-height: 80px
+$header-height: 80px
 
 .register-form, .login-form
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)
@@ -20,17 +20,26 @@ $unsigned-header-height: 80px
 
 .unsigned-header
   .logo
-    height: $unsigned-header-height
+    height: $header-height
     width: 230px
     background: url("../logo-white.png") no-repeat
     background-size: cover
 
   @media (max-width: 640px)
     .logo
-      height: 55px
-      width: 55px
+      height: calc(#{$header-height} - 25px)
+      width: calc(#{$header-height} - 25px)
       background: url("../icon.png") no-repeat
       background-size: cover
 
 .unsigned-home
-  height: calc(100vh - #{$unsigned-header-height})
+  height: calc(100vh - #{$header-height})
+
+.signed-header
+  height: $header-height
+
+  .logo
+    height: calc(#{$header-height} - 15px)
+    width: 65px
+    background: url("../icon.png") no-repeat
+    background-size: cover
