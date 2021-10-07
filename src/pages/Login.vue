@@ -74,7 +74,6 @@ import { reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
-import store from "../store";
 import router from "../router";
 
 export default {

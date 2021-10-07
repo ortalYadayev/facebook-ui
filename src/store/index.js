@@ -61,7 +61,7 @@ const store = createStore({
       try {
         const request = await axiosInstance.post('/me');
 
-        commit('setUser', request.data.user);
+        commit('setUser', request.data);
       } catch (error) {
         commit('removeToken');
       }
