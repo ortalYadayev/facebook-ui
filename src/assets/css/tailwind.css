@@ -2,7 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-button {
-    @apply hover:bg-blue-300 text-white;
+:root {
+    --gray: rgb(239, 241, 244);
+    --primary: rgb(24, 119, 241);
+    --primary-rgb: 24, 119, 241;
+    --lightblue: rgb(158, 208, 255)
 }
 
+html {
+    overflow-x: hidden;
+}
+
+input:focus {
+    outline: none !important;
+    border-color: #719ECE;
+    box-shadow: 0 0 10px #719ECE;
+}
+
+textarea:focus {
+    outline: none !important;
+    border-color: #719ECE;
+    box-shadow: 0 0 10px #719ECE;
+}

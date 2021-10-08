@@ -1,13 +1,14 @@
+$primary-rgb: 24, 119, 241
 
-$red: blue
 
-$font-stack:    Helvetica, sans-serif
-$primary-color: red
+.register-form, .login-form
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)
+  width: 400px
 
-div
-  font: 100% $font-stack
-  color: $primary-color
-
-button
-  border: gray solid 4px
-
+@media (max-width: 400px)
+  .register-form, .login-form
+    width: 90%
+    padding-top: 1.5rem
+    padding-bottom: 1.5rem
+    padding-left: 1rem
+    padding-right: 1rem
