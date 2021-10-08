@@ -10,16 +10,23 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register,
+    meta: {
+      guest: true,
+    },
   },
   {
     path: '/login',
     name: 'Login',
     component: Login,
+    meta: {
+      guest: true,
+    },
   },
   {
     path: '/:username',
     name: 'Profile',
     component: Profile,
+    props: true,
     meta: {
       auth: true,
     },
@@ -37,11 +44,20 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.auth)) {
-    if (!store.getters.isLoggedIn) {
+  if (to.matched.some(record => record.meta)) {
+    if (to.meta.guest && store.getters.isLoggedIn) {
+      next({
+        name: 'NotFound',
+      });
+
+      return;
+    }
+
+    if (to.meta.auth && !store.getters.isLoggedIn) {
       next({
         path: '/login',
       });
+
       return;
     }
   }

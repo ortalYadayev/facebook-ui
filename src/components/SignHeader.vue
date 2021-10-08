@@ -1,10 +1,10 @@
 <template>
-  <header class="profile-header flex flex-col justify-between items-center shadow-lg pb-3">
+  <header class="profile-header flex flex-col justify-between items-center shadow-sm pb-3">
     <div class="mt-10">
       <img
         class="border-4 border-lightblue h-40 w-40 rounded-full bg-white mb-2"
         :src="imageSrc"
-        alt="user image"
+        :alt="firstName"
       >
       <div class="flex items-end text-2xl">
         {{ firstName }} {{ lastName }}
@@ -48,10 +48,20 @@
 <script>
 export default {
   name: "SignHeader",
+
   props: {
-    firstName: String,
-    lastName: String,
-    imageSrc: String,
+    firstName: {
+      type: String,
+      required: true
+    },
+    lastName: {
+      type: String,
+      required: true
+    },
+    imageSrc: {
+      type: String,
+      required: true
+    },
   },
   setup(props) {
 

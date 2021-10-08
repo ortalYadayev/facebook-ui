@@ -8,11 +8,11 @@
     not nav
   </div>
 </template>
-<script>
 
+<script>
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import router from "../router";
+import { computed } from "vue";
 import SignHeader from "../components/SignHeader.vue";
 
 export default {
@@ -20,24 +20,19 @@ export default {
   components: {
     SignHeader,
   },
+  props: ['username'],
   setup(props) {
     const store = useStore();
-
     const route = useRoute();
-
-    setTimeout(()=> {
+    const isMyProfile = computed(() => {
       const username = store.state.user.username;
 
-      console.log(props.username)
-
-      // if(username.toString() !== props.username){
-      //   router.push({ name: "NotFound" });
-      // }
-    }, 0);
+      return username.toString() === props.username;
+    })
 
     return {
-      route,
-
+      isMyProfile,
+      props
     }
   }
 }
