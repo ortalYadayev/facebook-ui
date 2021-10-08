@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store/index';
 import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
 import Profile from '../pages/Profile.vue';
@@ -16,13 +17,15 @@ const routes = [
     component: Login,
   },
   {
-    path: '/profile/:id',
+    path: '/:username',
     name: 'Profile',
     component: Profile,
-    props: true,
+    meta: {
+      auth: true,
+    },
   },
   {
-    path: '/404',
+    path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
   },
@@ -31,6 +34,19 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.auth)) {
+    if (!store.getters.isLoggedIn) {
+      next({
+        path: '/login',
+      });
+      return;
+    }
+  }
+
+  next();
 });
 
 export default router;

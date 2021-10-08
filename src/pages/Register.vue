@@ -84,6 +84,34 @@
       </div>
       <div class="flex flex-col mb-4">
         <label
+          for="username"
+          class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
+        >
+          username
+          <span class="text-black normal-case break-all">({{ url }}/{{ payload.username === '' ? 'username' : payload.username }})</span>
+        </label>
+        <input
+          v-model="payload.username"
+          @keydown="resetErrors('username')"
+          id="username"
+          name="username"
+          placeholder="Username"
+          type="text"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-2"
+          :class="errors.username || v$.username.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
+          maxlength="20"
+        >
+        <span
+          v-if="errors.username"
+          class="italic text-xs text-red-500"
+        >{{ errors.username }}</span>
+        <span
+          v-else-if="v$.username.$error"
+          class="italic text-xs text-red-500"
+        >{{ v$.username.$errors[0].$message }}</span>
+      </div>
+      <div class="flex flex-col mb-4">
+        <label
           for="password"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
         >password</label>
@@ -146,16 +174,19 @@ import { reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
-import router from "../router";
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
     const store = useStore();
+    const router = useRouter();
+    const url = window.location.host;
 
     const payload = reactive({
       firstName: '',
       lastName: '',
       email: '',
+      username: '',
       password: '',
       confirm: ''
     });
@@ -177,6 +208,11 @@ export default {
         required: helpers.withMessage('An email is required', required),
         email: helpers.withMessage('Wrong or invalid email address, try again', email),
       },
+      username: {
+        required: helpers.withMessage('Your username is required', required),
+        minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
+        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(20)),
+      },
       password: {
         required: helpers.withMessage('Password is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(8)),
@@ -191,12 +227,12 @@ export default {
     const v$ = useVuelidate(rules, payload);
 
     return {
+      url,
       payload,
       errors,
       v$,
       register,
       resetErrors,
-      router
     }
 
     async function register() {

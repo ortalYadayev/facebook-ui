@@ -1,6 +1,11 @@
 <template>
   <div>
-    test
+    <SignHeader
+      :first-name="$store.state.user.firstName"
+      :last-name="$store.state.user.lastName"
+      :image-src="$store.state.user.imageUrl"
+    />
+    not nav
   </div>
 </template>
 <script>
@@ -8,28 +13,31 @@
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import router from "../router";
+import SignHeader from "../components/SignHeader.vue";
 
 export default {
   name: "Profile",
-  props: ["id"],
+  components: {
+    SignHeader,
+  },
   setup(props) {
     const store = useStore();
 
     const route = useRoute();
 
     setTimeout(()=> {
-      const id = store.state.user.id;
+      const username = store.state.user.username;
 
-      if(id.toString() !== props.id){
-        router.push({ name: "NotFound" });
-      }
+      console.log(props.username)
+
+      // if(username.toString() !== props.username){
+      //   router.push({ name: "NotFound" });
+      // }
     }, 0);
-
-
-
 
     return {
       route,
+
     }
   }
 }
