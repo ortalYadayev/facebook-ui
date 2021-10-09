@@ -66,6 +66,9 @@ const store = createStore({
         commit('removeToken');
       }
     },
+    showUser({ getters }, payload) {
+      return axiosInstance.get(`/users/${payload}`);
+    },
   },
 });
 

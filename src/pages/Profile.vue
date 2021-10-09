@@ -1,18 +1,17 @@
 <template>
   <div>
     <SignHeader
-      :first-name="$store.state.user.firstName"
-      :last-name="$store.state.user.lastName"
-      :image-src="$store.state.user.imageUrl"
+      :user="user"
     />
+
     not nav
   </div>
 </template>
 
 <script>
-import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { ref, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 import SignHeader from "../components/SignHeader.vue";
 
 export default {
@@ -20,19 +19,44 @@ export default {
   components: {
     SignHeader,
   },
-  props: ['username'],
+  props: {
+    username: {
+      type: String,
+      required: true,
+    }
+  },
   setup(props) {
     const store = useStore();
-    const route = useRoute();
-    const isMyProfile = computed(() => {
-      const username = store.state.user.username;
+    const router = useRouter();
+    const user = ref({
+      id: '',
+      email: '',
+      lastName: '',
+      firstName: '',
+      username: '',
+      imageUrl: '',
+    });
 
-      return username.toString() === props.username;
-    })
+    watchEffect(() => {
+      if (props.username !== user.value.username) {
+        showUser();
+      }
+    });
 
     return {
-      isMyProfile,
-      props
+      props,
+      user,
+    }
+
+    async function showUser() {
+      try {
+        const response = await store.dispatch('showUser', props.username);
+        user.value = response.data;
+      } catch (error) {
+        if (error.response.status === 404) {
+          await router.push({ name: "NotFound" });
+        }
+      }
     }
   }
 }

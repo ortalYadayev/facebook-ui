@@ -2,12 +2,13 @@
   <header class="profile-header flex flex-col justify-between items-center shadow-sm pb-3">
     <div class="mt-10">
       <img
+        v-if="user.imageUrl"
         class="border-4 border-lightblue h-40 w-40 rounded-full bg-white mb-2"
-        :src="imageSrc"
-        :alt="firstName"
+        :src="user.imageUrl"
+        :alt="user.firstName"
       >
-      <div class="flex items-end text-2xl">
-        {{ firstName }} {{ lastName }}
+      <div class="text-2xl">
+        {{ user.firstName }} {{ user.lastName }}
       </div>
     </div>
     <nav>
@@ -36,7 +37,7 @@
         Photos
       </router-link>
       <router-link
-        :to="{ name: 'Register' }"
+        :to="{ name: 'Profile', params: { username: 'ortalo12' } }"
         class="duration-300 border-b-2 border-transparent hover:text-primary focus:text-primary focus:border-primary hover:border-primary uppercase ml-2 px-3 py-2"
       >
         More
@@ -46,26 +47,25 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
+import {computed, ref} from "vue";
+
 export default {
   name: "SignHeader",
 
   props: {
-    firstName: {
-      type: String,
-      required: true
-    },
-    lastName: {
-      type: String,
-      required: true
-    },
-    imageSrc: {
-      type: String,
+    user: {
+      type: Object,
       required: true
     },
   },
   setup(props) {
+    const store = useStore();
+
+    const isMyProfile = computed(() => store.state.user.username === props.user.username)
 
     return {
+      isMyProfile,
     }
   }
 }
