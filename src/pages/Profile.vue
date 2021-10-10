@@ -3,8 +3,10 @@
     <SignHeader
       :user="user"
     />
-
-    not nav
+    <About v-if="$route.fullPath.split('/')[2] === 'about'" />
+    <Friends v-else-if="$route.fullPath.split('/')[2] === 'friends'" />
+    <Photos v-else-if="$route.fullPath.split('/')[2] === 'photos'" />
+    <Posts v-else />
   </div>
 </template>
 
@@ -13,11 +15,19 @@ import { useStore } from "vuex";
 import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import SignHeader from "../components/SignHeader.vue";
+import Posts from "../components/Profile/Posts.vue";
+import About from "../components/Profile/About.vue";
+import Friends from "../components/Profile/Friends.vue";
+import Photos from "../components/Profile/Photos.vue";
 
 export default {
   name: "Profile",
   components: {
     SignHeader,
+    Posts,
+    About,
+    Friends,
+    Photos,
   },
   props: {
     username: {
@@ -25,7 +35,7 @@ export default {
       required: true,
     }
   },
-  setup(props) {
+  setup(props, { slots }) {
     const store = useStore();
     const router = useRouter();
     const user = ref({
@@ -43,7 +53,11 @@ export default {
       }
     });
 
+
+    // this.$slots.default().filter(child => child.type.name === 'Posts')
+
     return {
+      router,
       props,
       user,
     }
@@ -61,7 +75,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

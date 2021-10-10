@@ -7,52 +7,57 @@
         :src="user.imageUrl"
         :alt="user.firstName"
       >
-      <div class="text-2xl">
+      <div class="text-center text-2xl">
         {{ user.firstName }} {{ user.lastName }}
       </div>
     </div>
-    <nav>
+    {{ user.username }}
+    <nav class="profile-nav">
       <router-link
-        :to="{ name: 'Register' }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary focus:text-primary focus:border-primary hover:border-primary uppercase px-3 py-2"
+        :to="{ name: Posts }"
+        :class=" $route.fullPath.split('/').length === 2 ? 'active': ''"
+        active-class=""
+        class="duration-300 hover:text-primary hover:border-primary uppercase px-3 py-2"
       >
         Posts
       </router-link>
       <router-link
-        :to="{ name: 'Register' }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary focus:text-primary focus:border-primary hover:border-primary uppercase ml-2 px-3 py-2"
+        :to="{ name: About }"
+        class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
       >
         About
       </router-link>
       <router-link
-        :to="{ name: 'Register' }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary focus:text-primary focus:border-primary hover:border-primary uppercase ml-2 px-3 py-2"
+        :to="{ name: Friends }"
+        class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
       >
         Friends
       </router-link>
       <router-link
-        :to="{ name: 'Register' }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary focus:text-primary focus:border-primary hover:border-primary uppercase ml-2 px-3 py-2"
+        :to="{ name: Photos }"
+        class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
       >
         Photos
       </router-link>
       <router-link
-        :to="{ name: 'Profile', params: { username: 'ortalo12' } }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary focus:text-primary focus:border-primary hover:border-primary uppercase ml-2 px-3 py-2"
-      >
-        More
-      </router-link>
+        :to="{ name: 'Register' }"
+        active-class="active"
+        class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
+      />
     </nav>
   </header>
 </template>
 
 <script>
 import { useStore } from "vuex";
-import {computed, ref} from "vue";
+import { computed } from "vue";
+import Posts from "../components/Profile/Posts.vue";
+import About from "../components/Profile/About.vue";
+import Friends from "../components/Profile/Friends.vue";
+import Photos from "../components/Profile/Photos.vue";
 
 export default {
   name: "SignHeader",
-
   props: {
     user: {
       type: Object,
@@ -66,11 +71,14 @@ export default {
 
     return {
       isMyProfile,
+      Posts,
+      About,
+      Friends,
+      Photos,
     }
   }
 }
 </script>
 
 <style scoped>
-
 </style>

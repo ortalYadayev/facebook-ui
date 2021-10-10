@@ -3,6 +3,10 @@ import store from '../store/index';
 import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
 import Profile from '../pages/Profile.vue';
+import Posts from '../components/Profile/Posts.vue';
+import About from '../components/Profile/About.vue';
+import Friends from '../components/Profile/Friends.vue';
+import Photos from '../components/Profile/Photos.vue';
 import NotFound from '../pages/NotFound.vue';
 
 const routes = [
@@ -30,9 +34,31 @@ const routes = [
     meta: {
       auth: true,
     },
+    children: [
+      {
+        path: '',
+        name: Posts,
+        component: Posts,
+      },
+      {
+        path: 'about',
+        name: About,
+        component: About,
+      },
+      {
+        path: 'friends',
+        name: Friends,
+        component: Friends,
+      },
+      {
+        path: 'photos',
+        name: Photos,
+        component: Photos,
+      },
+    ],
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/:catchAll(.*)*',
     name: 'NotFound',
     component: NotFound,
   },
@@ -40,7 +66,8 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: routes,
+  linkActiveClass: 'active',
 });
 
 router.beforeEach((to, from, next) => {
