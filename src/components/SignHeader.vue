@@ -1,5 +1,5 @@
 <template>
-  <header class="profile-header flex flex-col justify-between items-center shadow-sm pb-3">
+  <header class="profile-header flex flex-col justify-between items-center shadow-sm pb-2">
     <div class="mt-10">
       <img
         v-if="user.imageUrl"
@@ -63,14 +63,17 @@ export default {
       type: Object,
       required: true
     },
+    isMyProfile: {
+      type: Boolean,
+      required: true,
+    },
   },
   setup(props) {
     const store = useStore();
 
-    const isMyProfile = computed(() => store.state.user.username === props.user.username)
+    let isMyProfile = computed(() => store.state.user.username === props.user.username);
 
     return {
-      isMyProfile,
       Posts,
       About,
       Friends,

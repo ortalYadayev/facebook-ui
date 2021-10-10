@@ -3,10 +3,22 @@
     <SignHeader
       :user="user"
     />
-    <About v-if="$route.fullPath.split('/')[2] === 'about'" />
-    <Friends v-else-if="$route.fullPath.split('/')[2] === 'friends'" />
-    <Photos v-else-if="$route.fullPath.split('/')[2] === 'photos'" />
-    <Posts v-else />
+    <About
+      v-if="$route.fullPath.split('/')[2] === 'about'"
+      :user="user"
+    />
+    <Friends
+      v-else-if="$route.fullPath.split('/')[2] === 'friends'"
+      :user="user"
+    />
+    <Photos
+      v-else-if="$route.fullPath.split('/')[2] === 'photos'"
+      :user="user"
+    />
+    <Posts
+      v-else
+      :user="user"
+    />
   </div>
 </template>
 
@@ -35,7 +47,7 @@ export default {
       required: true,
     }
   },
-  setup(props, { slots }) {
+  setup(props) {
     const store = useStore();
     const router = useRouter();
     const user = ref({
@@ -53,8 +65,6 @@ export default {
       }
     });
 
-
-    // this.$slots.default().filter(child => child.type.name === 'Posts')
 
     return {
       router,
