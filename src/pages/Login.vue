@@ -95,7 +95,7 @@ export default {
       password: {
         required: helpers.withMessage('Password is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(8)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(255)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
     };
 
@@ -137,14 +137,16 @@ export default {
 
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .slide-fade-enter-active,
-.slide-fade-leave-active
-  transition: all 0.3s ease-out
+.slide-fade-leave-active {
+  transition: all 0.3s ease-out;
+}
 
 .slide-fade-enter-from,
-.slide-fade-leave-to4
-  transform: translateY(-100%)
-  opacity: 0
+.slide-fade-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+}
 
 </style>

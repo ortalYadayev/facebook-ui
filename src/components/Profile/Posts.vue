@@ -13,16 +13,19 @@
             <div class="flex-1 flex justify-between rounded-2xl">
               <input
                 type="text"
-                class="flex-1 duration-300 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-2xl py-2 px-4"
+                class="flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-2xl py-2 px-4"
                 placeholder="What do you think ?"
-                v-model="payload.post"
+                v-model="payload.description"
               >
-              <button
-                v-if="payload.post.length > 0"
-                class="ml-2"
-              >
-                Send
-              </button>
+              <transition name="slide-fade">
+                <button
+                  v-if="payload.description.length > 0"
+                  class="ml-2"
+                  @click="addPost"
+                >
+                  Send
+                </button>
+              </transition>
             </div>
           </div>
         </div>
@@ -31,8 +34,8 @@
   </div>
 </template>
 <script>
-import {computed, reactive } from "vue";
-import {useStore} from "vuex";
+import { reactive } from "vue";
+import { useStore } from "vuex";
 
 export default {
   name: "Posts",
@@ -45,21 +48,54 @@ export default {
   setup(props) {
     const store = useStore();
 
-    let isMyProfile = computed(() => store.state.user.username === props.user.username);
-
     const payload = reactive({
-      post: ''
+      user: '',
+      description: '',
     })
 
-
+    console.log(payload);
     return {
-      isMyProfile,
-      payload
+      addPost,
+      payload,
+      props,
+    }
+
+    async function addPost(){
+      console.log(props)
+      payload.user = props.user.username;
+      console.log(payload)
+      try {
+        await store.dispatch('post', payload);
+
+        console.log(payload);
+        // await router.push({ name: "Home" });
+      } catch (error) {
+        // if (error.response.status === 422) {
+          console.log(error)
+          // errors.value.message = error.response.data.message;
+        // }
+      }
     }
   }
 }
+
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '../../assets/css/app.scss';
 
+.body-posts {
+  width: $post-width;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.8s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
 </style>

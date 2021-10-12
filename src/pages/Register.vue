@@ -197,12 +197,12 @@ export default {
       firstName: {
         required: helpers.withMessage('Your first name is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(50)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(50)),
       },
       lastName: {
         required: helpers.withMessage('Your last name is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(50)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(50)),
       },
       email: {
         required: helpers.withMessage('An email is required', required),
@@ -211,12 +211,12 @@ export default {
       username: {
         required: helpers.withMessage('Your username is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(20)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(20)),
       },
       password: {
         required: helpers.withMessage('Password is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(8)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(255)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
       confirm: {
         required: helpers.withMessage('Password is required', required),

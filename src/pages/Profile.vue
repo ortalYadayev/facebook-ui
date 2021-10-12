@@ -24,7 +24,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { ref, watchEffect } from "vue";
+import {computed, ref, watchEffect} from "vue";
 import { useRouter } from "vue-router";
 import SignHeader from "../components/SignHeader.vue";
 import Posts from "../components/Profile/Posts.vue";
@@ -50,20 +50,21 @@ export default {
   setup(props) {
     const store = useStore();
     const router = useRouter();
-    const user = ref({
+    const user = ref( {
       id: '',
       email: '',
       lastName: '',
       firstName: '',
       username: '',
       imageUrl: '',
+      isAuth: false,
     });
 
-    watchEffect(() => {
-      if (props.username !== user.value.username) {
-        showUser();
-      }
-    });
+    // watchEffect(() => {
+    //   if (props.username.toLowerCase() !== user.value.username) {
+        getUser();
+    //   }
+    // });
 
 
     return {
@@ -72,9 +73,10 @@ export default {
       user,
     }
 
-    async function showUser() {
+    async function getUser() {
       try {
-        const response = await store.dispatch('showUser', props.username);
+        const response = await store.dispatch('getUser', props.username);
+        response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username;
         user.value = response.data;
       } catch (error) {
         if (error.response.status === 404) {
@@ -85,3 +87,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped >
+@import '../assets/css/app.scss';
+
+.profile-header {
+  height: $profile-header-height;
+  background-image: linear-gradient(to bottom, $lightblue, #c0daff, #dbe4ff, #f0f1ff, #ffffff);
+}
+
+.profile-header a.active {
+  color: $primary;
+  border-bottom: 2px solid $primary;
+}
+
+</style>

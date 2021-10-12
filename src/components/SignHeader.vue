@@ -11,7 +11,6 @@
         {{ user.firstName }} {{ user.lastName }}
       </div>
     </div>
-    {{ user.username }}
     <nav class="profile-nav">
       <router-link
         :to="{ name: Posts }"
@@ -49,8 +48,6 @@
 </template>
 
 <script>
-import { useStore } from "vuex";
-import { computed } from "vue";
 import Posts from "../components/Profile/Posts.vue";
 import About from "../components/Profile/About.vue";
 import Friends from "../components/Profile/Friends.vue";
@@ -63,15 +60,8 @@ export default {
       type: Object,
       required: true
     },
-    isMyProfile: {
-      type: Boolean,
-      required: true,
-    },
   },
   setup(props) {
-    const store = useStore();
-
-    let isMyProfile = computed(() => store.state.user.username === props.user.username);
 
     return {
       Posts,
