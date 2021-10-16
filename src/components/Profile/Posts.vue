@@ -15,11 +15,12 @@
                 type="text"
                 class="flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-2xl py-2 px-4"
                 placeholder="What do you think ?"
-                v-model="payload.description"
+                v-model="payload.content"
+                @keydown="resetErrors('content')"
               >
               <transition name="slide-fade">
                 <button
-                  v-if="payload.description.length > 0"
+                  v-if="payload.content.length > 0"
                   class="ml-2"
                   @click="addPost"
                 >
@@ -28,6 +29,10 @@
               </transition>
             </div>
           </div>
+          <span
+            v-if="v$.content.$error"
+            class="italic text-xs text-red-500"
+          >{{ v$.content.$errors[0].$message }}</span>
         </div>
       </div>
     </div>
@@ -36,6 +41,8 @@
 <script>
 import { reactive } from "vue";
 import { useStore } from "vuex";
+import useVuelidate from '@vuelidate/core';
+import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators';
 
 export default {
   name: "Posts",
@@ -49,33 +56,51 @@ export default {
     const store = useStore();
 
     const payload = reactive({
-      user: '',
-      description: '',
-    })
+      username: props.user.username,
+      content: '',
+    });
 
-    console.log(payload);
+    const rules = {
+      content: {
+        required: helpers.withMessage('Your content is required', required),
+        minLength: helpers.withMessage(({$params}) => `Minimum ${$params.min} characters required.`, minLength(1)),
+        maxLength: helpers.withMessage(({$params}) => `Maximum ${$params.max} characters required.`, maxLength(255)),
+      },
+    };
+
+    const v$ = useVuelidate(rules, payload);
+
     return {
-      addPost,
       payload,
       props,
-    }
+      v$,
+      addPost,
+      resetErrors,
+    };
 
     async function addPost(){
-      console.log(props)
-      payload.user = props.user.username;
-      console.log(payload)
-      try {
-        await store.dispatch('post', payload);
+      v$.value.$touch();
 
-        console.log(payload);
-        // await router.push({ name: "Home" });
+      if (v$.value.$invalid) {
+        return;
+      }
+
+      payload.username = props.user.username;
+      try {
+
+        await store.dispatch('storePost', payload);
       } catch (error) {
-        // if (error.response.status === 422) {
-          console.log(error)
-          // errors.value.message = error.response.data.message;
-        // }
+        if (error.response.status === 422) {
+          console.log(error);
+          errors.value.message = error.response.data.message;
+         }
       }
     }
+
+    function resetErrors(key) {
+      v$.value[key].$reset();
+    }
+
   }
 }
 

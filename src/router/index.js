@@ -80,8 +80,11 @@ router.beforeEach((to, from, next) => {
       next({
         name: 'Home',
       });
-
-      return;
+    }
+    if (!to.meta.auth && store.getters.isLoggedIn) {
+      next({
+        name: 'Home',
+      });
     }
 
     if (to.meta.auth && !store.getters.isLoggedIn) {

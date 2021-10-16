@@ -172,8 +172,8 @@
 <script>
 import { reactive, ref } from 'vue';
 import { useStore } from 'vuex';
-import useVuelidate from '@vuelidate/core'
-import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
+import useVuelidate from '@vuelidate/core';
+import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -233,7 +233,7 @@ export default {
       v$,
       register,
       resetErrors,
-    }
+    };
 
     async function register() {
       v$.value.$touch();

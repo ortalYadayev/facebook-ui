@@ -24,8 +24,8 @@
 
 <script>
 import { useStore } from "vuex";
-import {computed, ref, watchEffect} from "vue";
-import { useRouter } from "vue-router";
+import { ref, watchEffect } from "vue";
+import { useRoute } from "vue-router";
 import SignHeader from "../components/SignHeader.vue";
 import Posts from "../components/Profile/Posts.vue";
 import About from "../components/Profile/About.vue";
@@ -49,7 +49,8 @@ export default {
   },
   setup(props) {
     const store = useStore();
-    const router = useRouter();
+    const route = useRoute();
+
     const user = ref( {
       id: '',
       email: '',
@@ -60,23 +61,23 @@ export default {
       isAuth: false,
     });
 
-    // watchEffect(() => {
-    //   if (props.username.toLowerCase() !== user.value.username) {
+    watchEffect(() => {
+      if (props.username.toLowerCase() !== user.value.username) {
         getUser();
-    //   }
-    // });
+      }
+    });
 
 
     return {
-      router,
+      route,
       props,
       user,
-    }
+    };
 
     async function getUser() {
       try {
         const response = await store.dispatch('getUser', props.username);
-        response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username;
+        response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username.toLowerCase();
         user.value = response.data;
       } catch (error) {
         if (error.response.status === 404) {
