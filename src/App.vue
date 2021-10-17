@@ -7,14 +7,10 @@
 
 <script>
 import Spinner from './components/Spinner.vue';
-import { useStore } from 'vuex';
 
 export default {
   components: {
     Spinner,
   },
-  setup() {
-    const store = useStore();
-  }
 }
 </script>
