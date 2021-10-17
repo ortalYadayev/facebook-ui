@@ -2,7 +2,7 @@
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
       class="mt-6 mb-12 md:mb-16 h-10"
-      src="../assets/logo.png"
+      src="../assets/images/logo.png"
       alt="online forms"
     >
     <form
@@ -85,7 +85,11 @@ export default {
       password: '',
     });
 
-    const errors = ref({});
+    const errors = ref({
+      message: '',
+      email: '',
+      password: '',
+    });
 
     const rules = {
       email: {
@@ -107,7 +111,7 @@ export default {
       v$,
       login,
       resetErrors
-    }
+    };
 
     async function login() {
       v$.value.$touch();
@@ -117,7 +121,7 @@ export default {
       }
 
       try {
-        await store.dispatch('login', payload)
+        await store.dispatch('login', payload);
 
         await router.push({ name: "Home" });
       } catch (error) {

@@ -57,15 +57,16 @@ export default {
       lastName: '',
       firstName: '',
       username: '',
-      imageUrl: '',
+      profilePicturePath: '',
+      profilePictureUrl: '',
       isAuth: false,
     });
 
-    watchEffect(() => {
-      if (props.username.toLowerCase() !== user.value.username) {
+    // watchEffect(() => {
+    //   if (props.username.toLowerCase() !== user.value.username) {
         getUser();
-      }
-    });
+    //   }
+    // });
 
 
     return {

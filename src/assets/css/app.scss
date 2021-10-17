@@ -6,6 +6,10 @@ $lightblue: rgb(158, 208, 255);
 $profile-header-height: 350px;
 $post-width: 500px;
 
+.tag-profile {
+  height: 100%;
+  min-height: calc(100vh - #{$profile-header-height});
+}
 
 .register-form,
 .login-form{

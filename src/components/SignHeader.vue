@@ -2,10 +2,16 @@
   <header class="profile-header flex flex-col justify-between items-center shadow-sm pb-2">
     <div class="mt-10">
       <img
-        v-if="user.imageUrl"
+        v-if="user.profilePicturePath"
         class="border-4 border-lightblue h-40 w-40 rounded-full bg-white mb-2"
-        :src="user.imageUrl"
+        :src="user.profilePicturePath"
         :alt="user.firstName"
+      >
+      <img
+        v-else
+        src="../assets/images/user-icon.png"
+        alt="user icon"
+        class="border-4 border-lightblue h-40 w-40 rounded-full bg-white mb-2"
       >
       <div class="text-center text-2xl">
         {{ user.firstName }} {{ user.lastName }}

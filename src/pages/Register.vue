@@ -2,7 +2,7 @@
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
       class="my-6 md:my-8 h-10"
-      src="../assets/logo.png"
+      src="../assets/images/logo.png"
       alt="online forms"
     >
     <form
@@ -191,7 +191,14 @@ export default {
       confirm: ''
     });
 
-    const errors = ref({});
+    const errors = ref({
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
+      confirm: '',
+    });
 
     const rules = {
       firstName: {
