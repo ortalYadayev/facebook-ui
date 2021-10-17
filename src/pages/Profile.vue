@@ -25,7 +25,7 @@
 <script>
 import { useStore } from "vuex";
 import { ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import SignHeader from "../components/SignHeader.vue";
 import Posts from "../components/Profile/Posts.vue";
 import About from "../components/Profile/About.vue";
@@ -49,9 +49,9 @@ export default {
   },
   setup(props) {
     const store = useStore();
-    const route = useRoute();
+    const router = useRouter();
 
-    const user = ref( {
+    const user = ref( null | {
       id: '',
       email: '',
       lastName: '',
@@ -62,6 +62,7 @@ export default {
       isAuth: false,
     });
 
+    console.log(user);
     // watchEffect(() => {
     //   if (props.username.toLowerCase() !== user.value.username) {
         getUser();
@@ -70,13 +71,14 @@ export default {
 
 
     return {
-      route,
+      router,
       props,
       user,
     };
 
     async function getUser() {
       try {
+        store.commit("onLoad");
         const response = await store.dispatch('getUser', props.username);
         response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username.toLowerCase();
         user.value = response.data;
@@ -85,6 +87,7 @@ export default {
           await router.push({ name: "NotFound" });
         }
       }
+      store.commit("offLoad");
     }
   }
 }

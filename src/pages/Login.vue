@@ -121,6 +121,7 @@ export default {
       }
 
       try {
+        store.commit("onLoad");
         await store.dispatch('login', payload);
 
         await router.push({ name: "Home" });
@@ -129,6 +130,7 @@ export default {
           errors.value.message = error.response.data.message;
         }
       }
+      store.commit("offLoad");
     }
 
     function resetErrors(key, message) {

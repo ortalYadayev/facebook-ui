@@ -250,6 +250,7 @@ export default {
       }
 
       try {
+        store.commit("onLoad");
         await store.dispatch('register', payload);
         await router.push({ name: "Login" });
       } catch (error) {
@@ -257,6 +258,7 @@ export default {
           errors.value.email = error.response.data.type === 'email' ? error.response.data.message : '';
         }
       }
+      store.commit("offLoad");
     }
 
     function resetErrors(key) {

@@ -33,7 +33,7 @@
             <div class="send-transition flex-1 flex justify-between rounded-2xl">
               <input
                 type="text"
-                class="flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-2xl py-2 px-4"
+                class="think-about flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-2xl py-2 px-4"
                 placeholder="What do you think ?"
                 v-model="payload.content"
                 @keydown="resetErrors('content')"
@@ -144,6 +144,7 @@ export default {
     });
 
     return {
+      store,
       payload,
       props,
       errors,
@@ -162,17 +163,17 @@ export default {
 
       payload.username = props.user.username;
       try {
-
+        store.commit("onLoad");
         const response = await store.dispatch('storePost', payload);
         posts.value = response.data;
         posts.value.createdBy.fullName = posts.value.createdBy.firstName + ' ' + posts.value.createdBy.lastName;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
-        console.log(posts.value)
       } catch (error) {
         if (error.response.status === 422) {
           errors.message = error.response.data[0].message;
          }
       }
+      store.commit("offLoad");
     }
 
     function resetErrors(key) {
@@ -190,6 +191,15 @@ export default {
 
 .body-posts {
   width: $post-width;
+}
+
+@media (max-width: $post-width) {
+  .body-posts, .think-about {
+    width: 100%;
+  }
+  .body-posts {
+    width: 94%;
+  }
 }
 
 .send-transition > {
