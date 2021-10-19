@@ -40,12 +40,19 @@
               >
               <transition name="slide-fade">
                 <button
-                  v-if="payload.content.length > 0"
+                  v-if="payload.content.length > 0 && !isLoading"
                   class="ml-2"
                   @click="addPost"
                 >
                   Send
                 </button>
+                <sync-loader
+                  v-else
+                  :loading="isLoading"
+                  :color="color"
+                  :size="size"
+                  class="ml-2"
+                />
               </transition>
             </div>
           </div>
@@ -56,7 +63,7 @@
           Posts
         </div>
         <div
-          v-if="posts.content.length > 0"
+          v-if="isSend"
           class="post"
         >
           <div class="flex items-center mb-2">
@@ -91,10 +98,14 @@
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 import useVuelidate from '@vuelidate/core';
-import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators';
+import { required, minLength, maxLength, helpers } from '@vuelidate/validators';
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 
 export default {
   name: "Posts",
+  components: {
+    SyncLoader,
+  },
   props: {
     user: {
       type: Object,
@@ -104,12 +115,17 @@ export default {
   setup(props) {
     const store = useStore();
 
+    const isLoading = ref(false);
+    const color = ref('rgb(24, 119, 241)');
+    const size = ref('10px');
+
     const errors = reactive({
       message: '',
     });
 
+    const isSend = ref(false);
+
     const payload = reactive({
-      username: props.user.username,
       content: '',
     });
 
@@ -150,30 +166,43 @@ export default {
       errors,
       v$,
       posts,
+      isLoading,
+      color,
+      size,
+      isSend,
       addPost,
       resetErrors,
     };
 
     async function addPost(){
+      const content = reactive({
+        username: props.user.username,
+        content: payload.content,
+      });
+
       v$.value.$touch();
 
       if (v$.value.$invalid) {
         return;
       }
 
-      payload.username = props.user.username;
+      payload.content = '';
+      resetErrors('content');
+
+      isLoading.value = true;
       try {
-        store.commit("onLoad");
-        const response = await store.dispatch('storePost', payload);
+        const response = await store.dispatch('storePost', content);
         posts.value = response.data;
         posts.value.createdBy.fullName = posts.value.createdBy.firstName + ' ' + posts.value.createdBy.lastName;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
+
+        isSend.value = true;
       } catch (error) {
         if (error.response.status === 422) {
           errors.message = error.response.data[0].message;
          }
       }
-      store.commit("offLoad");
+      isLoading.value = false;
     }
 
     function resetErrors(key) {

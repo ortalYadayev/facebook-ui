@@ -58,12 +58,20 @@
           class="italic text-xs text-red-500"
         >{{ v$.password.$errors[0].$message }}</span>
       </div>
-      <div>
+      <div class="flex justify-center text-center">
         <button
-          class="w-full border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+          v-if="!isLoading"
+          class="w-full border-2 border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
         >
           Login
         </button>
+        <sync-loader
+          v-else
+          :loading="isLoading"
+          :color="color"
+          :size="size"
+          class="w-full border-2 border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+        />
       </div>
     </form>
   </div>
@@ -75,10 +83,18 @@ import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
 import router from "../router";
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 
 export default {
+  name: 'Login',
+  components: {
+    SyncLoader,
+  },
   setup() {
     const store = useStore();
+    const isLoading = ref(false);
+    const color = ref('#ffffff');
+    const size = ref('10px');
 
     const payload = reactive({
       email: '',
@@ -109,6 +125,9 @@ export default {
       payload,
       errors,
       v$,
+      isLoading,
+      color,
+      size,
       login,
       resetErrors
     };
@@ -120,17 +139,16 @@ export default {
         return;
       }
 
+      isLoading.value = true;
       try {
-        store.commit("onLoad");
         await store.dispatch('login', payload);
-
         await router.push({ name: "Home" });
       } catch (error) {
         if (error.response.status === 422) {
           errors.value.message = error.response.data.message;
         }
       }
-      store.commit("offLoad");
+      isLoading.value = false;
     }
 
     function resetErrors(key, message) {

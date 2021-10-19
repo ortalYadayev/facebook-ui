@@ -4,7 +4,6 @@ const store = createStore({
   state: {
     token: localStorage.getItem('token') ?? null,
     user: {},
-    showLoading: false,
   },
 
   getters: {
@@ -30,14 +29,6 @@ const store = createStore({
 
     removeUser(state) {
       state.user = {};
-    },
-
-    onLoad(state) {
-      state.showLoading = true;
-    },
-
-    offLoad(state) {
-      state.showLoading = false;
     },
   },
 

@@ -8,6 +8,4 @@ import './assets/css/app.scss';
 
 createApp(App).use(router).use(store).mount('#app');
 
-store.commit('onLoad');
 store.dispatch('getAuthUser');
-store.commit('offLoad');

@@ -158,12 +158,20 @@
           class="italic text-xs text-red-500"
         >{{ v$.confirm.$errors[0].$message }}</span>
       </div>
-      <div>
+      <div class="flex justify-center text-center">
         <button
+          v-if="!isLoading"
           class="w-full border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
         >
           Register
         </button>
+        <sync-loader
+          v-else
+          :loading="isLoading"
+          :color="color"
+          :size="size"
+          class="w-full border-2 border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+        />
       </div>
     </form>
   </div>
@@ -175,12 +183,20 @@ import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core';
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 
 export default {
+  components: {
+    SyncLoader,
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
     const url = window.location.host;
+
+    const isLoading = ref(false);
+    const color = ref('#ffffff');
+    const size = ref('10px');
 
     const payload = reactive({
       firstName: '',
@@ -238,6 +254,9 @@ export default {
       payload,
       errors,
       v$,
+      isLoading,
+      color,
+      size,
       register,
       resetErrors,
     };
@@ -249,8 +268,8 @@ export default {
         return;
       }
 
+      isLoading.value = true;
       try {
-        store.commit("onLoad");
         await store.dispatch('register', payload);
         await router.push({ name: "Login" });
       } catch (error) {
@@ -258,7 +277,7 @@ export default {
           errors.value.email = error.response.data.type === 'email' ? error.response.data.message : '';
         }
       }
-      store.commit("offLoad");
+      isLoading.value = false;
     }
 
     function resetErrors(key) {

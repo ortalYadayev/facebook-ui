@@ -1,24 +1,33 @@
 <template>
   <div>
-    <SignHeader
-      :user="user"
+    <sync-loader
+      v-if="user.username.length === 0"
+      :loading="isLoading"
+      :color="color"
+      :size="size"
+      class="h-screen flex justify-center items-center"
     />
-    <About
-      v-if="$route.fullPath.split('/')[2] === 'about'"
-      :user="user"
-    />
-    <Friends
-      v-else-if="$route.fullPath.split('/')[2] === 'friends'"
-      :user="user"
-    />
-    <Photos
-      v-else-if="$route.fullPath.split('/')[2] === 'photos'"
-      :user="user"
-    />
-    <Posts
-      v-else
-      :user="user"
-    />
+    <div v-else>
+      <SignHeader
+        :user="user"
+      />
+      <About
+        v-if="$route.fullPath.split('/')[2] === 'about'"
+        :user="user"
+      />
+      <Friends
+        v-else-if="$route.fullPath.split('/')[2] === 'friends'"
+        :user="user"
+      />
+      <Photos
+        v-else-if="$route.fullPath.split('/')[2] === 'photos'"
+        :user="user"
+      />
+      <Posts
+        v-else
+        :user="user"
+      />
+    </div>
   </div>
 </template>
 
@@ -31,6 +40,7 @@ import Posts from "../components/Profile/Posts.vue";
 import About from "../components/Profile/About.vue";
 import Friends from "../components/Profile/Friends.vue";
 import Photos from "../components/Profile/Photos.vue";
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
 
 export default {
   name: "Profile",
@@ -40,6 +50,7 @@ export default {
     About,
     Friends,
     Photos,
+    SyncLoader,
   },
   props: {
     username: {
@@ -51,7 +62,11 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    const user = ref( null | {
+    const isLoading = ref(false);
+    const color = ref('rgb(24, 119, 241)');
+    const size = ref('20px');
+
+    const user = ref(  {
       id: '',
       email: '',
       lastName: '',
@@ -62,23 +77,25 @@ export default {
       isAuth: false,
     });
 
-    console.log(user);
-    // watchEffect(() => {
-    //   if (props.username.toLowerCase() !== user.value.username) {
+    watchEffect(() => {
+      if (props.username.toLowerCase() !== user.value.username) {
         getUser();
-    //   }
-    // });
+      }
+    });
 
 
     return {
       router,
       props,
       user,
+      isLoading,
+      color,
+      size,
     };
 
     async function getUser() {
+      isLoading.value = true;
       try {
-        store.commit("onLoad");
         const response = await store.dispatch('getUser', props.username);
         response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username.toLowerCase();
         user.value = response.data;
@@ -87,7 +104,7 @@ export default {
           await router.push({ name: "NotFound" });
         }
       }
-      store.commit("offLoad");
+      isLoading.value = false;
     }
   }
 }
