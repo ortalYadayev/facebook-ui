@@ -26,3 +26,10 @@ $post-width: 500px;
     padding-right: 1rem;
   }
 }
+
+.profile-header a.active {
+  color: $primary;
+  border-bottom: 2px solid $primary;
+}
+
+

@@ -26,33 +26,35 @@
             >
             <img
               v-else
-              src="../../assets/images/user-icon.png"
+              src="../../assets/images/user.png"
               alt="user icon"
               class="h-9 w-9 rounded-full mr-2"
             >
-            <div class="send-transition flex-1 flex justify-between rounded-2xl">
-              <input
-                type="text"
-                class="think-about flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-2xl py-2 px-4"
-                placeholder="What do you think ?"
+            <div class="send-transition flex-1 flex justify-between items-center rounded-3xl">
+              <textarea
+                class="think-about flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-3xl resize-none py-2 px-4"
+                placeholder="What do you think?"
                 v-model="payload.content"
                 @keydown="resetErrors('content')"
-              >
+              />
               <transition name="slide-fade">
                 <button
-                  v-if="payload.content.length > 0 && !isLoading"
-                  class="ml-2"
+                  v-if="payload.content"
+                  class="ml-2 border rounded-3xl border-primary bg-primary text-white py-2 px-4"
+                  style="width: 90px;"
                   @click="addPost"
                 >
-                  Send
+                  <template v-if="!isLoading">
+                    Send
+                  </template>
+                  <sync-loader
+                    v-else
+                    :loading="isLoading"
+                    color="white"
+                    :size="size"
+                    class="ml-2"
+                  />
                 </button>
-                <sync-loader
-                  v-else
-                  :loading="isLoading"
-                  :color="color"
-                  :size="size"
-                  class="ml-2"
-                />
               </transition>
             </div>
           </div>
@@ -75,7 +77,7 @@
             >
             <img
               v-else
-              src="../../assets/images/user-icon.png"
+              src="../../assets/images/user.png"
               alt="user icon"
               class="h-9 w-9 rounded-full mr-2"
             >
@@ -186,7 +188,6 @@ export default {
         return;
       }
 
-      payload.content = '';
       resetErrors('content');
 
       isLoading.value = true;
@@ -196,13 +197,17 @@ export default {
         posts.value.createdBy.fullName = posts.value.createdBy.firstName + ' ' + posts.value.createdBy.lastName;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
 
+        payload.content = '';
+
         isSend.value = true;
+        isLoading.value = false;
       } catch (error) {
         if (error.response.status === 422) {
           errors.message = error.response.data[0].message;
          }
+
+        isLoading.value = false;
       }
-      isLoading.value = false;
     }
 
     function resetErrors(key) {

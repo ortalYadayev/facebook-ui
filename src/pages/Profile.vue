@@ -97,6 +97,7 @@ export default {
       isLoading.value = true;
       try {
         const response = await store.dispatch('getUser', props.username);
+
         response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username.toLowerCase();
         user.value = response.data;
       } catch (error) {
@@ -117,10 +118,4 @@ export default {
   height: $profile-header-height;
   background-image: linear-gradient(to bottom, $lightblue, #c0daff, #dbe4ff, #f0f1ff, #ffffff);
 }
-
-.profile-header a.active {
-  color: $primary;
-  border-bottom: 2px solid $primary;
-}
-
 </style>

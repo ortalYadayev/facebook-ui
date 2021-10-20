@@ -9,7 +9,7 @@
       >
       <img
         v-else
-        src="../assets/images/user-icon.png"
+        src="../assets/images/user.png"
         alt="user icon"
         class="border-4 border-lightblue h-40 w-40 rounded-full bg-white mb-2"
       >
