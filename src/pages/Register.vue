@@ -1,9 +1,9 @@
 <template>
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
-      class="my-6 md:my-8 h-24"
-      src="../assets/logo.svg"
-      alt="online forms"
+      class="my-6 md:my-8 h-10"
+      src="../assets/images/logo.png"
+      alt="facebook logo"
     >
     <form
       @submit.prevent="register"
@@ -84,6 +84,34 @@
       </div>
       <div class="flex flex-col mb-4">
         <label
+          for="username"
+          class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
+        >
+          username
+          <span class="text-black normal-case break-all">({{ url }}/{{ payload.username === '' ? 'username' : payload.username }})</span>
+        </label>
+        <input
+          v-model="payload.username"
+          @keydown="resetErrors('username')"
+          id="username"
+          name="username"
+          placeholder="Username"
+          type="text"
+          class="duration-150 border-2 border-gray-300 text-gray-300 hover:text-black focus:text-black rounded-md px-3 py-1.5 mb-2"
+          :class="errors.username || v$.username.$error ? 'border-red-500 focus:border-red-500' : 'hover:border-primary focus:border-primary focus:border-opacity-50'"
+          maxlength="20"
+        >
+        <span
+          v-if="errors.username"
+          class="italic text-xs text-red-500"
+        >{{ errors.username }}</span>
+        <span
+          v-else-if="v$.username.$error"
+          class="italic text-xs text-red-500"
+        >{{ v$.username.$errors[0].$message }}</span>
+      </div>
+      <div class="flex flex-col mb-4">
+        <label
           for="password"
           class="mb-1 text-primary text-xs sm:text-sm tracking-wide uppercase"
         >password</label>
@@ -130,11 +158,19 @@
           class="italic text-xs text-red-500"
         >{{ v$.confirm.$errors[0].$message }}</span>
       </div>
-      <div>
+      <div class="flex justify-center text-center">
         <button
           class="w-full border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
         >
-          Register
+          <template v-if="!isLoading">
+            Register
+          </template>
+          <sync-loader
+            v-else
+            :loading="isLoading"
+            :color="color"
+            :size="size"
+          />
         </button>
       </div>
     </form>
@@ -144,43 +180,66 @@
 <script>
 import { reactive, ref } from 'vue';
 import { useStore } from 'vuex';
-import useVuelidate from '@vuelidate/core'
-import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
-import router from "../router";
+import useVuelidate from '@vuelidate/core';
+import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators';
+import { useRouter } from 'vue-router';
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 
 export default {
+  components: {
+    SyncLoader,
+  },
   setup() {
     const store = useStore();
+    const router = useRouter();
+    const url = window.location.host;
+
+    const isLoading = ref(false);
+    const color = ref('#ffffff');
+    const size = ref('10px');
 
     const payload = reactive({
       firstName: '',
       lastName: '',
       email: '',
+      username: '',
       password: '',
       confirm: ''
     });
 
-    const errors = ref({});
+    const errors = ref({
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
+      confirm: '',
+    });
 
     const rules = {
       firstName: {
         required: helpers.withMessage('Your first name is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(50)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(50)),
       },
       lastName: {
         required: helpers.withMessage('Your last name is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(50)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(50)),
       },
       email: {
         required: helpers.withMessage('An email is required', required),
         email: helpers.withMessage('Wrong or invalid email address, try again', email),
       },
+      username: {
+        required: helpers.withMessage('Your username is required', required),
+        minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(2)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(20)),
+      },
       password: {
         required: helpers.withMessage('Password is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(8)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(255)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
       confirm: {
         required: helpers.withMessage('Password is required', required),
@@ -191,13 +250,16 @@ export default {
     const v$ = useVuelidate(rules, payload);
 
     return {
+      url,
       payload,
       errors,
       v$,
+      isLoading,
+      color,
+      size,
       register,
       resetErrors,
-      router
-    }
+    };
 
     async function register() {
       v$.value.$touch();
@@ -206,13 +268,18 @@ export default {
         return;
       }
 
+      isLoading.value = true;
       try {
         await store.dispatch('register', payload);
         await router.push({ name: "Login" });
+
+        isLoading.value = false;
       } catch (error) {
         if (error.response.status === 422) {
           errors.value.email = error.response.data.type === 'email' ? error.response.data.message : '';
         }
+
+        isLoading.value = false;
       }
     }
 

@@ -1,6 +1,5 @@
 import { createStore } from 'vuex';
 import axiosInstance from '../helpers/axios';
-
 const store = createStore({
   state: {
     token: localStorage.getItem('token') ?? null,
@@ -61,10 +60,18 @@ const store = createStore({
       try {
         const request = await axiosInstance.post('/me');
 
-        commit('setUser', request.data.user);
+        commit('setUser', request.data);
       } catch (error) {
         commit('removeToken');
       }
+    },
+
+    getUser({ getters }, payload) {
+      return axiosInstance.get(`/users/${payload}`);
+    },
+
+    storePost({ getters }, payload) {
+      return axiosInstance.post(`/users/${payload.username}/posts`, payload);
     },
   },
 });

@@ -6,7 +6,8 @@
     --gray: rgb(239, 241, 244);
     --primary: rgb(24, 119, 241);
     --primary-rgb: 24, 119, 241;
-    --lightblue: rgb(158, 208, 255)
+    --lightblue: rgb(158, 208, 255);
+    --profile-header-height: 300px;
 }
 
 html {
@@ -15,12 +16,12 @@ html {
 
 input:focus {
     outline: none !important;
-    border-color: #719ECE;
-    box-shadow: 0 0 10px #719ECE;
 }
 
 textarea:focus {
     outline: none !important;
-    border-color: #719ECE;
-    box-shadow: 0 0 10px #719ECE;
+}
+
+li {
+    list-style: none;
 }

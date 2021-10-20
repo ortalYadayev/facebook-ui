@@ -1,9 +1,9 @@
 <template>
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
-      class="mt-6 mb-12 h-24"
-      src="../assets/logo.svg"
-      alt="online forms"
+      class="mt-6 mb-12 md:mb-16 h-10"
+      src="../assets/logo.png"
+      alt="facebook logo"
     >
     <form
       @submit.prevent="login"
@@ -58,11 +58,19 @@
           class="italic text-xs text-red-500"
         >{{ v$.password.$errors[0].$message }}</span>
       </div>
-      <div>
+      <div class="flex justify-center text-center">
         <button
-          class="w-full border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+          class="w-full border-2 border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
         >
-          Login
+          <template v-if="!isLoading">
+            Login
+          </template>
+          <sync-loader
+            v-else
+            :loading="isLoading"
+            :color="color"
+            :size="size"
+          />
         </button>
       </div>
     </form>
@@ -74,19 +82,30 @@ import { reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
-import store from "../store";
 import router from "../router";
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 
 export default {
+  name: 'Login',
+  components: {
+    SyncLoader,
+  },
   setup() {
     const store = useStore();
+    const isLoading = ref(false);
+    const color = ref('#ffffff');
+    const size = ref('10px');
 
     const payload = reactive({
       email: '',
       password: '',
     });
 
-    const errors = ref({});
+    const errors = ref({
+      message: '',
+      email: '',
+      password: '',
+    });
 
     const rules = {
       email: {
@@ -96,7 +115,7 @@ export default {
       password: {
         required: helpers.withMessage('Password is required', required),
         minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(8)),
-        maxLength: helpers.withMessage(({ $params }) => `Minimum ${$params.max} characters required.`, maxLength(255)),
+        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
     };
 
@@ -106,9 +125,12 @@ export default {
       payload,
       errors,
       v$,
+      isLoading,
+      color,
+      size,
       login,
       resetErrors
-    }
+    };
 
     async function login() {
       v$.value.$touch();
@@ -117,14 +139,18 @@ export default {
         return;
       }
 
+      isLoading.value = true;
       try {
-        await store.dispatch('login', payload)
-
+        await store.dispatch('login', payload);
         await router.push({ name: "Home" });
+
+        isLoading.value = false;
       } catch (error) {
         if (error.response.status === 422) {
           errors.value.message = error.response.data.message;
         }
+
+        isLoading.value = false;
       }
     }
 
@@ -138,14 +164,16 @@ export default {
 
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .slide-fade-enter-active,
-.slide-fade-leave-active
-  transition: all 0.3s ease-out
+.slide-fade-leave-active {
+  transition: all 0.3s ease-out;
+}
 
 .slide-fade-enter-from,
-.slide-fade-leave-to4
-  transform: translateY(-100%)
-  opacity: 0
+.slide-fade-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+}
 
 </style>
