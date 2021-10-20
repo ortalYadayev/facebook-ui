@@ -3,7 +3,7 @@
     v-if="$store.getters.isLoggedIn"
     class=""
   >
-    <Header />
+    <FbHeader />
   </div>
   <div
     v-else
@@ -35,12 +35,12 @@
 </template>
 
 <script>
-import Header from '../components/Header.vue'
+import FbHeader from '../components/FbHeader.vue'
 
 export default {
   name: "Home",
   components: {
-    Header,
+    FbHeader,
   },
   setup() {
   }
