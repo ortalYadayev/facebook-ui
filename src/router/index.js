@@ -1,19 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import store from '../store/index';
-import Register from '../pages/Register.vue';
-import Login from '../pages/Login.vue';
-import Profile from '../pages/Profile.vue';
-import Posts from '../components/Profile/Posts.vue';
-import About from '../components/Profile/About.vue';
-import Friends from '../components/Profile/Friends.vue';
-import Photos from '../components/Profile/Photos.vue';
-import NotFound from '../pages/NotFound.vue';
 
 const routes = [
   {
+    path: '/',
+    name: 'Home',
+    component: () => import('../pages/Home.vue'),
+  },
+  {
     path: '/register',
     name: 'Register',
-    component: Register,
+    component: () => import('../pages/Register.vue'),
     meta: {
       guest: true,
     },
@@ -21,7 +17,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: () => import('../pages/Login.vue'),
     meta: {
       guest: true,
     },
@@ -29,7 +25,7 @@ const routes = [
   {
     path: '/:username',
     name: 'Profile',
-    component: Profile,
+    component: () => import('../pages/Profile.vue'),
     props: true,
     meta: {
       auth: true,
@@ -38,25 +34,25 @@ const routes = [
       {
         path: '',
         name: Posts,
-        component: Posts,
+        component: () => import('../components/Profile/Posts.vue'),
         props: true,
       },
       {
         path: 'about',
         name: About,
-        component: About,
+        component: () => import('../components/Profile/About.vue'),
         props: true,
       },
       {
         path: 'friends',
         name: Friends,
-        component: Friends,
+        component: () => import('../components/Profile/Friends.vue'),
         props: true,
       },
       {
         path: 'photos',
         name: Photos,
-        component: Photos,
+        component: () => import('../components/Profile/Photos.vue'),
         props: true,
       },
     ],
@@ -64,7 +60,7 @@ const routes = [
   {
     path: '/:catchAll(.*)*',
     name: 'NotFound',
-    component: NotFound,
+    component: () => import('../pages/NotFound.vue'),
   },
 ];
 

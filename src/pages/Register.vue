@@ -1,7 +1,7 @@
 <template>
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
-      class="my-6 md:my-8 h-20"
+      class="my-6 md:my-8 h-24"
       src="../assets/images/logo.svg"
       alt="facebook logo"
     >

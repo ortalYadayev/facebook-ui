@@ -1,8 +1,8 @@
 <template>
   <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
-      class="mt-6 mb-12 md:mb-16 h-20"
-      src="../assets/images/logo.svg"
+      class="mt-6 mb-12 md:mb-16 h-24"
+      src="../assets/logo.svg"
       alt="facebook logo"
     >
     <form
