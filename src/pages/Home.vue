@@ -7,7 +7,7 @@
   </div>
   <div
     v-else
-    class="home min-h-screen overflow-hidden bg-gray_rgb"
+    class="home min-h-screen overflow-hidden bg-gray-rgb"
   >
     <div class="unsigned-header flex flex-wrap container m-auto flex justify-between items-center">
       <router-link
@@ -24,7 +24,7 @@
         </router-link>
         <router-link
           :to="{ name: 'Register' }"
-          class="duration-300 hover:border-primary border-primary border-2 hover:bg-primary hover:text-white bg-gray_rgb text-sm sm:text-lg text-primary font-bold uppercase rounded-lg px-2 sm:px-4 md:px-6 py-2"
+          class="duration-300 hover:border-primary border-primary border-2 hover:bg-primary hover:text-white bg-gray-rgb text-sm sm:text-lg text-primary font-bold uppercase rounded-lg px-2 sm:px-4 md:px-6 py-2"
         >
           Register
         </router-link>

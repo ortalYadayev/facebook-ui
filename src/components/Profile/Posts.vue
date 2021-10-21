@@ -1,5 +1,5 @@
 <template>
-  <div class="tag-profile bg-gray_rgb">
+  <div class="tag-profile bg-gray-rgb">
     <div class="container m-auto flex justify-center items-center">
       <div class="body-posts">
         <div class="error-transition post">
@@ -32,7 +32,7 @@
             >
             <div class="send-transition flex-1 flex justify-between items-center rounded-3xl">
               <textarea
-                class="think-about flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-3xl resize-none py-2 px-4"
+                class="think-about flex-1 hover:bg-gray-300 bg-gray-rgb text-gray-700 rounded-3xl resize-none py-2 px-4"
                 placeholder="What do you think?"
                 v-model="payload.content"
                 @keydown="resetErrors('content')"

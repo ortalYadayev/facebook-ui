@@ -60,7 +60,7 @@
       </div>
       <div class="flex justify-center text-center">
         <button
-          class="w-full border-2 border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+          class="w-full border-2 border-primary bg-primary text-lg text-gray-rgb uppercase rounded-lg py-1 sm:py-2"
         >
           <template v-if="!isLoading">
             Login
