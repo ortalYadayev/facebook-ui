@@ -49,7 +49,8 @@ export default {
 }
 </script>
 
-<style lang-scss scoped>
+<style lang="scss" scoped>
+
 .home{
   background: url("../assets/images/circle.png") no-repeat center;
   background-size: 80% 200%;

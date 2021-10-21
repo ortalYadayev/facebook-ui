@@ -1,8 +1,8 @@
 <template>
   <div class="signed-header flex bg-white shadow-lg">
     <nav class="container m-auto flex justify-between items-center">
-      <div class="logo" />
-      <div>
+      <div class="logo ml-4" />
+      <div class="flex-1 flex justify-end mr-4">
         settings
       </div>
     </nav>

@@ -7,9 +7,9 @@
     --primary: rgb(24, 119, 241);
     --primary-rgb: 24, 119, 241;
     --lightblue: rgb(158, 208, 255);
-    --header-height: 80px;
     --lightblue: rgb(158, 208, 255);
     --profile-header-height: 300px;
+    --header-height: 60px;
 }
 
 html {

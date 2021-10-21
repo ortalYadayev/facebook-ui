@@ -78,15 +78,10 @@ router.beforeEach((to, from, next) => {
         name: 'Home',
       });
     }
-    if (!to.meta.auth && store.getters.isLoggedIn) {
-      next({
-        name: 'Home',
-      });
-    }
 
     if (to.meta.auth && !store.getters.isLoggedIn) {
       next({
-        path: '/login',
+        name: 'Login',
       });
     }
   }

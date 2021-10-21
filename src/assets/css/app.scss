@@ -5,7 +5,7 @@ $primary-rgb: 24, 119, 241;
 $lightblue: rgb(158, 208, 255);
 $profile-header-height: 350px;
 $post-width: 500px;
-$header-height: 80px;
+$header-height: 60px;
 
 .tag-profile {
   height: 100%;
@@ -44,8 +44,8 @@ $header-height: 80px;
   @media (max-width: 640px) {
     .logo{
       background: url("../images/icon.png") no-repeat;
-      height: calc(#{$header-height} - 25px);
-      width: calc(#{$header-height} - 25px);
+      height: calc(#{$header-height} - 15px);
+      width: calc(#{$header-height} - 15px);
       background-size: cover;
       margin: 10px;
     }
@@ -62,7 +62,7 @@ $header-height: 80px;
   .logo {
     background: url("../images/icon.png") no-repeat;
     height: calc(#{$header-height} - 15px);
-    width: 65px;
+    width: calc(#{$header-height} - 15px);
     background-size: cover;
   }
 }
