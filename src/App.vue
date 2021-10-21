@@ -4,5 +4,5 @@
   </div>
 </template>
 
-<style src="./assets/css/app.sass" />
+<style src="./assets/css/app.scss" />
 <style src="./assets/css/tailwind.css" />

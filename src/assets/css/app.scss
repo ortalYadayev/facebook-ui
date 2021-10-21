@@ -5,6 +5,7 @@ $primary-rgb: 24, 119, 241;
 $lightblue: rgb(158, 208, 255);
 $profile-header-height: 350px;
 $post-width: 500px;
+$header-height: 80px;
 
 .tag-profile {
   height: 100%;
@@ -32,4 +33,37 @@ $post-width: 500px;
   border-bottom: 2px solid $primary;
 }
 
+.unsigned-header {
+  .logo {
+    height: $header-height;
+    width: 230px;
+    background: url("../images/logo.svg") no-repeat;
+    background-size: cover;
+  }
+
+  @media (max-width: 640px) {
+    .logo{
+      background: url("../images/icon.png") no-repeat;
+      height: calc(#{$header-height} - 25px);
+      width: calc(#{$header-height} - 25px);
+      background-size: cover;
+      margin: 10px;
+    }
+  }
+}
+
+.unsigned-home {
+  height: calc(100vh - #{$header-height});
+}
+
+.signed-header {
+  height: $header-height;
+
+  .logo {
+    background: url("../images/icon.png") no-repeat;
+    height: calc(#{$header-height} - 15px);
+    width: 65px;
+    background-size: cover;
+  }
+}
 

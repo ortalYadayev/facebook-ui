@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store';
 
 const routes = [
   {
@@ -33,25 +34,25 @@ const routes = [
     children: [
       {
         path: '',
-        name: Posts,
+        name: () => import('../components/Profile/Posts.vue'),
         component: () => import('../components/Profile/Posts.vue'),
         props: true,
       },
       {
         path: 'about',
-        name: About,
+        name: () => import('../components/Profile/About.vue'),
         component: () => import('../components/Profile/About.vue'),
         props: true,
       },
       {
         path: 'friends',
-        name: Friends,
+        name: () => import('../components/Profile/Friends.vue'),
         component: () => import('../components/Profile/Friends.vue'),
         props: true,
       },
       {
         path: 'photos',
-        name: Photos,
+        name: () => import('../components/Profile/Photos.vue'),
         component: () => import('../components/Profile/Photos.vue'),
         props: true,
       },
