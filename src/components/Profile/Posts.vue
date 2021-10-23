@@ -40,8 +40,7 @@
               <transition name="slide-fade">
                 <button
                   v-if="payload.content"
-                  class="ml-2 border rounded-3xl border-primary bg-primary text-white py-2 px-4"
-                  style="width: 90px;"
+                  class="button-post ml-2 border rounded-3xl border-primary bg-primary text-white py-2 px-4"
                   @click="addPost"
                 >
                   <template v-if="!isLoading">
@@ -83,7 +82,7 @@
             >
             <div class="flex-1">
               <div class="text-lg font-bold">
-                {{ posts.createdBy.fullName }} > {{ posts.user.fullName }}
+                {{ posts.user.fullName }} > {{ posts.friend.fullName }}
               </div>
               <div class="text-sm">
                 {{ posts.createdAt }}
@@ -145,14 +144,14 @@ export default {
       createdAt: '',
       updatedAt: '',
       content: '',
-      createdBy: {
+      user: {
         firstName: '',
         lastName: '',
         username: '',
         fullName: '',
         profilePicturePath: '',
       },
-      user: {
+      friend: {
         firstName: '',
         lastName: '',
         username: '',
@@ -194,8 +193,8 @@ export default {
       try {
         const response = await store.dispatch('post', content);
         posts.value = response.data;
-        posts.value.createdBy.fullName = posts.value.createdBy.firstName + ' ' + posts.value.createdBy.lastName;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
+        posts.value.friend.fullName = posts.value.friend.firstName + ' ' + posts.value.friend.lastName;
 
         payload.content = '';
 
@@ -264,5 +263,9 @@ export default {
 
 .post {
   @apply rounded-lg shadow-md bg-white my-4 py-3 px-5;
+}
+
+.button-post {
+  width: 90px;
 }
 </style>

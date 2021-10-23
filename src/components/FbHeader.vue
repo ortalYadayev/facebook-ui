@@ -9,7 +9,7 @@
             class="flex items-center pl-2"
           >
             <font-awesome-icon
-              v-if="!payload.text"
+              v-if="!payload.body"
               icon="search"
               class="text-gray-400 ml-2"
             />
@@ -17,18 +17,19 @@
               type="text"
               id="search"
               class="rounded-3xl bg-transparent p-2"
-              v-model="payload.text"
+              v-model="payload.body"
               placeholder="Search in Facebook"
             >
           </label>
           <transition name="slide-fade">
             <button
-              v-if="payload.text"
-              class="search-button flex justify-center items-center duration-300 hover:bg-gray-400 rounded-full w-10 h-10"
+              v-if="payload.body"
+              @click="search"
+              class="search-button flex justify-center items-center duration-300 hover:bg-gray400 hover:border-primary border border-transparent rounded-full w-10 h-10"
             >
               <font-awesome-icon
                 icon="arrow-right"
-                class="fa-lg text-gray-600"
+                class="fa-lg"
               />
             </button>
           </transition>
@@ -42,17 +43,48 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { useStore } from "vuex/dist/vuex.mjs";
+import { ref, reactive } from 'vue';
 
 export default {
   name: "FbHeader",
   setup() {
-    const payload = ref({
-      text: '',
+    const store = useStore();
+
+    const payload = reactive({
+      body: '',
     });
+
+    const users = ref([]);
+
+    const isLoading = ref(false);
+    const color = ref('rgb(24, 119, 241)');
+    const size = ref('10px');
 
     return {
       payload,
+      isLoading,
+      color,
+      size,
+      search,
+    };
+
+    async function search() {
+      isLoading.value = true;
+      try {
+        const response = await store.dispatch('search', payload);
+        users.value = response.data;
+
+        console.log(response.data);
+
+        isLoading.value = false;
+      } catch (error) {
+        if (error.response.status === 422) {
+          errors.message = error.response.data[0].message;
+        }
+
+        isLoading.value = false;
+      }
     }
   }
 }
@@ -75,6 +107,6 @@ export default {
 }
 
 .search-button:hover svg {
-  @apply text-gray-rgb;
+  @apply text-primary;
 }
 </style>
