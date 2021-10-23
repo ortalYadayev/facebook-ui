@@ -70,7 +70,7 @@ const store = createStore({
       return axiosInstance.get(`/users/${payload}`);
     },
 
-    storePost({ getters }, payload) {
+    post({ getters }, payload) {
       return axiosInstance.post(`/users/${payload.username}/posts`, payload);
     },
   },

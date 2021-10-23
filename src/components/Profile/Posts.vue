@@ -192,7 +192,7 @@ export default {
 
       isLoading.value = true;
       try {
-        const response = await store.dispatch('storePost', content);
+        const response = await store.dispatch('post', content);
         posts.value = response.data;
         posts.value.createdBy.fullName = posts.value.createdBy.firstName + ' ' + posts.value.createdBy.lastName;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
