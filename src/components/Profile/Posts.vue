@@ -82,7 +82,7 @@
             >
             <div class="flex-1">
               <div class="text-lg font-bold">
-                {{ posts.user.fullName }} > {{ posts.friend.fullName }}
+                {{ posts.user.fullName }} > {{ posts.user.fullName }}
               </div>
               <div class="text-sm">
                 {{ posts.createdAt }}
@@ -151,13 +151,6 @@ export default {
         fullName: '',
         profilePicturePath: '',
       },
-      friend: {
-        firstName: '',
-        lastName: '',
-        username: '',
-        fullName: '',
-        profilePicturePath: '',
-      }
     });
 
     return {
@@ -176,10 +169,14 @@ export default {
     };
 
     async function addPost(){
-      const content = reactive({
-        username: props.user.username,
-        content: payload.content,
-      });
+      const friend = props.user.username;
+
+      if(friend !== store.state.user.username) {
+        errors.message = "You can't permission";
+        return;
+      }
+
+      // const content = reactive({payload.content});
 
       v$.value.$touch();
 
@@ -191,10 +188,9 @@ export default {
 
       isLoading.value = true;
       try {
-        const response = await store.dispatch('post', content);
+        const response = await store.dispatch('post', payload);
         posts.value = response.data;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
-        posts.value.friend.fullName = posts.value.friend.firstName + ' ' + posts.value.friend.lastName;
 
         payload.content = '';
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <FbHeader />
-    <router-view />
+    <router-view :key="$route.name !== 'Profile' ? $route.fullPath : $route.name" />
   </div>
 </template>
 

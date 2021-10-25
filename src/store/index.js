@@ -71,11 +71,11 @@ const store = createStore({
     },
 
     post({ getters }, payload) {
-      return axiosInstance.post(`/users/${payload.username}/posts`, payload);
+      return axiosInstance.post(`/posts`, payload);
     },
 
     search({ getters }, payload) {
-      return axiosInstance.get(`/search?query=${payload}`);
+      return axiosInstance.get(`/users/search?searchQuery=${payload}`);
     },
   },
 });
