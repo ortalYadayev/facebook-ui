@@ -19,27 +19,27 @@
     </div>
     <nav class="profile-nav">
       <router-link
-        :to="{ name: Posts }"
+        :to="{ name: 'Posts', params: { user } }"
         :class=" $route.fullPath.split('/').length === 2 ? 'active': ''"
         active-class=""
-        class="duration-300 hover:text-primary hover:border-primary uppercase px-3 py-2"
+        class="duration-300 hover:border-primary uppercase px-3 py-2"
       >
         Posts
       </router-link>
       <router-link
-        :to="{ name: About }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
+        :to="{ name: 'About', params: { user } }"
+        class="duration-300 border-b-2 border-transparent uppercase ml-2 px-3 py-2"
       >
         About
       </router-link>
       <router-link
-        :to="{ name: Friends }"
-        class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
+        :to="{ name: 'Friends', params: { user } }"
+        class="duration-300 border-b-2 border-transparent uppercase ml-2 px-3 py-2"
       >
         Friends
       </router-link>
       <router-link
-        :to="{ name: Photos }"
+        :to="{ name: 'Photos', params: { user } }"
         class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
       >
         Photos
@@ -48,32 +48,34 @@
         :to="{ name: 'Register' }"
         active-class="active"
         class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
-      />
+      >
+        More
+      </router-link>
     </nav>
   </header>
 </template>
 
 <script>
-import Posts from "../components/Profile/Posts.vue";
-import About from "../components/Profile/About.vue";
-import Friends from "../components/Profile/Friends.vue";
-import Photos from "../components/Profile/Photos.vue";
+import Posts from './Profile/Posts.vue';
+import About from './Profile/About.vue';
+import Friends from './Profile/Friends.vue';
+import Photos from './Profile/Photos.vue';
 
 export default {
-  name: "SignHeader",
+  name: "SignedHeaderProfile",
   props: {
     user: {
       type: Object,
-      required: true
+      required: true,
     },
   },
   setup(props) {
-
     return {
       Posts,
       About,
       Friends,
       Photos,
+      props,
     }
   }
 }

@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-    --gray: rgb(239, 241, 244);
-    --primary: rgb(24, 119, 241);
+    --primary: rgb(var(--primary-rgb));
     --primary-rgb: 24, 119, 241;
-    --lightblue: rgb(158, 208, 255);
+    --gray: rgb(239, 241, 244);
     --lightblue: rgb(158, 208, 255);
     --profile-header-height: 300px;
     --header-height: 60px;
+    --post-width: 500px;
 }
 
 html {

@@ -75,7 +75,7 @@ const store = createStore({
     },
 
     search({ getters }, payload) {
-      return axiosInstance.post('/search', payload);
+      return axiosInstance.get(`/search?query=${payload}`);
     },
   },
 });

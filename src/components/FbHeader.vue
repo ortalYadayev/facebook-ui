@@ -1,5 +1,5 @@
 <template>
-  <div class="signed-header flex bg-white shadow-lg">
+  <div class="signed-header flex bg-white fixed w-full shadow-md">
     <nav class="container m-auto flex justify-between items-center">
       <div class="flex items-center ml-4">
         <div class="logo mr-2" />
@@ -8,28 +8,37 @@
             for="search"
             class="flex items-center pl-2"
           >
-            <font-awesome-icon
-              v-if="!payload.body"
+            <fa-icon
+              v-if="!payload.search"
               icon="search"
               class="text-gray-400 ml-2"
             />
             <input
               type="text"
               id="search"
+              @change="search"
               class="rounded-3xl bg-transparent p-2"
-              v-model="payload.body"
+              v-model="payload.search"
               placeholder="Search in Facebook"
             >
           </label>
           <transition name="slide-fade">
             <button
-              v-if="payload.body"
+              v-if="payload.search"
               @click="search"
               class="search-button flex justify-center items-center duration-300 hover:bg-gray400 hover:border-primary border border-transparent rounded-full w-10 h-10"
             >
-              <font-awesome-icon
-                icon="arrow-right"
-                class="fa-lg"
+              <template v-if="!isLoading">
+                <fa-icon
+                  icon="arrow-right"
+                  class="fa-lg"
+                />
+              </template>
+              <sync-loader
+                v-else
+                :loading="isLoading"
+                :color="color"
+                :size="size"
               />
             </button>
           </transition>
@@ -43,26 +52,31 @@
 </template>
 
 <script>
-import { useStore } from "vuex/dist/vuex.mjs";
 import { ref, reactive } from 'vue';
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
+import { useRouter, useRoute } from "vue-router";
 
 export default {
   name: "FbHeader",
-  setup() {
-    const store = useStore();
+  components: {
+    SyncLoader
+  },
+  setup(props) {
+    const router = useRouter();
+    const route = useRoute();
 
     const payload = reactive({
-      body: '',
+      search: route.params.search ? route.params.search: '',
     });
-
-    const users = ref([]);
 
     const isLoading = ref(false);
     const color = ref('rgb(24, 119, 241)');
-    const size = ref('10px');
+    const size = ref('4px');
 
     return {
+      router,
       payload,
+      props,
       isLoading,
       color,
       size,
@@ -70,21 +84,8 @@ export default {
     };
 
     async function search() {
-      isLoading.value = true;
-      try {
-        const response = await store.dispatch('search', payload);
-        users.value = response.data;
-
-        console.log(response.data);
-
-        isLoading.value = false;
-      } catch (error) {
-        if (error.response.status === 422) {
-          errors.message = error.response.data[0].message;
-        }
-
-        isLoading.value = false;
-      }
+      // isLoading.value = true;
+      await router.push({ name: "Search", params: {search: payload.search} });
     }
   }
 }

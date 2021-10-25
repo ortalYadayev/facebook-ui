@@ -28,9 +28,11 @@ $header-height: 60px;
   }
 }
 
-.profile-header a.active {
-  color: $primary;
-  border-bottom: 2px solid $primary;
+.profile-header {
+  a.active, a:hover {
+    color: $primary;
+    border-bottom: 2px solid $primary;
+  }
 }
 
 .unsigned-header {
@@ -58,6 +60,7 @@ $header-height: 60px;
 
 .signed-header {
   height: $header-height;
+  margin-top: -$header-height;
 
   .logo {
     background: url("../images/icon.png") no-repeat;
@@ -67,3 +70,12 @@ $header-height: 60px;
   }
 }
 
+.body {
+  margin-top: $header-height;
+  min-height: calc(100vh - #{$header-height});
+  background: $gray;
+}
+
+.box {
+  @apply rounded-lg shadow-md bg-white my-4 py-3 px-5;
+}

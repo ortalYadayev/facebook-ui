@@ -1,14 +1,14 @@
 <template>
   <div>
     <sync-loader
-      v-if="user.username.length === 0"
+      v-if="!user.username"
       :loading="isLoading"
       :color="color"
       :size="size"
       class="h-screen flex justify-center items-center"
     />
     <div v-else>
-      <SignHeader
+      <SignedHeaderProfile
         :user="user"
       />
       <About
@@ -35,7 +35,7 @@
 import { useStore } from "vuex";
 import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
-import SignHeader from "../components/SignHeader.vue";
+import SignedHeaderProfile from "../components/SignedHeaderProfile.vue";
 import Posts from "../components/Profile/Posts.vue";
 import About from "../components/Profile/About.vue";
 import Friends from "../components/Profile/Friends.vue";
@@ -45,7 +45,7 @@ import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
 export default {
   name: "Profile",
   components: {
-    SignHeader,
+    SignedHeaderProfile,
     Posts,
     About,
     Friends,
@@ -78,7 +78,7 @@ export default {
     });
 
     watchEffect(() => {
-      if (props.username.toLowerCase() !== user.value.username) {
+      if (props.username !== user.value.username) {
         getUser();
       }
     });
@@ -98,7 +98,7 @@ export default {
       try {
         const response = await store.dispatch('getUser', props.username);
 
-        response.data.isAuth = store.state.user.username.toLowerCase() === response.data.username.toLowerCase();
+        response.data.isAuth = store.state.user.username === response.data.username;
         user.value = response.data;
 
         isLoading.value = false;
