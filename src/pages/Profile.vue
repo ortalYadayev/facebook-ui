@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="body">
     <sync-loader
       v-if="!user.username"
       :loading="isLoading"
