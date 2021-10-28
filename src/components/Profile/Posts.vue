@@ -172,7 +172,7 @@ export default {
       const friend = props.user.username;
 
       if(friend !== store.state.user.username) {
-        errors.message = "You can't permission";
+        errors.message = "You don't have permission";
         return;
       }
 

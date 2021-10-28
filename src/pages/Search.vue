@@ -4,7 +4,7 @@
       class="body flex justify-center"
     >
       <div
-        v-if="users"
+        v-if="users.length"
         class="search-body sm:w-1/2 lg:w-1/3 pt-8"
       >
         <div
@@ -118,13 +118,17 @@ export default {
     async function search() {
       try {
         const response = await store.dispatch('search', route.params.search);
+        if(!response.data) {
+          return;
+        }
+
         users.value = response.data;
+
         users.value.map(user => {
           if(user.username === store.state.user.username) {
             user.isAuth = true;
           }
         });
-
       } catch (error) {
         console.log(error);
         // if (error.response.status === 422) {
