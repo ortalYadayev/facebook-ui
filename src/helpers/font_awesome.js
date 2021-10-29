@@ -5,6 +5,7 @@ import {
   faSearch,
   faArrowRight,
   faUserPlus,
+  faPen,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -22,6 +23,7 @@ library.add({
   faSearch,
   faArrowRight,
   faUserPlus,
+  faPen,
 
   // Regular f-a
   faComment,

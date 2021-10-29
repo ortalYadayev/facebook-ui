@@ -77,6 +77,10 @@ const store = createStore({
     search({ getters }, payload) {
       return axiosInstance.get(`/users/search?searchQuery=${payload}`);
     },
+
+    friend({ getters }, payload) {
+      return axiosInstance.get(`/users/friend`);
+    },
   },
 });
 

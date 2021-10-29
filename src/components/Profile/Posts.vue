@@ -176,8 +176,6 @@ export default {
         return;
       }
 
-      // const content = reactive({payload.content});
-
       v$.value.$touch();
 
       if (v$.value.$invalid) {

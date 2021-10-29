@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="body">
     <sync-loader
       v-if="!user.username"
       :loading="isLoading"
@@ -74,6 +74,8 @@ export default {
       username: '',
       profilePicturePath: '',
       profilePictureUrl: '',
+      isFriend: false,
+      sendRequestToFriend: false,
       isAuth: false,
     });
 
@@ -113,12 +115,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped >
-@import '../assets/css/app.scss';
-
-.profile-header {
-  height: $profile-header-height;
-  background-image: linear-gradient(to bottom, $lightblue, #c0daff, #dbe4ff, #f0f1ff, #ffffff);
-}
-</style>
