@@ -52,11 +52,11 @@
 </template>
 
 <script>
-import {ref, reactive, getCurrentInstance, defineComponent} from 'vue';
+import {ref, reactive } from 'vue';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import { useRouter, useRoute } from "vue-router";
 
-export default defineComponent({
+export default {
   name: "FbHeader",
   components: {
     SyncLoader
@@ -91,7 +91,7 @@ export default defineComponent({
       await router.push({ name: "Search", params: {search: payload.search} });
     }
   }
-})
+}
 </script>
 
 <style scoped>
