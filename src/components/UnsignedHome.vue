@@ -42,4 +42,33 @@ export default {
   background: url("../assets/images/circle.png") no-repeat center;
   background-size: 80% 200%;
 }
+
+.unsigned-header {
+  height: var(--header-height);
+  width: 100%;
+}
+
+.unsigned-header {
+  .logo {
+    height: var(--header-height);
+    width: 230px;
+    background: url("../assets/images/logo.svg") no-repeat;
+    background-size: cover;
+  }
+
+  @media (max-width: 640px) {
+    .logo{
+      background: url("../assets/images/icon.png") no-repeat;
+      height: calc(var(--header-height) - 15px);
+      width: calc(var(--header-height) - 15px);
+      background-size: cover;
+      margin: 10px;
+    }
+  }
+}
+
+.unsigned-home {
+  height: calc(100vh - var(--header-height));
+}
+
 </style>

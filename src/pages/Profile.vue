@@ -115,10 +115,9 @@ export default {
 </script>
 
 <style lang="scss" scoped >
-@import '../assets/css/app.scss';
 
 .profile-header {
-  height: $profile-header-height;
-  background-image: linear-gradient(to bottom, $lightblue, #c0daff, #dbe4ff, #f0f1ff, #ffffff);
+  height: var(--profile-header-height);
+  background-image: linear-gradient(to bottom, var(--lightblue), #c0daff, #dbe4ff, #f0f1ff, #ffffff);
 }
 </style>

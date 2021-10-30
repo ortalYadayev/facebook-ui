@@ -255,4 +255,10 @@ export default {
 .button-post {
   width: 90px;
 }
+
+.tag-profile {
+  height: 100%;
+  min-height: calc(100vh - var(--$profile-header-height));
+}
+
 </style>

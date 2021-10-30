@@ -16,7 +16,7 @@
             <input
               type="text"
               id="search"
-              @change="search"
+              @keyup.enter="search"
               class="rounded-3xl bg-transparent p-2"
               v-model="payload.search"
               placeholder="Search in Facebook"
@@ -52,11 +52,11 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue';
+import {ref, reactive, getCurrentInstance, defineComponent} from 'vue';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import { useRouter, useRoute } from "vue-router";
 
-export default {
+export default defineComponent({
   name: "FbHeader",
   components: {
     SyncLoader
@@ -66,8 +66,12 @@ export default {
     const route = useRoute();
 
     const payload = reactive({
-      search: route.params.search ? route.params.search: '',
+      search: route.params.search ? route.params.search: route.query.query,
     });
+
+    if(payload.search){
+      search();
+    }
 
     const isLoading = ref(false);
     const color = ref('rgb(24, 119, 241)');
@@ -84,11 +88,10 @@ export default {
     };
 
     async function search() {
-      // isLoading.value = true;
       await router.push({ name: "Search", params: {search: payload.search} });
     }
   }
-}
+})
 </script>
 
 <style scoped>

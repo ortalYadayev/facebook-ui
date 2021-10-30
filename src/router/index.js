@@ -26,9 +26,6 @@ const routes = [
         path: '/',
         name: 'Home',
         component: () => import('../pages/Home.vue'),
-        meta: {
-          auth: true,
-        },
       },
       {
         path: '/search?query=:search',
@@ -84,6 +81,7 @@ const routes = [
 ];
 
 const router = createRouter({
+  mode: 'history',
   history: createWebHistory(),
   routes: routes,
   linkActiveClass: 'active',

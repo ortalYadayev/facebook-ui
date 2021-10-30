@@ -7,7 +7,6 @@ import store from './store';
 import './helpers/font_awesome';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-// Auth
 store.dispatch('getAuthUser');
 
 createApp(App)
