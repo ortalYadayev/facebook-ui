@@ -258,7 +258,7 @@ export default {
 
 .tag-profile {
   height: 100%;
-  min-height: calc(100vh - var(--$profile-header-height));
+  min-height: calc(100vh - var(--profile-header-height));
 }
 
 </style>
