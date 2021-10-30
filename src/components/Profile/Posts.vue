@@ -1,7 +1,10 @@
 <template>
   <div class="tag-profile bg-gray-rgb">
     <div class="container m-auto flex justify-center items-center">
-      <div class="body-posts">
+      <div
+        v-if="user.isAuth"
+        class="body-posts"
+      >
         <div class="box">
           <transition name="top-slide-fade">
             <div
@@ -58,9 +61,7 @@
             </div>
           </div>
         </div>
-        <div
-          class="box flex justify-center text-xl font-bold"
-        >
+        <div class="box flex justify-center text-xl font-bold">
           Posts
         </div>
         <div
@@ -175,8 +176,6 @@ export default {
         errors.message = "You don't have permission";
         return;
       }
-
-      // const content = reactive({payload.content});
 
       v$.value.$touch();
 

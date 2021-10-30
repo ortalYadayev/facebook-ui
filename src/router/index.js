@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store';
-import Photos from '../components/Profile/Photos.vue';
-import Posts from '../components/Profile/Posts.vue';
 
 const routes = [
   {

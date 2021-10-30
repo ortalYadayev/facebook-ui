@@ -131,10 +131,6 @@ export default {
         });
       } catch (error) {
         console.log(error);
-        // if (error.response.status === 422) {
-        //   errors.message = error.response.data[0].message;
-        // }
-
       }
     }
   }
