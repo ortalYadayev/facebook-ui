@@ -1,9 +1,12 @@
 <template>
-  <div class="tag-profile bg-gray_rgb">
+  <div class="tag-profile bg-gray-rgb">
     <div class="container m-auto flex justify-center items-center">
-      <div class="body-posts">
-        <div class="error-transition post">
-          <transition name="slide-fade">
+      <div
+        v-if="user.isAuth"
+        class="body-posts"
+      >
+        <div class="box">
+          <transition name="top-slide-fade">
             <div
               v-if="v$.content.$error"
               class="flex justify-center italic text-red-500 py-2 mb-3"
@@ -30,18 +33,17 @@
               alt="user icon"
               class="h-9 w-9 rounded-full mr-2"
             >
-            <div class="send-transition flex-1 flex justify-between items-center rounded-3xl">
+            <div class="flex-1 flex justify-between items-center rounded-3xl">
               <textarea
-                class="think-about flex-1 hover:bg-gray-300 bg-gray_rgb text-gray-700 rounded-3xl resize-none py-2 px-4"
+                class="think-about flex-1 hover:bg-gray-300 bg-gray-rgb text-gray-700 rounded-3xl resize-none py-2 px-4"
                 placeholder="What do you think?"
                 v-model="payload.content"
                 @keydown="resetErrors('content')"
               />
-              <transition name="slide-fade">
+              <transition name="right-slide-fade">
                 <button
                   v-if="payload.content"
-                  class="ml-2 border rounded-3xl border-primary bg-primary text-white py-2 px-4"
-                  style="width: 90px;"
+                  class="button-post ml-2 border rounded-3xl border-primary bg-primary text-white py-2 px-4"
                   @click="addPost"
                 >
                   <template v-if="!isLoading">
@@ -59,14 +61,12 @@
             </div>
           </div>
         </div>
-        <div
-          class="post flex justify-center text-xl font-bold"
-        >
+        <div class="box flex justify-center text-xl font-bold">
           Posts
         </div>
         <div
           v-if="isSend"
-          class="post"
+          class="box"
         >
           <div class="flex items-center mb-2">
             <img
@@ -79,11 +79,11 @@
               v-else
               src="../../assets/images/user.png"
               alt="user icon"
-              class="h-9 w-9 rounded-full mr-2"
+              class="bg-gray-rgb h-9 w-9 rounded-full mr-2"
             >
             <div class="flex-1">
               <div class="text-lg font-bold">
-                {{ posts.createdBy.fullName }} > {{ posts.user.fullName }}
+                {{ posts.user.fullName }} > {{ posts.user.fullName }}
               </div>
               <div class="text-sm">
                 {{ posts.createdAt }}
@@ -145,20 +145,13 @@ export default {
       createdAt: '',
       updatedAt: '',
       content: '',
-      createdBy: {
-        firstName: '',
-        lastName: '',
-        username: '',
-        fullName: '',
-        profilePicturePath: '',
-      },
       user: {
         firstName: '',
         lastName: '',
         username: '',
         fullName: '',
         profilePicturePath: '',
-      }
+      },
     });
 
     return {
@@ -177,10 +170,12 @@ export default {
     };
 
     async function addPost(){
-      const content = reactive({
-        username: props.user.username,
-        content: payload.content,
-      });
+      const friend = props.user.username;
+
+      if(friend !== store.state.user.username) {
+        errors.message = "You don't have permission";
+        return;
+      }
 
       v$.value.$touch();
 
@@ -192,9 +187,8 @@ export default {
 
       isLoading.value = true;
       try {
-        const response = await store.dispatch('storePost', content);
+        const response = await store.dispatch('post', payload);
         posts.value = response.data;
-        posts.value.createdBy.fullName = posts.value.createdBy.firstName + ' ' + posts.value.createdBy.lastName;
         posts.value.user.fullName = posts.value.user.firstName + ' ' + posts.value.user.lastName;
 
         payload.content = '';
@@ -204,7 +198,7 @@ export default {
       } catch (error) {
         if (error.response.status === 422) {
           errors.message = error.response.data[0].message;
-         }
+        }
 
         isLoading.value = false;
       }
@@ -220,14 +214,14 @@ export default {
 
 </script>
 
-<style lang="scss" scoped>
-@import '../../assets/css/app.scss';
+<style src="../../assets/css/app.scss" />
 
+<style lang="scss" scoped>
 .body-posts {
-  width: $post-width;
+  width: var(--post-width);
 }
 
-@media (max-width: $post-width) {
+@media (max-width: var(--post-width)) {
   .body-posts, .think-about {
     width: 100%;
   }
@@ -236,33 +230,35 @@ export default {
   }
 }
 
-.send-transition > {
-  .slide-fade-enter-from,
-  .slide-fade-leave-to {
-    transform: translateX(20px);
-    opacity: 0;
-  }
-
-  .slide-fade-enter-active,
-  .slide-fade-leave-active {
-    transition: all 0.8s ease;
-  }
+.right-slide-fade-enter-from,
+.right-slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 
-.error-transition > {
-  .slide-fade-enter-from,
-  .slide-fade-leave-to {
-    transform: translateY(-30px);
-    opacity: 0;
-  }
-
-  .slide-fade-enter-active,
-  .slide-fade-leave-active {
-    transition: all 0.2s ease;
-  }
+.right-slide-fade-enter-active,
+.right-slide-fade-leave-active {
+  transition: all 0.8s ease;
 }
 
-.post {
-  @apply rounded-lg shadow-md bg-white my-4 py-3 px-5;
+.top-slide-fade-enter-from,
+.top-slide-fade-leave-to {
+  transform: translateY(-30px);
+  opacity: 0;
 }
+
+.top-slide-fade-enter-active,
+.top-slide-fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.button-post {
+  width: 90px;
+}
+
+.tag-profile {
+  height: 100%;
+  min-height: calc(100vh - var(--$profile-header-height));
+}
+
 </style>

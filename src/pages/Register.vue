@@ -160,7 +160,7 @@
       </div>
       <div class="flex justify-center text-center">
         <button
-          class="w-full border-primary bg-primary text-lg text-gray_rgb uppercase rounded-lg py-1 sm:py-2"
+          class="w-full border-primary bg-primary text-lg text-gray-rgb uppercase rounded-lg py-1 sm:py-2"
         >
           <template v-if="!isLoading">
             Register
@@ -277,6 +277,7 @@ export default {
       } catch (error) {
         if (error.response.status === 422) {
           errors.value.email = error.response.data.type === 'email' ? error.response.data.message : '';
+          errors.value.username = error.response.data.type === 'username' ? error.response.data.message : '';
         }
 
         isLoading.value = false;

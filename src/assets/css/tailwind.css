@@ -2,16 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-    --gray: rgb(239, 241, 244);
-    --primary: rgb(24, 119, 241);
+    --primary: rgb(var(--primary-rgb));
     --primary-rgb: 24, 119, 241;
-    --lightblue: rgb(158, 208, 255);
-    --header-height: 80px;
+    --gray: rgb(239, 241, 244);
     --lightblue: rgb(158, 208, 255);
     --profile-header-height: 300px;
+    --post-width: 500px;
+    --header-height: 60px;
 }
-
 html {
     overflow-x: hidden;
 }
@@ -26,9 +26,4 @@ textarea:focus {
 
 li {
     list-style: none;
-}
-
-.unsigned-header {
-    height: var(--header-height);
-    width: 100%;
 }

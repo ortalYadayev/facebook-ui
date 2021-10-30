@@ -1,16 +1,6 @@
-$primary-rgb: 24, 119, 241;
-$gray: rgb(239, 241, 244);
 $primary: rgb(24, 119, 241);
-$primary-rgb: 24, 119, 241;
-$lightblue: rgb(158, 208, 255);
-$profile-header-height: 350px;
-$post-width: 500px;
-$header-height: 80px;
-
-.tag-profile {
-  height: 100%;
-  min-height: calc(100vh - #{$profile-header-height});
-}
+$gray: rgb(239, 241, 244);
+$header-height: 60px;
 
 .register-form,
 .login-form{
@@ -28,42 +18,31 @@ $header-height: 80px;
   }
 }
 
-.profile-header a.active {
-  color: $primary;
-  border-bottom: 2px solid $primary;
-}
-
-.unsigned-header {
-  .logo {
-    height: $header-height;
-    width: 230px;
-    background: url("../images/logo.svg") no-repeat;
-    background-size: cover;
+.profile-header {
+  a.active, a:hover {
+    color: $primary;
+    border-bottom: 2px solid $primary;
   }
-
-  @media (max-width: 640px) {
-    .logo{
-      background: url("../images/icon.png") no-repeat;
-      height: calc(#{$header-height} - 25px);
-      width: calc(#{$header-height} - 25px);
-      background-size: cover;
-      margin: 10px;
-    }
-  }
-}
-
-.unsigned-home {
-  height: calc(100vh - #{$header-height});
 }
 
 .signed-header {
   height: $header-height;
+  margin-top: -$header-height;
 
   .logo {
     background: url("../images/icon.png") no-repeat;
     height: calc(#{$header-height} - 15px);
-    width: 65px;
+    width: calc(#{$header-height} - 15px);
     background-size: cover;
   }
 }
 
+.body {
+  margin-top: $header-height;
+  min-height: calc(100vh - #{$header-height});
+  background: $gray;
+}
+
+.box {
+  @apply rounded-lg shadow-md bg-white my-4 py-3 px-5;
+}
