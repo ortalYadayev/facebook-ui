@@ -25,7 +25,7 @@ const routes = [
                 component: () => import('../pages/Home.vue'),
             },
             {
-                path: '/search?query=:search',
+                path: '/search',
                 name: 'Search',
                 component: () => import('../pages/Search.vue'),
                 props: true,
@@ -44,25 +44,25 @@ const routes = [
                 children: [
                     {
                         path: '',
-                        name: 'Posts',
+                        name: 'Profile.Posts',
                         component: () => import('../components/Profile/Posts.vue'),
                         props: true,
                     },
                     {
                         path: 'about',
-                        name: 'About',
+                        name: 'Profile.About',
                         component: () => import('../components/Profile/About.vue'),
                         props: true,
                     },
                     {
                         path: 'friends',
-                        name: 'Friends',
+                        name: 'Profile.Friends',
                         component: () => import('../components/Profile/Friends.vue'),
                         props: true,
                     },
                     {
                         path: 'photos',
-                        name: 'Photos',
+                        name: 'Profile.Photos',
                         component: () => import('../components/Profile/Photos.vue'),
                         props: true,
                     },

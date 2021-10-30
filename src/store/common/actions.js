@@ -10,7 +10,7 @@ export default {
     },
 
     search({ getters }, payload) {
-        return axiosInstance.get('/users/search', {
+        return axiosInstance.get(`/users/search`, {
             params: { searchQuery: payload },
         });
     },

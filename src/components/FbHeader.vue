@@ -9,23 +9,23 @@
             class="flex items-center pl-2"
           >
             <fa-icon
-              v-if="!payload.search"
+              v-if="!searchQuery"
               icon="search"
               class="text-gray-400 ml-2"
             />
             <input
               type="text"
               id="search"
-              @keyup.enter="search"
+              @keyup.enter="searchQuery ? $router.push({ name: 'Search', query: { query: searchQuery } }) : ''"
               class="rounded-3xl bg-transparent p-2"
-              v-model="payload.search"
+              v-model="searchQuery"
               placeholder="Search in Facebook"
             >
           </label>
           <transition name="slide-fade">
-            <button
-              v-if="payload.search"
-              @click="search"
+            <router-link
+              :to="{ name: 'Search', query: { query: searchQuery } }"
+              v-if="searchQuery"
               class="search-button flex justify-center items-center duration-300 hover:bg-gray400 hover:border-primary border border-transparent rounded-full w-10 h-10"
             >
               <template v-if="!isLoading">
@@ -40,56 +40,41 @@
                 :color="color"
                 :size="size"
               />
-            </button>
+            </router-link>
           </transition>
         </div>
       </div>
       <div class="flex-1 flex justify-end mr-4">
-        settings
+        Settings
       </div>
     </nav>
   </div>
 </template>
 
 <script>
-import {ref, reactive } from 'vue';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
-import { useRouter, useRoute } from "vue-router";
+import { ref } from 'vue';
+import { useRoute } from "vue-router";
 
 export default {
   name: "FbHeader",
   components: {
     SyncLoader
   },
-  setup(props) {
-    const router = useRouter();
+  setup() {
     const route = useRoute();
 
-    const payload = reactive({
-      search: route.params.search ? route.params.search: route.query.query,
-    });
-
-    if(payload.search){
-      search();
-    }
-
+    const searchQuery = ref(route.query.query || '');
     const isLoading = ref(false);
     const color = ref('rgb(24, 119, 241)');
     const size = ref('4px');
 
     return {
-      router,
-      payload,
-      props,
+      searchQuery,
       isLoading,
       color,
       size,
-      search,
     };
-
-    async function search() {
-      await router.push({ name: "Search", params: {search: payload.search} });
-    }
   }
 }
 </script>

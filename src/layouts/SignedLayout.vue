@@ -2,7 +2,7 @@
   <div>
     <FbHeader v-if="$store.getters.isLoggedIn" />
 
-    <router-view :key="$route.name !== 'Profile' ? $route.fullPath : $route.name" />
+    <router-view :key="!$route.name.startsWith('Profile') ? $route.fullPath : $route.name" />
   </div>
 </template>
 

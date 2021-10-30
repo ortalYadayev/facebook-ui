@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-view :key="$route.name !== 'Profile' ? $route.fullPath : $route.name" />
+    <router-view :key="$route.fullPath" />
   </div>
 </template>
 

@@ -13,7 +13,7 @@
           class="box flex items-center justify-between mb-2"
         >
           <div class="flex items-center">
-            <button @click="profile(index)">
+            <router-link :to="{ name: 'Profile', params: { username: user.username } }">
               <img
                 v-if="user.profilePictureUrl"
                 :src="user.profilePictureUrl"
@@ -26,16 +26,16 @@
                 alt="user icon"
                 class="hover:opacity-90 bg-gray-rgb h-16 w-16 rounded-full mr-2"
               >
-            </button>
+            </router-link>
             <div class="flex-1">
-              <button
-                @click="profile(index)"
+              <router-link
+                :to="{ name: 'Profile', params: { username: user.username } }"
                 class="hover:underline"
               >
                 <div class="text-lg font-bold">
                   {{ user.firstName }} {{ user.lastName }}
                 </div>
-              </button>
+              </router-link>
               <div v-if="user.isFriend">
                 A friend
               </div>
@@ -75,49 +75,34 @@
 </template>
 
 <script>
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import { ref } from 'vue';
 
 export default {
   name: "Search",
-  setup(props) {
+  setup() {
     const route = useRoute();
-    const router = useRouter();
     const store = useStore();
 
     const isLoading = ref(false);
 
-    search();
+    if (route.query.query) {
+      search();
+    }
 
-    const users = ref([{
-      id: '',
-      email: '',
-      lastName: '',
-      firstName: '',
-      username: '',
-      profilePicturePath: '',
-      profilePictureUrl: '',
-      isFriend: false,
-      isAuth: false,
-    }]);
+    const users = ref([]);
 
     return {
       route,
-      props,
       isLoading,
       users,
       search,
-      profile,
     };
-
-    async function profile(index) {
-      await router.push({ name: 'Profile', params: { username: users.value[index].username } })
-    }
 
     async function search() {
       try {
-        const response = await store.dispatch('search', route.params.search);
+        const response = await store.dispatch('search', route.query.query);
         if(!response.data) {
           return;
         }

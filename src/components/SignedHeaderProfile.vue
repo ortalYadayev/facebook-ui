@@ -19,7 +19,7 @@
     </div>
     <nav class="profile-nav">
       <router-link
-        :to="{ name: 'Posts', params: { user } }"
+        :to="{ name: 'Profile.Posts', params: { user } }"
         :class=" $route.fullPath.split('/').length === 2 ? 'active': ''"
         active-class=""
         class="duration-300 hover:border-primary uppercase px-3 py-2"
@@ -27,19 +27,19 @@
         Posts
       </router-link>
       <router-link
-        :to="{ name: 'About', params: { user } }"
+        :to="{ name: 'Profile.About', params: { user } }"
         class="duration-300 border-b-2 border-transparent uppercase ml-2 px-3 py-2"
       >
         About
       </router-link>
       <router-link
-        :to="{ name: 'Friends', params: { user } }"
+        :to="{ name: 'Profile.Friends', params: { user } }"
         class="duration-300 border-b-2 border-transparent uppercase ml-2 px-3 py-2"
       >
         Friends
       </router-link>
       <router-link
-        :to="{ name: 'Photos', params: { user } }"
+        :to="{ name: 'Profile.Photos', params: { user } }"
         class="duration-300 border-b-2 border-transparent hover:text-primary hover:border-primary uppercase ml-2 px-3 py-2"
       >
         Photos

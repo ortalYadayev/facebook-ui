@@ -12,15 +12,15 @@
         :user="user"
       />
       <About
-        v-if="$route.fullPath.split('/')[2] === 'about'"
+        v-if="$route.name === 'Profile.About'"
         :user="user"
       />
       <Friends
-        v-else-if="$route.fullPath.split('/')[2] === 'friends'"
+        v-else-if="$route.name === 'Profile.Friends'"
         :user="user"
       />
       <Photos
-        v-else-if="$route.fullPath.split('/')[2] === 'photos'"
+        v-else-if="$route.name === 'Profile.Photos'"
         :user="user"
       />
       <Posts
@@ -78,11 +78,11 @@ export default {
     });
 
     watchEffect(() => {
+      console.log(user.value.username)
       if (props.username !== user.value.username) {
         getUser();
       }
     });
-
 
     return {
       router,
