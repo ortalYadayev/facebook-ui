@@ -74,6 +74,7 @@ export default {
       username: '',
       profilePicturePath: '',
       profilePictureUrl: '',
+      statusFriend: '',
       isAuth: false,
     });
 
@@ -82,7 +83,6 @@ export default {
         getUser();
       }
     });
-
 
     return {
       router,
@@ -93,18 +93,31 @@ export default {
       size,
     };
 
+    async function isFriend() {
+      try {
+
+        console.log(user)
+      } catch (error) {
+        if (error.response.status === 422) {
+          user.value.statusFriend = '';
+        }
+      }
+    }
+
     async function getUser() {
       isLoading.value = true;
       try {
         const response = await store.dispatch('getUser', props.username);
+        const FriendResponse = await store.dispatch('isFriend', props.username);
 
         response.data.isAuth = store.state.user.username === response.data.username;
         user.value = response.data;
+        user.value.statusFriend = FriendResponse.data.status;
 
         isLoading.value = false;
       } catch (error) {
         if (error.response.status === 404) {
-          await router.push({ name: "NotFound" });
+          await router.push({name: "NotFound"});
         }
 
         isLoading.value = false;

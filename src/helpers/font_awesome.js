@@ -5,6 +5,8 @@ import {
   faSearch,
   faArrowRight,
   faUserPlus,
+  faPen,
+  faUserCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -14,7 +16,7 @@ import {
 
 import {
   // Brands font awesome
-  faRedditAlien,
+  faFacebookMessenger,
 } from '@fortawesome/free-brands-svg-icons';
 
 library.add({
@@ -22,10 +24,12 @@ library.add({
   faSearch,
   faArrowRight,
   faUserPlus,
+  faPen,
+  faUserCheck,
 
   // Regular f-a
   faComment,
 
   // Brands f-a
-  faRedditAlien,
+  faFacebookMessenger,
 });

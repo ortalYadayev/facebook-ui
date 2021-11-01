@@ -79,6 +79,18 @@ const store = createStore({
         params: { searchQuery: payload },
       });
     },
+
+    friendRequest({ getters }, payload) {
+      return axiosInstance.get('/users/friendrequest', {
+        params: { username: payload },
+      });
+    },
+
+    isFriend({ getters }, payload) {
+      return axiosInstance.get('/users/friends', {
+        params: { username: payload },
+      });
+    },
   },
 });
 
