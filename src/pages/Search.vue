@@ -36,7 +36,7 @@
                   {{ user.firstName }} {{ user.lastName }}
                 </div>
               </button>
-              <div v-if="user.isFriend">
+              <div v-if="user.statusFriend === 'approved'">
                 A friend
               </div>
               <div v-if="user.isAuth">
@@ -47,9 +47,10 @@
 
           <button
             v-if="!user.isAuth"
+            @click="addFriend(index)"
             class="duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10"
           >
-            <template v-if="!user.isFriend">
+            <template v-if="!user.statusFriend">
               <fa-icon icon="user-plus" />
             </template>
             <template v-else>
@@ -77,11 +78,11 @@
 <script>
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { ref } from 'vue';
+import { watchEffect, ref } from 'vue';
 
 export default {
   name: "Search",
-  setup(props) {
+  setup() {
     const route = useRoute();
     const router = useRouter();
     const store = useStore();
@@ -89,7 +90,6 @@ export default {
     const isLoading = ref(false);
 
     search();
-
     const users = ref([{
       id: '',
       email: '',
@@ -98,17 +98,27 @@ export default {
       username: '',
       profilePicturePath: '',
       profilePictureUrl: '',
-      isFriend: false,
+      statusFriend: '',
       isAuth: false,
     }]);
 
+    const statusFriend = ref('');
+
+    watchEffect(() => {
+      users.value.map((user) => {
+        if (user.statusFriend) {
+          statusFriend.value = user.statusFriend;
+        }
+      })
+    });
+
     return {
       route,
-      props,
       isLoading,
       users,
       search,
       profile,
+      addFriend,
     };
 
     async function profile(index) {
@@ -131,6 +141,16 @@ export default {
         });
       } catch (error) {
         // console.log(error);
+      }
+    }
+
+    async function addFriend() {
+      try {
+        const response = await store.dispatch('friendRequest', props.user.username);
+
+        statusFriend.value = response.data.status;
+      } catch (error){
+        console.log(error)
       }
     }
   }

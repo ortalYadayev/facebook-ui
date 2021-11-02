@@ -108,11 +108,13 @@ export default {
       isLoading.value = true;
       try {
         const response = await store.dispatch('getUser', props.username);
-        const FriendResponse = await store.dispatch('isFriend', props.username);
+        // const FriendResponse = await store.dispatch('isFriend', props.username);
+
+        console.log(response.data);
 
         response.data.isAuth = store.state.user.username === response.data.username;
         user.value = response.data;
-        user.value.statusFriend = FriendResponse.data.status;
+        user.value.statusFriend = FriendResponse.data.status || '';
 
         isLoading.value = false;
       } catch (error) {
