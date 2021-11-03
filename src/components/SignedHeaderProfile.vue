@@ -136,7 +136,7 @@ export default {
 
     async function addFriend() {
       try {
-        const response = await store.dispatch('friendRequest', props.user.username);
+        const response = await store.dispatch('friendRequest', { id: props.user.id });
 
         statusFriend.value = response.data.status;
       } catch (error){

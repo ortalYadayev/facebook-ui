@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-lightblue min-h-screen flex flex-col justify-center items-center">
+  <div class="pb-12 md:pb-16 bg-lightblue min-h-screen flex flex-col justify-center items-center">
     <img
       class="mt-6 mb-12 md:mb-16 h-24"
       src="../assets/images/logo.svg"
