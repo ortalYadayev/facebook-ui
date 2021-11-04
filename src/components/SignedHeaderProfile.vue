@@ -62,16 +62,29 @@
           edit the profile
         </button>
       </div>
-      <div v-else>
+      <div
+        v-else
+        class="flex"
+      >
         <button
           @click="addFriend"
-          class="duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
+          class="flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
           :class="statusFriend === 'approved' ? 'status-approved' : 'status-all'"
         >
-          <fa-icon
-            :icon="statusFriend === 'approved'? 'user-check' : 'user-plus'"
-            class="mr-1"
-          />
+          <template v-if="!isLoading">
+            <fa-icon
+              :icon="statusFriend === 'approved'? 'user-check' : 'user-plus'"
+              class="mr-1"
+            />
+          </template>
+          <template v-else>
+            <sync-loader
+              class="mr-1"
+              :loading="isLoading"
+              :color="color"
+              :size="size"
+            />
+          </template>
           <template v-if="statusFriend === 'approved'">
             friend
           </template>
@@ -103,7 +116,8 @@ import About from './Profile/About.vue';
 import Friends from './Profile/Friends.vue';
 import Photos from './Profile/Photos.vue';
 import { useStore } from 'vuex';
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
 
 export default {
   name: "SignedHeaderProfile",
@@ -113,34 +127,41 @@ export default {
       required: true,
     },
   },
+  components: {
+    SyncLoader,
+  },
   setup(props) {
     const store = useStore();
 
-    const statusFriend = ref('');
+    const statusFriend = ref(props.user.statusFriend);
 
-    watchEffect(() => {
-      if (props.user.statusFriend) {
-        statusFriend.value = props.user.statusFriend;
-      }
-    });
+    const isLoading = ref(false);
+    const color = ref('#fff');
+    const size = ref('7px');
 
     return {
       Posts,
       About,
       Friends,
       Photos,
-      props,
       statusFriend,
+      isLoading,
+      color,
+      size,
       addFriend,
     };
 
     async function addFriend() {
+      isLoading.value = true;
       try {
         const response = await store.dispatch('friendRequest', { id: props.user.id });
 
-        statusFriend.value = response.data.status;
+        if(response.status === 201) {
+          statusFriend.value = 'pending';
+        }
+        isLoading.value = false;
       } catch (error){
-        console.log(error)
+        isLoading.value = false;
       }
     }
   }

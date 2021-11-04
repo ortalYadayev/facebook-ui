@@ -50,12 +50,34 @@
             @click="addFriend(index)"
             class="duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10"
           >
-            <template v-if="!user.statusFriend">
-              <fa-icon icon="user-plus" />
+            <template v-if="!isLoading || indexFriend !== index">
+              <template v-if="!user.statusFriend">
+                <fa-icon icon="user-plus" />
+              </template>
+              <template v-else-if="user.statusFriend === 'approved'">
+                <fa-icon
+                  :icon="['fab', 'facebook-messenger']"
+                  class="fa-lg"
+                />
+              </template>
+              <template v-else-if="user.statusFriend === 'pending' && user.sentBy === user.id">
+                <fa-icon
+                  icon="user-plus"
+                  class="text-primary"
+                />
+              </template>
+              <template v-else-if="user.statusFriend === 'pending' && user.sentBy === $store.state.user.id">
+                <fa-icon
+                  icon="user-times"
+                  class="text-primary"
+                />
+              </template>
             </template>
             <template v-else>
-              <fa-icon
-                :icon="['far', 'comment']"
+              <sync-loader
+                :loading="isLoading"
+                :color="color"
+                :size="size"
               />
             </template>
           </button>
@@ -79,19 +101,25 @@
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { watchEffect, ref } from 'vue';
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
 
 export default {
   name: "Search",
+  components: {
+    SyncLoader,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const store = useStore();
 
     const isLoading = ref(false);
+    const color = ref('rgb(24, 119, 241)');
+    const size = ref('5px');
 
     search();
     const users = ref([{
-      id: '',
+      id: Number,
       email: '',
       lastName: '',
       firstName: '',
@@ -99,10 +127,12 @@ export default {
       profilePicturePath: '',
       profilePictureUrl: '',
       statusFriend: '',
+      sentBy: Number,
       isAuth: false,
     }]);
 
     const statusFriend = ref('');
+    const indexFriend = ref(0);
 
     watchEffect(() => {
       users.value.map((user) => {
@@ -115,7 +145,10 @@ export default {
     return {
       route,
       isLoading,
+      color,
+      size,
       users,
+      indexFriend,
       search,
       profile,
       addFriend,
@@ -132,27 +165,49 @@ export default {
           return;
         }
 
-        users.value = response.data;
+        const requests = response.data.requests;
 
-        users.value.map(user => {
+        users.value = response.data.users;
+
+        users.value.forEach(user => {
           if(user.username === store.state.user.username) {
             user.isAuth = true;
           }
+          else requests.forEach(request => {
+            if(request.status === 'approved' && (request.receiver === user.id || request.sent === user.id)){
+              user.statusFriend = 'approved';
+            } else if(request.status === 'pending') {
+              if (request.receiver === user.id) {
+                user.statusFriend = 'pending';
+                user.sentBy = request.sent;
+              } else if (request.sent === user.id) {
+                user.statusFriend = 'pending';
+                user.sentBy = user.id;
+              }
+            }
+          });
         });
       } catch (error) {
         // console.log(error);
       }
     }
 
-    async function addFriend() {
+    async function addFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
       try {
-        const response = await store.dispatch('friendRequest', props.user.username);
+        const response = await store.dispatch('friendRequest', { id: users.value[index].id });
 
-        statusFriend.value = response.data.status;
+        if(response.status === 201) {
+          users.value[index].statusFriend = 'pending';
+          users.value[index].sentBy = store.state.user.id;
+        }
+        isLoading.value = false;
       } catch (error){
-        console.log(error)
+        isLoading.value = false;
       }
     }
+
   }
 }
 </script>

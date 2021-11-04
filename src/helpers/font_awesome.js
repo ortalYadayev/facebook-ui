@@ -7,6 +7,7 @@ import {
   faUserPlus,
   faPen,
   faUserCheck,
+  faUserTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -26,6 +27,7 @@ library.add({
   faUserPlus,
   faPen,
   faUserCheck,
+  faUserTimes,
 
   // Regular f-a
   faComment,

@@ -93,17 +93,6 @@ export default {
       size,
     };
 
-    async function isFriend() {
-      try {
-
-        console.log(user)
-      } catch (error) {
-        if (error.response.status === 422) {
-          user.value.statusFriend = '';
-        }
-      }
-    }
-
     async function getUser() {
       isLoading.value = true;
       try {
