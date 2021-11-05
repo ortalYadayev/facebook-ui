@@ -69,11 +69,11 @@
         <button
           @click="addFriend"
           class="flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
-          :class="statusFriend === 'approved' ? 'status-approved' : 'status-all'"
+          :class="statusFriend.status === 'approved' ? 'status-approved' : 'status-all'"
         >
           <template v-if="!isLoading">
             <fa-icon
-              :icon="statusFriend === 'approved'? 'user-check' : 'user-plus'"
+              :icon="statusFriend.status === 'approved'? 'user-check' : 'user-plus'"
               class="mr-1"
             />
           </template>
@@ -85,11 +85,14 @@
               :size="size"
             />
           </template>
-          <template v-if="statusFriend === 'approved'">
+          <template v-if="statusFriend.status === 'approved'">
             friend
           </template>
-          <template v-else-if="statusFriend === 'pending'">
+          <template v-else-if="statusFriend.status === 'pending' && statusFriend.sentBy === $store.state.user.id">
             cancel
+          </template>
+          <template v-else-if="statusFriend.status === 'pending' && statusFriend.sentBy === user.id">
+            approve
           </template>
           <template v-else>
             add a friend
@@ -97,7 +100,7 @@
         </button>
         <button
           class="duration-150 border-2 uppercase tracking-wider rounded-lg p-2"
-          :class="statusFriend === 'approved' ? 'status-all' : 'status-approved'"
+          :class="statusFriend.status === 'approved' ? 'status-all' : 'status-approved'"
         >
           <fa-icon
             :icon="['fab', 'facebook-messenger']"
@@ -118,6 +121,7 @@ import Photos from './Profile/Photos.vue';
 import { useStore } from 'vuex';
 import { ref } from "vue";
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
+import { useRouter } from "vue-router";
 
 export default {
   name: "SignedHeaderProfile",
@@ -132,8 +136,12 @@ export default {
   },
   setup(props) {
     const store = useStore();
+    const router = useRouter();
 
-    const statusFriend = ref(props.user.statusFriend);
+    const statusFriend = ref({
+      status: props.user.statusFriend,
+      sentBy: props.user.sentBy
+    });
 
     const isLoading = ref(false);
     const color = ref('#fff');
@@ -156,12 +164,16 @@ export default {
       try {
         const response = await store.dispatch('friendRequest', { id: props.user.id });
 
-        if(response.status === 201) {
-          statusFriend.value = 'pending';
-        }
+        statusFriend.value.status = response.data.statusFriend.status;
+        statusFriend.value.sentBy = response.data.statusFriend.sentBy;
+
         isLoading.value = false;
       } catch (error){
         isLoading.value = false;
+
+        if (error.response.status === 404) {
+          await router.push({name: "NotFound"});
+        }
       }
     }
   }

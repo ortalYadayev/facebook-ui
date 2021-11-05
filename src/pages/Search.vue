@@ -36,7 +36,7 @@
                   {{ user.firstName }} {{ user.lastName }}
                 </div>
               </button>
-              <div v-if="user.statusFriend === 'approved'">
+              <div v-if="user.statusFriend.status === 'approved'">
                 A friend
               </div>
               <div v-if="user.isAuth">
@@ -51,22 +51,22 @@
             class="duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10"
           >
             <template v-if="!isLoading || indexFriend !== index">
-              <template v-if="!user.statusFriend">
+              <template v-if="!user.statusFriend.status">
                 <fa-icon icon="user-plus" />
               </template>
-              <template v-else-if="user.statusFriend === 'approved'">
+              <template v-else-if="user.statusFriend.status === 'approved'">
                 <fa-icon
                   :icon="['fab', 'facebook-messenger']"
                   class="fa-lg"
                 />
               </template>
-              <template v-else-if="user.statusFriend === 'pending' && user.sentBy === user.id">
+              <template v-else-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === user.id">
                 <fa-icon
                   icon="user-plus"
                   class="text-primary"
                 />
               </template>
-              <template v-else-if="user.statusFriend === 'pending' && user.sentBy === $store.state.user.id">
+              <template v-else-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === $store.state.user.id">
                 <fa-icon
                   icon="user-times"
                   class="text-primary"
@@ -126,12 +126,19 @@ export default {
       username: '',
       profilePicturePath: '',
       profilePictureUrl: '',
-      statusFriend: '',
-      sentBy: Number,
+      statusFriend: {
+        status: '',
+        sentBy: Number,
+        receiver: Number,
+      },
       isAuth: false,
     }]);
 
-    const statusFriend = ref('');
+    const statusFriend = ref({
+      status: '',
+      sentBy: Number,
+      receiver: Number,
+    });
     const indexFriend = ref(0);
 
     watchEffect(() => {
@@ -161,32 +168,8 @@ export default {
     async function search() {
       try {
         const response = await store.dispatch('search', route.params.search);
-        if(!response.data) {
-          return;
-        }
 
-        const requests = response.data.requests;
-
-        users.value = response.data.users;
-
-        users.value.forEach(user => {
-          if(user.username === store.state.user.username) {
-            user.isAuth = true;
-          }
-          else requests.forEach(request => {
-            if(request.status === 'approved' && (request.receiver === user.id || request.sent === user.id)){
-              user.statusFriend = 'approved';
-            } else if(request.status === 'pending') {
-              if (request.receiver === user.id) {
-                user.statusFriend = 'pending';
-                user.sentBy = request.sent;
-              } else if (request.sent === user.id) {
-                user.statusFriend = 'pending';
-                user.sentBy = user.id;
-              }
-            }
-          });
-        });
+        users.value = response.data;
       } catch (error) {
         // console.log(error);
       }
@@ -198,10 +181,9 @@ export default {
       try {
         const response = await store.dispatch('friendRequest', { id: users.value[index].id });
 
-        if(response.status === 201) {
-          users.value[index].statusFriend = 'pending';
-          users.value[index].sentBy = store.state.user.id;
-        }
+        users.value[index].statusFriend.status = response.data.statusFriend.status;
+        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+
         isLoading.value = false;
       } catch (error){
         isLoading.value = false;

@@ -75,6 +75,7 @@ export default {
       profilePicturePath: '',
       profilePictureUrl: '',
       statusFriend: '',
+      sentBy: Number,
       isAuth: false,
     });
 
@@ -100,7 +101,8 @@ export default {
 
         response.data.user.isAuth = store.state.user.username === response.data.user.username;
         user.value = response.data.user;
-        user.value.statusFriend = response.data.status;
+        user.value.statusFriend = response.data.statusFriend.status;
+        user.value.sentBy = response.data.statusFriend.sentBy;
 
         isLoading.value = false;
       } catch (error) {
