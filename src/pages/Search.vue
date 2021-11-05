@@ -45,33 +45,50 @@
             </div>
           </div>
 
-          <button
+          <div
             v-if="!user.isAuth"
-            @click="addFriend(index)"
-            class="duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10"
+            class="box-friend"
           >
-            <template v-if="!isLoading || indexFriend !== index">
-              <template v-if="!user.statusFriend.status">
+            <template
+              v-if="!isLoading || indexFriend !== index"
+            >
+              <button
+                v-if="!user.statusFriend.status"
+                @click="addFriend(index)"
+                class="box-friend"
+              >
                 <fa-icon icon="user-plus" />
-              </template>
-              <template v-else-if="user.statusFriend.status === 'approved'">
+              </button>
+              <button
+                v-if="user.statusFriend.status === 'approved'"
+                @click="removeFriend(index)"
+                class="box-friend"
+              >
                 <fa-icon
                   :icon="['fab', 'facebook-messenger']"
                   class="fa-lg"
                 />
-              </template>
-              <template v-else-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === user.id">
+              </button>
+              <button
+                v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === user.id"
+                @click="approveFriendOrReject(index)"
+                class="box-friend"
+              >
                 <fa-icon
                   icon="user-plus"
                   class="text-primary"
                 />
-              </template>
-              <template v-else-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === $store.state.user.id">
+              </button>
+              <button
+                v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === $store.state.user.id"
+                @click="deleteFriend(index)"
+                class="box-friend"
+              >
                 <fa-icon
                   icon="user-times"
                   class="text-primary"
                 />
-              </template>
+              </button>
             </template>
             <template v-else>
               <sync-loader
@@ -80,7 +97,7 @@
                 :size="size"
               />
             </template>
-          </button>
+          </div>
         </div>
       </div>
       <div
@@ -199,5 +216,9 @@ export default {
   .search-body {
     width: 98%;
   }
+}
+
+.box-friend {
+  @apply duration-150 flex justify-center items-center bg-gray-rgb rounded-full w-10 h-10;
 }
 </style>
