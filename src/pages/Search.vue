@@ -45,10 +45,7 @@
             </div>
           </div>
 
-          <div
-            v-if="!user.isAuth"
-            class="box-friend"
-          >
+          <div v-if="!user.isAuth">
             <template
               v-if="!isLoading || indexFriend !== index"
             >
@@ -69,19 +66,32 @@
                   class="fa-lg"
                 />
               </button>
-              <button
+              <div
                 v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === user.id"
-                @click="approveFriendOrReject(index)"
-                class="box-friend"
+                class="flex"
               >
-                <fa-icon
-                  icon="user-plus"
-                  class="text-primary"
-                />
-              </button>
+                <button
+                  @click="approveFriend(index)"
+                  class="box-friend mr-2"
+                >
+                  <fa-icon
+                    icon="user-plus"
+                    class="text-primary"
+                  />
+                </button>
+                <button
+                  @click="deleteFriend(index)"
+                  class="box-friend"
+                >
+                  <fa-icon
+                    icon="user-times"
+                    class="text-primary"
+                  />
+                </button>
+              </div>
               <button
                 v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === $store.state.user.id"
-                @click="deleteFriend(index)"
+                @click="rejectFriend(index)"
                 class="box-friend"
               >
                 <fa-icon
@@ -176,6 +186,10 @@ export default {
       search,
       profile,
       addFriend,
+      removeFriend,
+      approveFriend,
+      deleteFriend,
+      rejectFriend,
     };
 
     async function profile(index) {
@@ -207,6 +221,66 @@ export default {
       }
     }
 
+    async function removeFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        const response = await store.dispatch('removeFriend', { id: users.value[index].id });
+
+        users.value[index].statusFriend.status = response.data.statusFriend.status;
+        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function approveFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        const response = await store.dispatch('approveFriend', { id: users.value[index].id });
+
+        users.value[index].statusFriend.status = response.data.statusFriend.status;
+        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function deleteFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        const response = await store.dispatch('deleteFriend', { id: users.value[index].id });
+
+        users.value[index].statusFriend.status = response.data.statusFriend.status;
+        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function rejectFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        const response = await store.dispatch('deleteFriend', { id: users.value[index].id });
+
+        users.value[index].statusFriend.status = response.data.statusFriend.status;
+        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
   }
 }
 </script>
@@ -219,6 +293,6 @@ export default {
 }
 
 .box-friend {
-  @apply duration-150 flex justify-center items-center bg-gray-rgb rounded-full w-10 h-10;
+  @apply duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10;
 }
 </style>

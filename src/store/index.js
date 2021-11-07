@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import axiosInstance from '../helpers/axios';
+
 const store = createStore({
   state: {
     token: localStorage.getItem('token') ?? null,
@@ -82,6 +83,22 @@ const store = createStore({
 
     friendRequest({ getters }, payload) {
       return axiosInstance.post('/friend-requests', payload);
+    },
+
+    removeFriend({ getters }, payload) {
+      return axiosInstance.post('/friend-requests/remove', payload);
+    },
+
+    approveFriend({ getters }, payload) {
+      return axiosInstance.post('/friend-requests/approve', payload);
+    },
+
+    deleteFriend({ getters }, payload) {
+      return axiosInstance.post('/friend-requests/delete', payload);
+    },
+
+    rejectFriend({ getters }, payload) {
+      return axiosInstance.post('/friend-requests/reject', payload);
     },
   },
 });
