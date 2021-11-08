@@ -86,7 +86,7 @@ const store = createStore({
     },
 
     removeFriend({ getters }, payload) {
-      return axiosInstance.post('/friend-requests/remove', payload);
+      return axiosInstance.delete(`/friend-requests/${payload.id}/remove`);
     },
 
     approveFriend({ getters }, payload) {

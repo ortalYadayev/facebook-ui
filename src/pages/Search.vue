@@ -80,7 +80,7 @@
                   />
                 </button>
                 <button
-                  @click="deleteFriend(index)"
+                  @click="rejectFriend(index)"
                   class="box-friend"
                 >
                   <fa-icon
@@ -91,7 +91,7 @@
               </div>
               <button
                 v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === $store.state.user.id"
-                @click="rejectFriend(index)"
+                @click="deleteFriend(index)"
                 class="box-friend"
               >
                 <fa-icon
@@ -156,7 +156,6 @@ export default {
       statusFriend: {
         status: '',
         sentBy: Number,
-        receiver: Number,
       },
       isAuth: false,
     }]);
@@ -164,7 +163,6 @@ export default {
     const statusFriend = ref({
       status: '',
       sentBy: Number,
-      receiver: Number,
     });
     const indexFriend = ref(0);
 
@@ -202,7 +200,7 @@ export default {
 
         users.value = response.data;
       } catch (error) {
-        // console.log(error);
+        console.log(error);
       }
     }
 
@@ -210,25 +208,10 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        const response = await store.dispatch('friendRequest', { id: users.value[index].id });
+        await store.dispatch('friendRequest', { id: users.value[index].id });
 
-        users.value[index].statusFriend.status = response.data.statusFriend.status;
-        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
-
-        isLoading.value = false;
-      } catch (error){
-        isLoading.value = false;
-      }
-    }
-
-    async function removeFriend(index) {
-      indexFriend.value = index;
-      isLoading.value = true;
-      try {
-        const response = await store.dispatch('removeFriend', { id: users.value[index].id });
-
-        users.value[index].statusFriend.status = response.data.statusFriend.status;
-        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+        users.value[index].statusFriend.status = 'pending';
+        users.value[index].statusFriend.sentBy = store.state.user.id;
 
         isLoading.value = false;
       } catch (error){
@@ -240,10 +223,10 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        const response = await store.dispatch('approveFriend', { id: users.value[index].id });
+        await store.dispatch('approveFriend', { id: users.value[index].id });
 
-        users.value[index].statusFriend.status = response.data.statusFriend.status;
-        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+        users.value[index].statusFriend.status = 'approved';
+        users.value[index].statusFriend.sentBy = users.value[index].id;
 
         isLoading.value = false;
       } catch (error){
@@ -256,9 +239,7 @@ export default {
       isLoading.value = true;
       try {
         const response = await store.dispatch('deleteFriend', { id: users.value[index].id });
-
-        users.value[index].statusFriend.status = response.data.statusFriend.status;
-        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+        users.value[index].statusFriend = {};
 
         isLoading.value = false;
       } catch (error){
@@ -270,10 +251,21 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        const response = await store.dispatch('deleteFriend', { id: users.value[index].id });
+        await store.dispatch('rejectFriend', { id: users.value[index].id });
+        users.value[index].statusFriend = {};
 
-        users.value[index].statusFriend.status = response.data.statusFriend.status;
-        users.value[index].statusFriend.sentBy = response.data.statusFriend.sentBy;
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function removeFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        await store.dispatch('removeFriend', { id: users.value[index].id });
+        users.value[index].statusFriend = {};
 
         isLoading.value = false;
       } catch (error){
