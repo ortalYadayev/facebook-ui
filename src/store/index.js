@@ -82,23 +82,31 @@ const store = createStore({
     },
 
     friendRequest({ getters }, payload) {
-      return axiosInstance.post('/friend-requests', payload);
-    },
-
-    removeFriend({ getters }, payload) {
-      return axiosInstance.delete(`/friend-requests/${payload.id}/remove`);
-    },
-
-    approveFriend({ getters }, payload) {
-      return axiosInstance.post('/friend-requests/approve', payload);
+      return axiosInstance.post(`/users/${payload.id}/friend-requests`);
     },
 
     deleteFriend({ getters }, payload) {
-      return axiosInstance.post('/friend-requests/delete', payload);
+      return axiosInstance.delete(
+        `/friend-requests/${payload.idRequest}/delete`
+      );
     },
 
     rejectFriend({ getters }, payload) {
-      return axiosInstance.post('/friend-requests/reject', payload);
+      return axiosInstance.delete(
+        `/friend-requests/${payload.idRequest}/reject`
+      );
+    },
+
+    approveFriend({ getters }, payload) {
+      return axiosInstance.post(
+        `/friend-requests/${payload.idRequest}/approve`
+      );
+    },
+
+    removeFriend({ getters }, payload) {
+      return axiosInstance.delete(
+        `/friend-requests/${payload.idRequest}/remove`
+      );
     },
   },
 });
