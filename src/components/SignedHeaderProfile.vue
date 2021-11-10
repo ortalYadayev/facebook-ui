@@ -66,41 +66,119 @@
         v-else
         class="flex"
       >
-        <button
-          @click="addFriend"
-          class="flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
-          :class="statusFriend.status === 'approved' ? 'status-approved' : 'status-all'"
-        >
-          <template v-if="!isLoading">
-            <fa-icon
-              :icon="statusFriend.status === 'approved'? 'user-check' : 'user-plus'"
-              class="mr-1"
-            />
-          </template>
-          <template v-else>
-            <sync-loader
-              class="mr-1"
-              :loading="isLoading"
-              :color="color"
-              :size="size"
-            />
-          </template>
-          <template v-if="statusFriend.status === 'approved'">
-            friend
-          </template>
-          <template v-else-if="statusFriend.status === 'pending' && statusFriend.sentBy === $store.state.user.id">
-            cancel
-          </template>
-          <template v-else-if="statusFriend.status === 'pending' && statusFriend.sentBy === user.id">
-            approve
-          </template>
-          <template v-else>
+        <div>
+          <button
+            @click="addFriend"
+            v-if="!statusFriend.status"
+            class="not-friend flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
+          >
+            <template v-if="!isLoading">
+              <fa-icon
+                icon="user-plus"
+                class="mr-1"
+              />
+            </template>
+            <template v-else>
+              <sync-loader
+                class="mr-1"
+                :loading="isLoading"
+                :color="color"
+                :size="size"
+              />
+            </template>
             add a friend
-          </template>
-        </button>
+          </button>
+          <button
+            @click="deleteFriend"
+            v-else-if="statusFriend.status === 'pending' && statusFriend.sentBy === $store.state.user.id"
+            class="not-friend flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
+          >
+            <template v-if="!isLoading">
+              <fa-icon
+                icon="user-plus"
+                class="mr-1"
+              />
+            </template>
+            <template v-else>
+              <sync-loader
+                class="mr-1"
+                :loading="isLoading"
+                :color="color"
+                :size="size"
+              />
+            </template>
+            cancel
+          </button>
+          <div
+            v-if="statusFriend.status === 'pending' && statusFriend.sentBy === user.id"
+            class="flex"
+          >
+            <button
+              @click="approveFriend"
+              class="not-friend flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
+            >
+              <template v-if="!isLoading">
+                <fa-icon
+                  icon="user-check"
+                  class="mr-1"
+                />
+              </template>
+              <template v-else>
+                <sync-loader
+                  class="mr-1"
+                  :loading="isLoading"
+                  :color="color"
+                  :size="size"
+                />
+              </template>
+              approve
+            </button>
+            <button
+              @click="rejectFriend"
+              class="not-friend flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
+            >
+              <template v-if="!isReject">
+                <fa-icon
+                  icon="user-times"
+                  class="mr-1"
+                />
+              </template>
+              <template v-else>
+                <sync-loader
+                  class="mr-1"
+                  :loading="isReject"
+                  :color="color"
+                  :size="size"
+                />
+              </template>
+              reject
+            </button>
+          </div>
+          <button
+            @click="removeFriend"
+            v-if="statusFriend.status === 'approved'"
+            class="not-friend flex justify-center items-center duration-150 border-2 uppercase tracking-wider rounded-lg p-2 mr-2"
+          >
+            <template v-if="!isLoading">
+              <fa-icon
+                icon="user-check"
+                class="mr-1"
+              />
+            </template>
+            <template v-else>
+              <sync-loader
+                class="mr-1"
+                :loading="isLoading"
+                :color="color"
+                :size="size"
+              />
+            </template>
+            friend
+          </button>
+        </div>
         <button
-          class="duration-150 border-2 uppercase tracking-wider rounded-lg p-2"
-          :class="statusFriend.status === 'approved' ? 'status-all' : 'status-approved'"
+          class="message-box duration-150 border-2 uppercase tracking-wider rounded-lg p-2"
+          v-if="!(statusFriend.status === 'pending' && statusFriend.sentBy === user.id)"
         >
           <fa-icon
             :icon="['fab', 'facebook-messenger']"
@@ -138,11 +216,11 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    const statusFriend = ref({
-      status: props.user.statusFriend,
-      sentBy: props.user.sentBy
-    });
+    const statusFriend = ref(
+       props.user.statusFriend || {},
+    );
 
+    const isReject = ref(false);
     const isLoading = ref(false);
     const color = ref('#fff');
     const size = ref('7px');
@@ -156,7 +234,12 @@ export default {
       isLoading,
       color,
       size,
+      isReject,
       addFriend,
+      deleteFriend,
+      rejectFriend,
+      approveFriend,
+      removeFriend,
     };
 
     async function addFriend() {
@@ -164,8 +247,9 @@ export default {
       try {
         const response = await store.dispatch('friendRequest', { id: props.user.id });
 
-        statusFriend.value.status = response.data.statusFriend.status;
-        statusFriend.value.sentBy = response.data.statusFriend.sentBy;
+        statusFriend.value.status = 'pending';
+        statusFriend.value.sentBy = response.data.sender.id;
+        statusFriend.value.idRequest = response.data.id;
 
         isLoading.value = false;
       } catch (error){
@@ -176,6 +260,54 @@ export default {
         }
       }
     }
+
+    async function deleteFriend() {
+      isLoading.value = true;
+      try {
+        await store.dispatch('deleteFriend', { idRequest: statusFriend.value.idRequest });
+        statusFriend.value = {};
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function rejectFriend() {
+      isReject.value = true;
+      try {
+        await store.dispatch('rejectFriend', { idRequest: statusFriend.value.idRequest });
+        statusFriend.value = {};
+
+        isReject.value = false;
+      } catch (error){
+        isReject.value = false;
+      }
+    }
+
+    async function approveFriend(index) {
+      isLoading.value = true;
+      try {
+        await store.dispatch('approveFriend', { idRequest: statusFriend.value.idRequest });
+        statusFriend.value.status = 'approved';
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function removeFriend(index) {
+      isLoading.value = true;
+      try {
+        await store.dispatch('removeFriend', { idRequest: statusFriend.value.idRequest });
+        statusFriend.value = {};
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
   }
 }
 </script>
@@ -184,21 +316,16 @@ export default {
 nav {
   width: 800px;
 }
-</style>
-
-
-<style lang="scss" scoped >
-
 .profile-header {
   height: var(--profile-header-height);
   background-image: linear-gradient(to bottom, var(--lightblue), #c0daff, #dbe4ff, #f0f1ff, #fff);
 }
 
-.status-all {
+.not-friend {
   @apply border-primary bg-primary text-gray-rgb hover:opacity-90;
 }
 
-.status-approved {
+.message-box {
   @apply border-gray-rgb bg-gray-rgb hover:border-gray-200 hover:bg-gray-200;
 }
 </style>

@@ -159,7 +159,6 @@ export default {
         sentBy: Number,
       },
       isAuth: false,
-      requestId: Number,
     }]);
 
     const indexFriend = ref(0);
@@ -174,10 +173,10 @@ export default {
       search,
       profile,
       addFriend,
-      removeFriend,
-      approveFriend,
       deleteFriend,
+      approveFriend,
       rejectFriend,
+      removeFriend,
     };
 
     async function profile(index) {
@@ -242,7 +241,7 @@ export default {
         await store.dispatch('approveFriend', { idRequest: users.value[index].statusFriend.idRequest });
 
         users.value[index].statusFriend.status = 'approved';
-        users.value[index].statusFriend.sentBy = users.value[index].id;
+        // users.value[index].statusFriend.sentBy = users.value[index].id;
 
         isLoading.value = false;
       } catch (error){
@@ -262,7 +261,6 @@ export default {
         isLoading.value = false;
       }
     }
-
   }
 }
 </script>
