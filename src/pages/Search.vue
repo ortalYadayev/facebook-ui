@@ -241,7 +241,6 @@ export default {
         await store.dispatch('approveFriend', { idRequest: users.value[index].statusFriend.idRequest });
 
         users.value[index].statusFriend.status = 'approved';
-        // users.value[index].statusFriend.sentBy = users.value[index].id;
 
         isLoading.value = false;
       } catch (error){
