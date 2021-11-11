@@ -36,7 +36,7 @@
                   {{ user.firstName }} {{ user.lastName }}
                 </div>
               </router-link>
-              <div v-if="user.isFriend">
+              <div v-if="user.statusFriend.status === 'approved'">
                 A friend
               </div>
               <div v-if="user.isAuth">
@@ -45,19 +45,69 @@
             </div>
           </div>
 
-          <button
-            v-if="!user.isAuth"
-            class="duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10"
-          >
-            <template v-if="!user.isFriend">
-              <fa-icon icon="user-plus" />
+          <div v-if="!user.isAuth">
+            <template
+              v-if="!isLoading || indexFriend !== index"
+            >
+              <button
+                v-if="!user.statusFriend.status"
+                @click="addFriend(index)"
+                class="box-friend"
+              >
+                <fa-icon icon="user-plus" />
+              </button>
+              <button
+                v-if="user.statusFriend.status === 'approved'"
+                @click="removeFriend(index)"
+                class="box-friend"
+              >
+                <fa-icon
+                  :icon="['fab', 'facebook-messenger']"
+                  class="fa-lg"
+                />
+              </button>
+              <div
+                v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === user.id"
+                class="flex"
+              >
+                <button
+                  @click="approveFriend(index)"
+                  class="box-friend mr-2"
+                >
+                  <fa-icon
+                    icon="user-plus"
+                    class="text-primary"
+                  />
+                </button>
+                <button
+                  @click="rejectFriend(index)"
+                  class="box-friend"
+                >
+                  <fa-icon
+                    icon="user-times"
+                    class="text-primary"
+                  />
+                </button>
+              </div>
+              <button
+                v-if="user.statusFriend.status === 'pending' && user.statusFriend.sentBy === $store.state.user.id"
+                @click="deleteFriend(index)"
+                class="box-friend"
+              >
+                <fa-icon
+                  icon="user-times"
+                  class="text-primary"
+                />
+              </button>
             </template>
             <template v-else>
-              <fa-icon
-                :icon="['far', 'comment']"
+              <sync-loader
+                :loading="isLoading"
+                :color="color"
+                :size="size"
               />
             </template>
-          </button>
+          </div>
         </div>
       </div>
       <div
@@ -78,44 +128,119 @@
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import { ref } from 'vue';
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
 
 export default {
   name: "Search",
+  components: {
+    SyncLoader,
+  },
   setup() {
     const route = useRoute();
     const store = useStore();
 
     const isLoading = ref(false);
+    const color = ref('rgb(24, 119, 241)');
+    const size = ref('5px');
 
-    if (route.query.query) {
+    if(route.query.query){
       search();
     }
 
     const users = ref([]);
 
+    const indexFriend = ref(0);
+
     return {
       route,
       isLoading,
+      color,
+      size,
       users,
+      indexFriend,
       search,
+      addFriend,
+      deleteFriend,
+      approveFriend,
+      rejectFriend,
+      removeFriend,
     };
 
     async function search() {
       try {
         const response = await store.dispatch('search', route.query.query);
-        if(!response.data) {
-          return;
-        }
-
         users.value = response.data;
-
-        users.value.map(user => {
-          if(user.username === store.state.user.username) {
-            user.isAuth = true;
-          }
-        });
       } catch (error) {
-        // console.log(error);
+        console.log(error);
+      }
+    }
+
+    async function addFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        const response = await store.dispatch('friendRequest', { id: users.value[index].id });
+
+        users.value[index].statusFriend.status = 'pending';
+        users.value[index].statusFriend.idRequest = response.data.id;
+        users.value[index].statusFriend.sentBy = store.state.user.id;
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function deleteFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        await store.dispatch('deleteFriend', { idRequest: users.value[index].statusFriend.idRequest });
+        users.value[index].statusFriend = {};
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function rejectFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        await store.dispatch('rejectFriend', { idRequest: users.value[index].statusFriend.idRequest });
+        users.value[index].statusFriend = {};
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function approveFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        await store.dispatch('approveFriend', { idRequest: users.value[index].statusFriend.idRequest });
+
+        users.value[index].statusFriend.status = 'approved';
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
+      }
+    }
+
+    async function removeFriend(index) {
+      indexFriend.value = index;
+      isLoading.value = true;
+      try {
+        await store.dispatch('removeFriend', { idRequest: users.value[index].statusFriend.idRequest });
+        users.value[index].statusFriend = {};
+
+        isLoading.value = false;
+      } catch (error){
+        isLoading.value = false;
       }
     }
   }
@@ -127,5 +252,9 @@ export default {
   .search-body {
     width: 98%;
   }
+}
+
+.box-friend {
+  @apply duration-150 flex justify-center items-center bg-gray-rgb hover:bg-lightblue rounded-full w-10 h-10;
 }
 </style>

@@ -74,6 +74,11 @@ export default {
       username: '',
       profilePicturePath: '',
       profilePictureUrl: '',
+      statusFriend: {
+        status: '',
+        idRequest: Number,
+        sentBy: Number,
+      },
       isAuth: false,
     });
 
@@ -98,13 +103,14 @@ export default {
       try {
         const response = await store.dispatch('getUser', props.username);
 
-        response.data.isAuth = store.state.user.username === response.data.username;
-        user.value = response.data;
+        response.data.user.isAuth = store.state.user.username === response.data.user.username;
+        user.value = response.data.user;
+        user.value.statusFriend = response.data.statusFriend;
 
         isLoading.value = false;
       } catch (error) {
         if (error.response.status === 404) {
-          await router.push({ name: "NotFound" });
+          await router.push({name: "NotFound"});
         }
 
         isLoading.value = false;
