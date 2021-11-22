@@ -4,7 +4,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "format": "prettier --config .prettierrc '**/*.js'",
+    "format:fix": "prettier --config .prettierrc '**/*.js' --write",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "resolutions": {
     "elements-plus/vue": "^3.2.1"
