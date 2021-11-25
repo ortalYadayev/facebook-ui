@@ -3,7 +3,7 @@ $gray: rgb(239, 241, 244);
 $header-height: 60px;
 
 .register-form,
-.login-form{
+.login-form {
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%);
   width: 400px;
 }
@@ -45,4 +45,8 @@ $header-height: 60px;
 
 .box {
   @apply rounded-lg shadow-md bg-white my-4 py-3 px-5;
+}
+
+.fa-w-40 {
+  width: 40px !important;
 }

@@ -6,7 +6,7 @@
         <div class="search flex-1 flex items-center justify-between rounded-3xl bg-gray-rgb">
           <label
             for="search"
-            class="flex items-center pl-2"
+            class="flex items-center pl-2 w-full"
           >
             <fa-icon
               v-if="!searchQuery"
@@ -17,7 +17,7 @@
               type="text"
               id="search"
               @keyup.enter="searchQuery ? $router.push({ name: 'Search', query: { query: searchQuery } }) : ''"
-              class="rounded-3xl bg-transparent p-2"
+              class="flex-1 rounded-3xl bg-transparent p-2"
               v-model="searchQuery"
               placeholder="Search in Facebook"
             >
@@ -31,7 +31,7 @@
               <template v-if="!isLoading">
                 <fa-icon
                   icon="arrow-right"
-                  class="fa-lg"
+                  class="fa-lg fa-w-40"
                 />
               </template>
               <sync-loader
@@ -53,8 +53,8 @@
 
 <script>
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
-import { ref } from 'vue';
-import { useRoute } from "vue-router";
+import {ref} from 'vue';
+import {useRoute} from "vue-router";
 
 export default {
   name: "FbHeader",

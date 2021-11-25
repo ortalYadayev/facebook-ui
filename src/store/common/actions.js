@@ -6,7 +6,11 @@ export default {
   },
 
   post({ getters }, payload) {
-    return axiosInstance.post(`/posts`, payload);
+    return axiosInstance.post('/posts', payload);
+  },
+
+  getPosts({ getters }, payload) {
+    return axiosInstance.get(`/${payload}/posts`);
   },
 
   search({ getters }, payload) {
