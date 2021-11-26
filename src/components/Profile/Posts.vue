@@ -2,10 +2,10 @@
   <div class="tag-profile bg-gray-rgb">
     <div class="container m-auto flex flex-col justify-center items-center">
       <div
-        v-if="user.isAuth"
+        v-if="user.id === $store.state.user.id"
         class="w-body-post"
       >
-        <div class="box">
+        <div class="box border-t border-primary">
           <transition name="top-slide-fade">
             <div
               v-if="v$.content.$error"
@@ -63,7 +63,7 @@
           </div>
         </div>
       </div>
-      <div class="box w-body-post flex justify-center text-xl font-bold">
+      <div class="box w-body-post flex justify-center text-xl font-bold border-t border-primary">
         Posts
       </div>
       <sync-loader
@@ -74,7 +74,7 @@
       <div
         v-for="(post, index) in posts"
         :key="index"
-        class="box w-body-post"
+        class="box w-body-post border-t border-primary divide-y divide-gray-300"
       >
         <div class="flex items-center mb-2">
           <img
@@ -98,7 +98,21 @@
             </div>
           </div>
         </div>
-        {{ post.content }}
+        <div class="py-2">
+          {{ post.content }}
+        </div>
+        <div class="pt-2">
+          <div>likes countOfLikes</div>
+          <div>
+            <button
+              @click="like(index)"
+              class="rounded-md hover:bg-gray-rgb w-full py-1"
+            >
+              <fa-icon icon="thumbs-up" />
+              like
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -164,13 +178,14 @@ export default {
       color,
       size,
       addPost,
+      like,
       resetErrors,
     };
 
     async function getPosts() {
       isLoadingOfPosts.value = true;
       try {
-        const response = await store.dispatch('getPosts', props.user.id);
+        const response = await store.dispatch('getPosts', {userId: props.user.id});
 
         if (response.data.length === 0) {
           return;
@@ -180,10 +195,6 @@ export default {
 
         isLoadingOfPosts.value = false;
       } catch (error) {
-        if (error.response.status === 422) {
-          errors.message = error.response.data[0].message;
-        }
-
         isLoadingOfPosts.value = false;
       }
     }
@@ -213,6 +224,15 @@ export default {
         }
 
         isLoading.value = false;
+      }
+    }
+
+    async function like(index) {
+      try {
+        await store.dispatch('addLike', {
+          postId: posts[index].id,
+        });
+      } catch (error) {
       }
     }
 

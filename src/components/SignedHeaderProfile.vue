@@ -54,7 +54,9 @@
         </router-link>
       </div>
       <div v-if="user.isAuth">
-        <button class="duration-150 border-2 border-primary uppercase tracking-wider bg-primary text-gray-rgb hover:opacity-90 rounded-lg p-2 mr-2">
+        <button
+          class="duration-150 border-2 border-primary uppercase tracking-wider bg-primary text-gray-rgb hover:opacity-90 rounded-lg p-2 mr-2"
+        >
           <fa-icon
             icon="pen"
             class="mr-1"
@@ -196,10 +198,10 @@ import Posts from './Profile/Posts.vue';
 import About from './Profile/About.vue';
 import Friends from './Profile/Friends.vue';
 import Photos from './Profile/Photos.vue';
-import { useStore } from 'vuex';
-import { ref } from "vue";
+import {useStore} from 'vuex';
+import {ref} from "vue";
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue'
-import { useRouter } from "vue-router";
+import {useRouter} from "vue-router";
 
 export default {
   name: "SignedHeaderProfile",
@@ -217,7 +219,7 @@ export default {
     const router = useRouter();
 
     const statusFriend = ref(
-       props.user.statusFriend || {},
+        props.user.statusFriend || {},
     );
 
     const isReject = ref(false);
@@ -245,14 +247,14 @@ export default {
     async function addFriend() {
       isLoading.value = true;
       try {
-        const response = await store.dispatch('friendRequest', { id: props.user.id });
+        const response = await store.dispatch('friendRequest', {id: props.user.id});
 
         statusFriend.value.status = 'pending';
         statusFriend.value.sentBy = response.data.sender.id;
-        statusFriend.value.idRequest = response.data.id;
+        statusFriend.value.requestId = response.data.id;
 
         isLoading.value = false;
-      } catch (error){
+      } catch (error) {
         isLoading.value = false;
 
         if (error.response.status === 404) {
@@ -264,11 +266,11 @@ export default {
     async function deleteFriend() {
       isLoading.value = true;
       try {
-        await store.dispatch('deleteFriend', { idRequest: statusFriend.value.idRequest });
+        await store.dispatch('deleteFriend', {requestId: statusFriend.value.requestId});
         statusFriend.value = {};
 
         isLoading.value = false;
-      } catch (error){
+      } catch (error) {
         isLoading.value = false;
       }
     }
@@ -276,11 +278,11 @@ export default {
     async function rejectFriend() {
       isReject.value = true;
       try {
-        await store.dispatch('rejectFriend', { idRequest: statusFriend.value.idRequest });
+        await store.dispatch('rejectFriend', {requestId: statusFriend.value.requestId});
         statusFriend.value = {};
 
         isReject.value = false;
-      } catch (error){
+      } catch (error) {
         isReject.value = false;
       }
     }
@@ -288,11 +290,11 @@ export default {
     async function approveFriend(index) {
       isLoading.value = true;
       try {
-        await store.dispatch('approveFriend', { idRequest: statusFriend.value.idRequest });
+        await store.dispatch('approveFriend', {requestId: statusFriend.value.requestId});
         statusFriend.value.status = 'approved';
 
         isLoading.value = false;
-      } catch (error){
+      } catch (error) {
         isLoading.value = false;
       }
     }
@@ -300,11 +302,11 @@ export default {
     async function removeFriend(index) {
       isLoading.value = true;
       try {
-        await store.dispatch('removeFriend', { idRequest: statusFriend.value.idRequest });
+        await store.dispatch('removeFriend', {requestId: statusFriend.value.requestId});
         statusFriend.value = {};
 
         isLoading.value = false;
-      } catch (error){
+      } catch (error) {
         isLoading.value = false;
       }
     }
@@ -312,10 +314,11 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 nav {
   width: 800px;
 }
+
 .profile-header {
   height: var(--profile-header-height);
   background-image: linear-gradient(to bottom, var(--lightblue), #c0daff, #dbe4ff, #f0f1ff, #fff);

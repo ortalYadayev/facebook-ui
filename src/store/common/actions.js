@@ -10,7 +10,7 @@ export default {
   },
 
   getPosts({ getters }, payload) {
-    return axiosInstance.get(`/${payload}/posts`);
+    return axiosInstance.get(`/posts/${payload.userId}`);
   },
 
   search({ getters }, payload) {
@@ -24,18 +24,22 @@ export default {
   },
 
   deleteFriend({ getters }, payload) {
-    return axiosInstance.delete(`/friend-requests/${payload.idRequest}`);
+    return axiosInstance.delete(`/friend-requests/${payload.requestId}`);
   },
 
   rejectFriend({ getters }, payload) {
-    return axiosInstance.delete(`/friend-requests/${payload.idRequest}/reject`);
+    return axiosInstance.delete(`/friend-requests/${payload.requestId}/reject`);
   },
 
   approveFriend({ getters }, payload) {
-    return axiosInstance.post(`/friend-requests/${payload.idRequest}/approve`);
+    return axiosInstance.post(`/friend-requests/${payload.requestId}/approve`);
   },
 
   removeFriend({ getters }, payload) {
-    return axiosInstance.delete(`/friend-requests/${payload.idRequest}/remove`);
+    return axiosInstance.delete(`/friend-requests/${payload.requestId}/remove`);
+  },
+
+  addLike({ getters }, payload) {
+    return axiosInstance.post(`/posts/{${payload.postId}/like`);
   },
 };

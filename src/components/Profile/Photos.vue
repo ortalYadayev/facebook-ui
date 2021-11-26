@@ -11,7 +11,7 @@ import {useStore} from "vuex";
 import {computed} from "vue";
 
 export default {
-  name: "Posts",
+  name: "Photos",
   props: {
     user: {
       type: Object,

@@ -76,7 +76,7 @@ export default {
       profilePictureUrl: '',
       statusFriend: {
         status: '',
-        idRequest: Number,
+        requestId: Number,
         sentBy: Number,
       },
       isAuth: false,

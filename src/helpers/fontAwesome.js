@@ -8,6 +8,7 @@ import {
   faPen,
   faUserCheck,
   faUserTimes,
+  faThumbsUp,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -31,6 +32,7 @@ library.add({
 
   // Regular f-a
   faComment,
+  faThumbsUp,
 
   // Brands f-a
   faFacebookMessenger,

@@ -9,7 +9,7 @@ import {useStore} from "vuex";
 import {computed} from "vue";
 
 export default {
-  name: "Posts",
+  name: "About",
   props: {
     user: {
       type: Object,

@@ -2,7 +2,10 @@
   <div class="signed-header flex bg-white fixed w-full shadow-md">
     <nav class="container m-auto flex justify-between items-center">
       <div class="flex items-center ml-4">
-        <div class="logo mr-2" />
+        <router-link
+          :to="{ name: 'Home' }"
+          class="logo mr-2"
+        />
         <div class="search flex-1 flex items-center justify-between rounded-3xl bg-gray-rgb">
           <label
             for="search"
