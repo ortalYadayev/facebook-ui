@@ -182,7 +182,7 @@ export default {
         const response = await store.dispatch('friendRequest', {id: users.value[index].id});
 
         users.value[index].statusFriend.status = 'pending';
-        users.value[index].statusFriend.idRequest = response.data.id;
+        users.value[index].statusFriend.requestId = response.data.id;
         users.value[index].statusFriend.sentBy = store.state.user.id;
 
         isLoading.value = false;
@@ -195,7 +195,7 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        await store.dispatch('deleteFriend', {idRequest: users.value[index].statusFriend.idRequest});
+        await store.dispatch('deleteFriend', {requestId: users.value[index].statusFriend.requestId});
         users.value[index].statusFriend = {};
 
         isLoading.value = false;
@@ -208,7 +208,7 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        await store.dispatch('rejectFriend', {idRequest: users.value[index].statusFriend.idRequest});
+        await store.dispatch('rejectFriend', {requestId: users.value[index].statusFriend.requestId});
         users.value[index].statusFriend = {};
 
         isLoading.value = false;
@@ -221,7 +221,7 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        await store.dispatch('approveFriend', {idRequest: users.value[index].statusFriend.idRequest});
+        await store.dispatch('approveFriend', {requestId: users.value[index].statusFriend.requestId});
 
         users.value[index].statusFriend.status = 'approved';
 
@@ -235,7 +235,7 @@ export default {
       indexFriend.value = index;
       isLoading.value = true;
       try {
-        await store.dispatch('removeFriend', {idRequest: users.value[index].statusFriend.idRequest});
+        await store.dispatch('removeFriend', {requestId: users.value[index].statusFriend.requestId});
         users.value[index].statusFriend = {};
 
         isLoading.value = false;

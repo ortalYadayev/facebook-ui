@@ -77,21 +77,35 @@
         class="box w-body-post border-t border-primary divide-y divide-gray-300"
       >
         <div class="flex items-center mb-2">
-          <img
-            v-if="user.profilePictureUrl"
-            :src="user.profilePictureUrl"
-            :alt="user.firstName"
-            class="h-9 w-9 rounded-full mr-2"
-          >
-          <img
-            v-else
-            src="../../assets/images/user.png"
-            alt="user icon"
-            class="bg-gray-rgb h-9 w-9 rounded-full mr-2"
-          >
+          <router-link :to="{ name: 'Profile', params: { username: user.username } }">
+            <img
+              v-if="user.profilePictureUrl"
+              :src="user.profilePictureUrl"
+              :alt="user.firstName"
+              class="h-9 w-9 rounded-full mr-2"
+            >
+            <img
+              v-else
+              src="../../assets/images/user.png"
+              alt="user icon"
+              class="bg-gray-rgb h-9 w-9 rounded-full mr-2"
+            >
+          </router-link>
           <div class="flex-1">
             <div class="text-lg font-bold">
-              {{ user.firstName }} {{ user.lastName }} > {{ user.firstName }} {{ user.lastName }}
+              <router-link
+                :to="{ name: 'Profile', params: { username: user.username } }"
+                class="hover:underline"
+              >
+                {{ user.firstName }} {{ user.lastName }}
+              </router-link>
+              >
+              <router-link
+                :to="{ name: 'Profile', params: { username: user.username } }"
+                class="hover:underline"
+              >
+                {{ user.firstName }} {{ user.lastName }}
+              </router-link>
             </div>
             <div class="text-sm">
               {{ post.createdAt }}
@@ -102,11 +116,36 @@
           {{ post.content }}
         </div>
         <div class="pt-2">
-          <div>likes countOfLikes</div>
+          <div>
+            <p v-if="post.likeAuth && post.likesCount - 1 > 1">
+              {{ post.likesCount - 1 }} likes and you
+            </p>
+            <p v-if="post.likeAuth && post.likesCount - 1 === 1">
+              {{ post.likesCount - 1 }} like and you
+            </p>
+            <p v-if="post.likeAuth && post.likesCount === 1">
+              you
+            </p>
+            <p v-if="!post.likeAuth && post.likesCount > 1">
+              {{ post.likesCount }} likes
+            </p>
+            <p v-if="!post.likeAuth && post.likesCount === 1">
+              {{ post.likesCount }} like
+            </p>
+          </div>
           <div>
             <button
+              v-if="!post.likeAuth"
               @click="like(index)"
               class="rounded-md hover:bg-gray-rgb w-full py-1"
+            >
+              <fa-icon icon="thumbs-up" />
+              like
+            </button>
+            <button
+              v-else
+              @click="unlike(index)"
+              class="text-primary rounded-md hover:bg-gray-rgb w-full py-1"
             >
               <fa-icon icon="thumbs-up" />
               like
@@ -179,15 +218,18 @@ export default {
       size,
       addPost,
       like,
+      unlike,
       resetErrors,
     };
 
     async function getPosts() {
       isLoadingOfPosts.value = true;
+
       try {
         const response = await store.dispatch('getPosts', {userId: props.user.id});
 
         if (response.data.length === 0) {
+          isLoadingOfPosts.value = false;
           return;
         }
 
@@ -229,9 +271,24 @@ export default {
 
     async function like(index) {
       try {
-        await store.dispatch('addLike', {
-          postId: posts[index].id,
+        await store.dispatch('like', {
+          postId: posts.value[index].id,
         });
+
+        posts.value[index].likeAuth = true;
+        posts.value[index].likesCount++;
+      } catch (error) {
+      }
+    }
+
+    async function unlike(index) {
+      try {
+        await store.dispatch('unlike', {
+          postId: posts.value[index].id,
+        });
+
+        posts.value[index].likeAuth = false;
+        posts.value[index].likesCount--;
       } catch (error) {
       }
     }

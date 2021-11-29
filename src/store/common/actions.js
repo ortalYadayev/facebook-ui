@@ -39,7 +39,11 @@ export default {
     return axiosInstance.delete(`/friend-requests/${payload.requestId}/remove`);
   },
 
-  addLike({ getters }, payload) {
-    return axiosInstance.post(`/posts/{${payload.postId}/like`);
+  like({ getters }, payload) {
+    return axiosInstance.post(`/posts/${payload.postId}/like`);
+  },
+
+  unlike({ getters }, payload) {
+    return axiosInstance.delete(`/posts/${payload.postId}/unlike`);
   },
 };

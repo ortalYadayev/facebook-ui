@@ -289,6 +289,7 @@ export default {
 
     async function approveFriend(index) {
       isLoading.value = true;
+
       try {
         await store.dispatch('approveFriend', {requestId: statusFriend.value.requestId});
         statusFriend.value.status = 'approved';
