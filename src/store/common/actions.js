@@ -10,7 +10,7 @@ export default {
   },
 
   getPosts({ getters }, payload) {
-    return axiosInstance.get(`/posts/${payload.userId}`);
+    return axiosInstance.get(`users/${payload.userId}/posts`);
   },
 
   search({ getters }, payload) {
@@ -40,10 +40,10 @@ export default {
   },
 
   like({ getters }, payload) {
-    return axiosInstance.post(`/posts/${payload.postId}/like`);
+    return axiosInstance.post(`/posts/${payload.postId}/likes`);
   },
 
   unlike({ getters }, payload) {
-    return axiosInstance.delete(`/posts/${payload.postId}/unlike`);
+    return axiosInstance.delete(`/posts/${payload.postId}/likes`);
   },
 };
