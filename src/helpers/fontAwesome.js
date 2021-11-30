@@ -29,10 +29,10 @@ library.add({
   faPen,
   faUserCheck,
   faUserTimes,
+  faThumbsUp,
 
   // Regular f-a
   faComment,
-  faThumbsUp,
 
   // Brands f-a
   faFacebookMessenger,

@@ -25,13 +25,13 @@
               v-if="user.profilePicturePath"
               :src="user.profilePicturePath"
               :alt="user.firstName"
-              class="h-9 w-9 rounded-full mr-2"
+              class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
             >
             <img
               v-else
               src="../../assets/images/user.png"
               alt="user icon"
-              class="h-9 w-9 rounded-full mr-2"
+              class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
             >
             <div class="flex-1 flex justify-between items-center rounded-3xl">
               <textarea
@@ -82,13 +82,13 @@
               v-if="user.profilePictureUrl"
               :src="user.profilePictureUrl"
               :alt="user.firstName"
-              class="h-9 w-9 rounded-full mr-2"
+              class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
             >
             <img
               v-else
               src="../../assets/images/user.png"
               alt="user icon"
-              class="bg-gray-rgb h-9 w-9 rounded-full mr-2"
+              class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
             >
           </router-link>
           <div class="flex-1">
@@ -112,10 +112,10 @@
             </div>
           </div>
         </div>
-        <div class="py-2">
+        <div class="py-2 break-words">
           {{ post.content }}
         </div>
-        <div class="pt-2">
+        <div class="py-2">
           <div>
             <p v-if="post.likeAuth && post.likesCount - 1 > 1">
               {{ post.likesCount - 1 }} likes and you
@@ -133,24 +133,53 @@
               {{ post.likesCount }} like
             </p>
           </div>
-          <div>
+          <div class="flex">
             <button
-              v-if="!post.likeAuth"
               @click="like(index)"
-              class="rounded-md hover:bg-gray-rgb w-full py-1"
+              class="rounded-md hover:bg-gray-rgb w-1/2 py-1"
+              :class="post.likeAuth ? 'text-primary' : ''"
             >
-              <fa-icon icon="thumbs-up" />
+              <fa-icon
+                icon="thumbs-up"
+                class="mr-1"
+              />
               like
             </button>
-            <button
-              v-else
-              @click="unlike(index)"
-              class="text-primary rounded-md hover:bg-gray-rgb w-full py-1"
+            <label
+              for="comment"
+              class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1"
             >
-              <fa-icon icon="thumbs-up" />
-              like
-            </button>
+              <fa-icon
+                :icon="['far', 'comment']"
+                class="mr-1"
+              />
+              comment
+            </label>
           </div>
+        </div>
+        <div class="flex items-center py-2">
+          <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+            <img
+              v-if="store.state.user.profilePicturePath"
+              :src="store.state.user.profilePicturePath"
+              :alt="store.state.user.firstName"
+              class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
+            >
+            <img
+              v-else
+              src="../../assets/images/user.png"
+              alt="user icon"
+              class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
+            >
+          </router-link>
+          <input
+            type="text"
+            id="comment"
+            @keyup.enter="addComment(index)"
+            class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
+            placeholder="Type Your Comment"
+            v-model="payloadComment[index].content"
+          >
         </div>
       </div>
     </div>
@@ -201,6 +230,7 @@ export default {
 
     const v$ = useVuelidate(rules, payload);
 
+    const payloadComment = reactive([]);
     let posts = ref([]);
 
     getPosts();
@@ -208,6 +238,7 @@ export default {
     return {
       store,
       payload,
+      payloadComment,
       props,
       errors,
       v$,
@@ -218,7 +249,7 @@ export default {
       size,
       addPost,
       like,
-      unlike,
+      addComment,
       resetErrors,
     };
 
@@ -246,6 +277,12 @@ export default {
         });
 
         posts.value = response.data;
+
+        for (let i = 0; i < posts.value.length; i++) {
+          payloadComment[i] = reactive({
+            content: '',
+          })
+        }
 
         isLoadingOfPosts.value = false;
       } catch (error) {
@@ -276,7 +313,6 @@ export default {
 
         payload.content = '';
 
-
         isLoading.value = false;
       } catch (error) {
         if (error.response.status === 422) {
@@ -289,24 +325,37 @@ export default {
 
     async function like(index) {
       try {
-        await store.dispatch('like', {
-          postId: posts.value[index].id,
-        });
+        if (!posts.value[index].likeAuth) {
+          await store.dispatch('like', {
+            postId: posts.value[index].id,
+          });
 
-        posts.value[index].likeAuth = true;
-        posts.value[index].likesCount++;
+          posts.value[index].likeAuth = true;
+          posts.value[index].likesCount++;
+        } else {
+          await store.dispatch('unlike', {
+            postId: posts.value[index].id,
+          });
+
+          posts.value[index].likeAuth = false;
+          posts.value[index].likesCount--;
+        }
       } catch (error) {
+        if (error.response.status === 404) {
+          await $router.push({name: "NotFound"});
+        }
       }
     }
 
-    async function unlike(index) {
+    async function addComment(index) {
       try {
-        await store.dispatch('unlike', {
+        await store.dispatch('comment', {
           postId: posts.value[index].id,
+          content: payloadComment[index],
         });
 
-        posts.value[index].likeAuth = false;
-        posts.value[index].likesCount--;
+        // posts.value[index].likeAuth = false;
+        // posts.value[index].likesCount--;
       } catch (error) {
       }
     }
