@@ -233,6 +233,18 @@ export default {
           return;
         }
 
+
+        response.data.forEach((post) => {
+          let likeAuth = false;
+          post.likes.forEach((like) => {
+            if (like.user.id === store.state.user.id) {
+              likeAuth = true;
+            }
+          });
+          post.likeAuth = likeAuth;
+          post.likesCount = post.likes.length;
+        });
+
         posts.value = response.data;
 
         isLoadingOfPosts.value = false;
@@ -256,9 +268,15 @@ export default {
       isLoading.value = true;
       try {
         const response = await store.dispatch('post', payload);
+
+        response.data.likeAuth = false;
+        response.data.likesCount = 0;
+
         posts.value.unshift(response.data);
 
         payload.content = '';
+
+
         isLoading.value = false;
       } catch (error) {
         if (error.response.status === 422) {
