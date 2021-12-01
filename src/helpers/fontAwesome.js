@@ -9,6 +9,7 @@ import {
   faUserCheck,
   faUserTimes,
   faThumbsUp,
+  faComments,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -30,6 +31,7 @@ library.add({
   faUserCheck,
   faUserTimes,
   faThumbsUp,
+  faComments,
 
   // Regular f-a
   faComment,

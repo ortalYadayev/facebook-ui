@@ -115,14 +115,15 @@
         <div class="py-2 break-words">
           {{ post.content }}
 
-          <div class="flex justify-end mt-2">
+          <div
+            class="flex mt-2"
+            :class="post.likesCount === 0 ? 'justify-end' : 'justify-between'"
+          >
             <div
               v-if="post.likesCount > 0"
-              class="flex items-center w-1/2"
+              class="flex items-center"
             >
-              <div
-                class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
-              >
+              <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
                 <fa-icon
                   icon="thumbs-up"
                   class="text-white p-0.5"
@@ -144,11 +145,18 @@
                 {{ post.likesCount }} like
               </p>
             </div>
+
             <button
               v-if="post.commentsCount > 0"
-              class="text-right w-1/2"
+              class="flex items-center text-right hover:underline"
               @click="openOrCloseComments(index)"
             >
+              <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
+                <fa-icon
+                  icon="comments"
+                  class="text-white p-0.5"
+                />
+              </div>
               {{ post.commentsCount }} comments
             </button>
           </div>
@@ -177,13 +185,6 @@
           </label>
         </div>
         <div class="pt-2">
-          <button
-            v-if="commentsOfPosts[index].showComments"
-            @click="moreComments(index)"
-            class="text-lg mb-2 hover:underline"
-          >
-            show more comments
-          </button>
           <div
             v-if="commentsOfPosts[index].opened"
           >
@@ -229,6 +230,13 @@
               </div>
             </div>
           </div>
+          <button
+            v-if="commentsOfPosts[index].showComments"
+            @click="moreComments(index)"
+            class="text-lg mb-2 hover:underline"
+          >
+            show more comments
+          </button>
           <div class="flex items-center">
             <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
               <img
@@ -357,18 +365,16 @@ export default {
           post.commentsCount = post.comments.length;
 
           commentsOfPosts[i] = reactive({
-            comments: [],
+            comments: [...post.comments],
             showComments: false,
             opened: true,
           })
 
           if (post.comments.length > 5) {
-            commentsOfPosts[i].comments = post.comments;
             commentsOfPosts[i].showComments = true;
             commentsOfPosts[i].opened = false;
 
             post.comments = [];
-            // post.comments = commentsOfPosts[i].comments.slice(0, 5);
           }
 
           payloadComments[i] = reactive({
@@ -459,33 +465,25 @@ export default {
 
       const lengthStart = posts.value[index].comments.length;
       let lengthEnd = lengthStart + 5;
+      const lengthComments = commentsOfPosts[index].comments.length;
 
-      if (commentsOfPosts[index].comments.length < lengthEnd) {
-        lengthEnd = commentsOfPosts[index].comments.length;
+      if (lengthComments <= lengthEnd) {
+        lengthEnd = lengthComments;
         commentsOfPosts[index].showComments = false;
       }
 
-      posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthStart, lengthEnd));
+      posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
     }
 
     async function openOrCloseComments(index) {
       if (commentsOfPosts[index].opened === true) {
         commentsOfPosts[index].opened = false;
+        commentsOfPosts[index].showComments = true;
         posts.value[index].comments = [];
         return;
       }
-      commentsOfPosts[index].opened = true;
 
-      const lengthStart = posts.value[index].comments.length;
-      let lengthEnd = lengthStart + 5;
-
-      if (commentsOfPosts[index].comments.length < lengthEnd) {
-        lengthEnd = commentsOfPosts[index].comments.length;
-        commentsOfPosts[index].showComments = false;
-      }
-
-      posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthStart, lengthEnd));
-
+      await moreComments(index);
     }
 
     async function addComment(index) {
@@ -497,11 +495,13 @@ export default {
           content: payloadComments[index],
         });
 
-        payload.content = '';
+        payloadComments[index].content = '';
 
+        commentsOfPosts[index].comments.push(response.data);
         posts.value[index].comments.push(response.data);
         posts.value[index].commentsCount++;
       } catch (error) {
+        console.log(`error: ${error}`)
         if (error.response.status === 422) {
           errors.comment = error.response.data[0].message;
         }
