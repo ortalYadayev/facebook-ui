@@ -14,10 +14,10 @@
               {{ v$.content.$errors[0].$message }}
             </div>
             <div
-              v-else-if="errors.message"
+              v-else-if="errors.content"
               class="flex justify-center italic text-red-500 py-2 mb-3"
             >
-              {{ errors.message }}
+              {{ errors.content }}
             </div>
           </transition>
           <div class="flex items-center">
@@ -114,9 +114,18 @@
         </div>
         <div class="py-2 break-words">
           {{ post.content }}
-        </div>
-        <div class="py-2">
-          <div>
+          <div
+            v-if="post.likesCount > 0"
+            class="flex items-center mt-2"
+          >
+            <div
+              class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
+            >
+              <fa-icon
+                icon="thumbs-up"
+                class="text-white p-0.5 fasm"
+              />
+            </div>
             <p v-if="post.likeAuth && post.likesCount - 1 > 1">
               {{ post.likesCount - 1 }} likes and you
             </p>
@@ -133,53 +142,118 @@
               {{ post.likesCount }} like
             </p>
           </div>
-          <div class="flex">
-            <button
-              @click="like(index)"
-              class="rounded-md hover:bg-gray-rgb w-1/2 py-1"
-              :class="post.likeAuth ? 'text-primary' : ''"
-            >
-              <fa-icon
-                icon="thumbs-up"
-                class="mr-1"
-              />
-              like
-            </button>
-            <label
-              for="comment"
-              class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1"
-            >
-              <fa-icon
-                :icon="['far', 'comment']"
-                class="mr-1"
-              />
-              comment
-            </label>
-          </div>
         </div>
-        <div class="flex items-center py-2">
-          <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
-            <img
-              v-if="store.state.user.profilePicturePath"
-              :src="store.state.user.profilePicturePath"
-              :alt="store.state.user.firstName"
-              class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
-            >
-            <img
-              v-else
-              src="../../assets/images/user.png"
-              alt="user icon"
-              class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
-            >
-          </router-link>
-          <input
-            type="text"
-            id="comment"
-            @keyup.enter="addComment(index)"
-            class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
-            placeholder="Type Your Comment"
-            v-model="payloadComment[index].content"
+        <div class="py-2 flex">
+          <button
+            @click="like(index)"
+            class="rounded-md hover:bg-gray-rgb w-1/2 py-1 mr-1"
+            :class="post.likeAuth ? 'text-primary' : ''"
           >
+            <fa-icon
+              icon="thumbs-up"
+              class="mr-1"
+            />
+            like
+          </button>
+          <label
+            for="comment"
+            class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1 ml-1"
+          >
+            <fa-icon
+              :icon="['far', 'comment']"
+              class="mr-1"
+            />
+            comment
+          </label>
+        </div>
+        <div class="pt-2">
+          <button
+            v-if="commentsOfPosts[index].showComments"
+            @click="moreComments(index)"
+            class="text-lg mb-2 hover:underline"
+          >
+            show more comments
+          </button>
+          <div
+            v-for="(comment, index) in post.comments"
+            :key="index"
+            class="flex items-center justify-between py-1"
+          >
+            <div class="max-w-comment flex items-center">
+              <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+                <img
+                  v-if="store.state.user.profilePicturePath"
+                  :src="store.state.user.profilePicturePath"
+                  :alt="store.state.user.firstName"
+                  class="hover:opacity-90 h-6 w-6 rounded-full"
+                >
+                <img
+                  v-else
+                  src="../../assets/images/user.png"
+                  alt="user icon"
+                  class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full"
+                >
+              </router-link>
+              <div class="max-w-comment flex-1 flex flex-col mx-2 break-words">
+                <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
+                  <router-link
+                    :to="{ name: 'Profile', params: { username: user.username } }"
+                    class="font-bold hover:underline"
+                  >
+                    {{ comment.user.firstName }} {{ comment.user.lastName }}
+                  </router-link>
+                  <span>
+                    {{ comment.content }}
+                  </span>
+                </div>
+                <div class="text-xs">
+                  {{ comment.updatedAt }}
+                </div>
+              </div>
+            </div>
+            <div class="">
+              ...
+            </div>
+          </div>
+          <div class="flex items-center">
+            <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+              <img
+                v-if="store.state.user.profilePicturePath"
+                :src="store.state.user.profilePicturePath"
+                :alt="store.state.user.firstName"
+                class="hover:opacity-90 h-6 w-6 rounded-full mr-2"
+              >
+              <img
+                v-else
+                src="../../assets/images/user.png"
+                alt="user icon"
+                class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full mr-2"
+              >
+            </router-link>
+            <input
+              type="text"
+              id="comment"
+              @keyup.enter="addComment(index)"
+              class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
+              placeholder="Type Your Comment"
+              v-model="payloadComment[index].content"
+              @keydown="resetErrors('comment')"
+            >
+          </div>
+          <transition name="top-slide-fade">
+            <div
+              v-if="v$.content.$error"
+              class="flex justify-center italic text-red-500 py-2 mb-3"
+            >
+              {{ v$.content.$errors[0].$message }}
+            </div>
+            <div
+              v-else-if="errors.content"
+              class="flex justify-center italic text-red-500 py-2 mb-3"
+            >
+              {{ errors.content }}
+            </div>
+          </transition>
         </div>
       </div>
     </div>
@@ -213,7 +287,7 @@ export default {
     const size = ref('10px');
 
     const errors = reactive({
-      message: '',
+      content: '',
     });
 
     const payload = reactive({
@@ -227,10 +301,21 @@ export default {
         maxLength: helpers.withMessage(({$params}) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
     };
+    const rulesOfComments = {
+      comment: {
+        required: helpers.withMessage('The content in your comment is required', required),
+        minLength: helpers.withMessage(({$params}) => `Minimum ${$params.min} characters required.`, minLength(1)),
+        maxLength: helpers.withMessage(({$params}) => `Maximum ${$params.max} characters required.`, maxLength(255)),
+      },
+    };
 
     const v$ = useVuelidate(rules, payload);
 
     const payloadComment = reactive([]);
+    const commentsOfPosts = reactive([]);
+
+    const v$Comments = useVuelidate(rulesOfComments, payloadComment);
+
     let posts = ref([]);
 
     getPosts();
@@ -239,9 +324,11 @@ export default {
       store,
       payload,
       payloadComment,
+      commentsOfPosts,
       props,
       errors,
       v$,
+      v$Comments,
       posts,
       isLoadingOfPosts,
       isLoading,
@@ -249,6 +336,7 @@ export default {
       size,
       addPost,
       like,
+      moreComments,
       addComment,
       resetErrors,
     };
@@ -258,31 +346,43 @@ export default {
 
       try {
         const response = await store.dispatch('getPosts', {userId: props.user.id});
-
         if (response.data.length === 0) {
           isLoadingOfPosts.value = false;
           return;
         }
 
-
-        response.data.forEach((post) => {
+        for (let i = 0; i < response.data.length; i++) {
+          const post = response.data[i];
           let likeAuth = false;
+
           post.likes.forEach((like) => {
             if (like.user.id === store.state.user.id) {
               likeAuth = true;
             }
           });
+
           post.likeAuth = likeAuth;
           post.likesCount = post.likes.length;
-        });
 
-        posts.value = response.data;
 
-        for (let i = 0; i < posts.value.length; i++) {
+          commentsOfPosts[i] = reactive({
+            comments: [],
+            showComments: false,
+          })
+          if (post.comments.length > 5) {
+            commentsOfPosts[i].comments = post.comments;
+            commentsOfPosts[i].showComments = true;
+
+            post.comments = [];
+            post.comments = commentsOfPosts[i].comments.slice(0, 5);
+          }
+
           payloadComment[i] = reactive({
             content: '',
           })
         }
+
+        posts.value = response.data;
 
         isLoadingOfPosts.value = false;
       } catch (error) {
@@ -292,7 +392,7 @@ export default {
 
     async function addPost() {
       if (props.user.username !== store.state.user.username) {
-        errors.message = "You don't have permission";
+        errors.content = "You don't have permission";
         return;
       }
 
@@ -308,15 +408,26 @@ export default {
 
         response.data.likeAuth = false;
         response.data.likesCount = 0;
+        response.data.comments = [];
+        response.data.likes = [];
 
         posts.value.unshift(response.data);
+
+        commentsOfPosts.unshift(reactive({
+          comments: [],
+          showComments: false,
+        }));
+
+        payloadComment.unshift(reactive({
+          content: '',
+        }));
 
         payload.content = '';
 
         isLoading.value = false;
       } catch (error) {
         if (error.response.status === 422) {
-          errors.message = error.response.data[0].message;
+          errors.content = error.response.data[0].message;
         }
 
         isLoading.value = false;
@@ -347,16 +458,39 @@ export default {
       }
     }
 
+    async function moreComments(index) {
+      const lengthStart = posts.value[index].comments.length;
+      let lengthEnd = lengthStart + 5;
+
+      if (commentsOfPosts[index].comments.length < lengthEnd) {
+        lengthEnd = commentsOfPosts[index].comments.length;
+        commentsOfPosts[index].showComments = false;
+      }
+
+      posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthStart, lengthEnd));
+    }
+
     async function addComment(index) {
+      console.log(v$)
+      v$.value.$touch();
+      if (v$.value.$invalid) {
+        return;
+      }
+      resetErrors('comment');
+
       try {
-        await store.dispatch('comment', {
+        const response = await store.dispatch('comment', {
           postId: posts.value[index].id,
           content: payloadComment[index],
         });
 
-        // posts.value[index].likeAuth = false;
-        // posts.value[index].likesCount--;
+        payload.content = '';
+
+        posts.value[index].comments.push(response.data);
       } catch (error) {
+        if (error.response.status === 422) {
+          errors.message = error.response.data[0].message;
+        }
       }
     }
 
@@ -415,6 +549,10 @@ export default {
 .tag-profile {
   height: 100%;
   min-height: calc(100vh - var(--profile-header-height));
+}
+
+.max-w-comment {
+  max-width: 90%;
 }
 
 </style>
