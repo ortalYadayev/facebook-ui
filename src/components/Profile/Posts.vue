@@ -114,33 +114,43 @@
         </div>
         <div class="py-2 break-words">
           {{ post.content }}
-          <div
-            v-if="post.likesCount > 0"
-            class="flex items-center mt-2"
-          >
+
+          <div class="flex justify-end mt-2">
             <div
-              class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
+              v-if="post.likesCount > 0"
+              class="flex items-center w-1/2"
             >
-              <fa-icon
-                icon="thumbs-up"
-                class="text-white p-0.5 fasm"
-              />
+              <div
+                class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
+              >
+                <fa-icon
+                  icon="thumbs-up"
+                  class="text-white p-0.5"
+                />
+              </div>
+              <p v-if="post.likeAuth && post.likesCount - 1 > 1">
+                {{ post.likesCount - 1 }} likes and you
+              </p>
+              <p v-if="post.likeAuth && post.likesCount - 1 === 1">
+                {{ post.likesCount - 1 }} like and you
+              </p>
+              <p v-if="post.likeAuth && post.likesCount === 1">
+                you
+              </p>
+              <p v-if="!post.likeAuth && post.likesCount > 1">
+                {{ post.likesCount }} likes
+              </p>
+              <p v-if="!post.likeAuth && post.likesCount === 1">
+                {{ post.likesCount }} like
+              </p>
             </div>
-            <p v-if="post.likeAuth && post.likesCount - 1 > 1">
-              {{ post.likesCount - 1 }} likes and you
-            </p>
-            <p v-if="post.likeAuth && post.likesCount - 1 === 1">
-              {{ post.likesCount - 1 }} like and you
-            </p>
-            <p v-if="post.likeAuth && post.likesCount === 1">
-              you
-            </p>
-            <p v-if="!post.likeAuth && post.likesCount > 1">
-              {{ post.likesCount }} likes
-            </p>
-            <p v-if="!post.likeAuth && post.likesCount === 1">
-              {{ post.likesCount }} like
-            </p>
+            <button
+              v-if="post.commentsCount > 0"
+              class="text-right w-1/2"
+              @click="openOrCloseComments(index)"
+            >
+              {{ post.commentsCount }} comments
+            </button>
           </div>
         </div>
         <div class="py-2 flex">
@@ -175,44 +185,48 @@
             show more comments
           </button>
           <div
-            v-for="(comment, index) in post.comments"
-            :key="index"
-            class="flex items-center justify-between py-1"
+            v-if="commentsOfPosts[index].opened"
           >
-            <div class="max-w-comment flex items-center">
-              <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
-                <img
-                  v-if="store.state.user.profilePicturePath"
-                  :src="store.state.user.profilePicturePath"
-                  :alt="store.state.user.firstName"
-                  class="hover:opacity-90 h-6 w-6 rounded-full"
-                >
-                <img
-                  v-else
-                  src="../../assets/images/user.png"
-                  alt="user icon"
-                  class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full"
-                >
-              </router-link>
-              <div class="max-w-comment flex-1 flex flex-col mx-2 break-words">
-                <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
-                  <router-link
-                    :to="{ name: 'Profile', params: { username: user.username } }"
-                    class="font-bold hover:underline"
+            <div
+              v-for="(comment, index) in post.comments"
+              :key="index"
+              class="flex items-center justify-between py-1"
+            >
+              <div class="max-w-comment flex items-center">
+                <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+                  <img
+                    v-if="store.state.user.profilePicturePath"
+                    :src="store.state.user.profilePicturePath"
+                    :alt="store.state.user.firstName"
+                    class="hover:opacity-90 h-6 w-6 rounded-full"
                   >
-                    {{ comment.user.firstName }} {{ comment.user.lastName }}
-                  </router-link>
-                  <span>
-                    {{ comment.content }}
-                  </span>
-                </div>
-                <div class="text-xs">
-                  {{ comment.updatedAt }}
+                  <img
+                    v-else
+                    src="../../assets/images/user.png"
+                    alt="user icon"
+                    class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full"
+                  >
+                </router-link>
+                <div class="max-w-comment flex-1 flex flex-col mx-2 break-words">
+                  <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
+                    <router-link
+                      :to="{ name: 'Profile', params: { username: user.username } }"
+                      class="font-bold hover:underline"
+                    >
+                      {{ comment.user.firstName }} {{ comment.user.lastName }}
+                    </router-link>
+                    <span>
+                      {{ comment.content }}
+                    </span>
+                  </div>
+                  <div class="text-xs">
+                    {{ comment.updatedAt }}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="">
-              ...
+              <div class="">
+                ...
+              </div>
             </div>
           </div>
           <div class="flex items-center">
@@ -236,24 +250,9 @@
               @keyup.enter="addComment(index)"
               class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
               placeholder="Type Your Comment"
-              v-model="payloadComment[index].content"
-              @keydown="resetErrors('comment')"
+              v-model="payloadComments[index].content"
             >
           </div>
-          <transition name="top-slide-fade">
-            <div
-              v-if="v$.content.$error"
-              class="flex justify-center italic text-red-500 py-2 mb-3"
-            >
-              {{ v$.content.$errors[0].$message }}
-            </div>
-            <div
-              v-else-if="errors.content"
-              class="flex justify-center italic text-red-500 py-2 mb-3"
-            >
-              {{ errors.content }}
-            </div>
-          </transition>
         </div>
       </div>
     </div>
@@ -301,20 +300,11 @@ export default {
         maxLength: helpers.withMessage(({$params}) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
     };
-    const rulesOfComments = {
-      comment: {
-        required: helpers.withMessage('The content in your comment is required', required),
-        minLength: helpers.withMessage(({$params}) => `Minimum ${$params.min} characters required.`, minLength(1)),
-        maxLength: helpers.withMessage(({$params}) => `Maximum ${$params.max} characters required.`, maxLength(255)),
-      },
-    };
 
     const v$ = useVuelidate(rules, payload);
 
-    const payloadComment = reactive([]);
+    const payloadComments = reactive([]);
     const commentsOfPosts = reactive([]);
-
-    const v$Comments = useVuelidate(rulesOfComments, payloadComment);
 
     let posts = ref([]);
 
@@ -323,12 +313,11 @@ export default {
     return {
       store,
       payload,
-      payloadComment,
+      payloadComments,
       commentsOfPosts,
       props,
       errors,
       v$,
-      v$Comments,
       posts,
       isLoadingOfPosts,
       isLoading,
@@ -337,6 +326,7 @@ export default {
       addPost,
       like,
       moreComments,
+      openOrCloseComments,
       addComment,
       resetErrors,
     };
@@ -353,6 +343,7 @@ export default {
 
         for (let i = 0; i < response.data.length; i++) {
           const post = response.data[i];
+
           let likeAuth = false;
 
           post.likes.forEach((like) => {
@@ -363,21 +354,24 @@ export default {
 
           post.likeAuth = likeAuth;
           post.likesCount = post.likes.length;
-
+          post.commentsCount = post.comments.length;
 
           commentsOfPosts[i] = reactive({
             comments: [],
             showComments: false,
+            opened: true,
           })
+
           if (post.comments.length > 5) {
             commentsOfPosts[i].comments = post.comments;
             commentsOfPosts[i].showComments = true;
+            commentsOfPosts[i].opened = false;
 
             post.comments = [];
-            post.comments = commentsOfPosts[i].comments.slice(0, 5);
+            // post.comments = commentsOfPosts[i].comments.slice(0, 5);
           }
 
-          payloadComment[i] = reactive({
+          payloadComments[i] = reactive({
             content: '',
           })
         }
@@ -408,6 +402,7 @@ export default {
 
         response.data.likeAuth = false;
         response.data.likesCount = 0;
+        response.data.commentsCount = 0;
         response.data.comments = [];
         response.data.likes = [];
 
@@ -416,9 +411,10 @@ export default {
         commentsOfPosts.unshift(reactive({
           comments: [],
           showComments: false,
+          opened: true,
         }));
 
-        payloadComment.unshift(reactive({
+        payloadComments.unshift(reactive({
           content: '',
         }));
 
@@ -459,6 +455,8 @@ export default {
     }
 
     async function moreComments(index) {
+      commentsOfPosts[index].opened = true;
+
       const lengthStart = posts.value[index].comments.length;
       let lengthEnd = lengthStart + 5;
 
@@ -470,33 +468,49 @@ export default {
       posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthStart, lengthEnd));
     }
 
-    async function addComment(index) {
-      console.log(v$)
-      v$.value.$touch();
-      if (v$.value.$invalid) {
+    async function openOrCloseComments(index) {
+      if (commentsOfPosts[index].opened === true) {
+        commentsOfPosts[index].opened = false;
+        posts.value[index].comments = [];
         return;
       }
-      resetErrors('comment');
+      commentsOfPosts[index].opened = true;
+
+      const lengthStart = posts.value[index].comments.length;
+      let lengthEnd = lengthStart + 5;
+
+      if (commentsOfPosts[index].comments.length < lengthEnd) {
+        lengthEnd = commentsOfPosts[index].comments.length;
+        commentsOfPosts[index].showComments = false;
+      }
+
+      posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthStart, lengthEnd));
+
+    }
+
+    async function addComment(index) {
+      commentsOfPosts[index].opened = true;
 
       try {
         const response = await store.dispatch('comment', {
           postId: posts.value[index].id,
-          content: payloadComment[index],
+          content: payloadComments[index],
         });
 
         payload.content = '';
 
         posts.value[index].comments.push(response.data);
+        posts.value[index].commentsCount++;
       } catch (error) {
         if (error.response.status === 422) {
-          errors.message = error.response.data[0].message;
+          errors.comment = error.response.data[0].message;
         }
       }
     }
 
     function resetErrors(key) {
       v$.value[key].$reset();
-      delete errors.message;
+      delete errors[key];
     }
 
   }
