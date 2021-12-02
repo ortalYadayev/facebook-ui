@@ -108,7 +108,7 @@
               </router-link>
             </div>
             <div class="text-sm">
-              {{ post.createdAt }}
+              {{ post.postFormat }}
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@
                     </span>
                   </div>
                   <div class="text-xs">
-                    {{ comment.updatedAt }}
+                    {{ comment.commentFormat }}
                   </div>
                 </div>
               </div>
@@ -273,6 +273,7 @@ import {useStore} from "vuex";
 import useVuelidate from '@vuelidate/core';
 import {required, minLength, maxLength, helpers} from '@vuelidate/validators';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
+import getMessageDateService from "../../helpers/getMessageDate";
 
 export default {
   name: "Posts",
@@ -375,11 +376,17 @@ export default {
             commentsOfPosts[i].opened = false;
 
             post.comments = [];
+          } else {
+            post.comments.forEach(comment => {
+              comment.commentFormat = getMessageDateService(comment);
+            })
           }
 
           payloadComments[i] = reactive({
             content: '',
           })
+
+          post.postFormat = getMessageDateService(post);
         }
 
         posts.value = response.data;
@@ -411,6 +418,7 @@ export default {
         response.data.commentsCount = 0;
         response.data.comments = [];
         response.data.likes = [];
+        response.data.postFormat = getMessageDateService(response.data);
 
         posts.value.unshift(response.data);
 
@@ -472,6 +480,10 @@ export default {
         commentsOfPosts[index].showComments = false;
       }
 
+      for (let i = lengthComments - lengthEnd; i < lengthComments - lengthStart; i++) {
+        commentsOfPosts[index].comments[i].commentFormat = getMessageDateService(commentsOfPosts[index].comments[i]);
+      }
+
       posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
     }
 
@@ -494,9 +506,9 @@ export default {
           postId: posts.value[index].id,
           content: payloadComments[index],
         });
-
         payloadComments[index].content = '';
 
+        response.data.commentFormat = getMessageDateService(response.data);
         commentsOfPosts[index].comments.push(response.data);
         posts.value[index].comments.push(response.data);
         posts.value[index].commentsCount++;
