@@ -114,7 +114,6 @@
         </div>
         <div class="py-2 break-words">
           {{ post.content }}
-
           <div
             class="flex mt-2"
             :class="post.likesCount === 0 ? 'justify-end' : 'justify-between'"
@@ -145,7 +144,6 @@
                 {{ post.likesCount }} like
               </p>
             </div>
-
             <button
               v-if="post.commentsCount > 0"
               class="flex items-center text-right hover:underline"
@@ -188,53 +186,10 @@
           <div
             v-if="commentsOfPosts[index].opened"
           >
-            <div
-              v-for="(comment, index) in post.comments"
-              :key="index"
-              class="flex items-center justify-between py-1"
-            >
-              <div class="max-w-comment flex items-center">
-                <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
-                  <img
-                    v-if="store.state.user.profilePicturePath"
-                    :src="store.state.user.profilePicturePath"
-                    :alt="store.state.user.firstName"
-                    class="hover:opacity-90 h-6 w-6 rounded-full"
-                  >
-                  <img
-                    v-else
-                    src="../../assets/images/user.png"
-                    alt="user icon"
-                    class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full"
-                  >
-                </router-link>
-                <div class="max-w-comment flex flex-col mx-2 break-words">
-                  <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
-                    <router-link
-                      :to="{ name: 'Profile', params: { username: user.username } }"
-                      class="font-bold hover:underline"
-                    >
-                      {{ comment.user.firstName }} {{ comment.user.lastName }}
-                    </router-link>
-                    <span>
-                      {{ comment.content }}
-                    </span>
-                  </div>
-                  <div class="text-xs">
-                    <button class="hover:underline">
-                      like
-                    </button>
-                    <button class="hover:underline mx-3">
-                      comment
-                    </button>
-                    {{ comment.commentFormat }}
-                  </div>
-                </div>
-              </div>
-              <div class="">
-                ...
-              </div>
-            </div>
+            <Comment
+              :items="post.comments"
+              :post-id="post.id"
+            />
           </div>
           <button
             v-if="commentsOfPosts[index].showComments"
@@ -280,11 +235,13 @@ import useVuelidate from '@vuelidate/core';
 import {required, minLength, maxLength, helpers} from '@vuelidate/validators';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import getMessageDateService from "../../helpers/getMessageDate";
+import Comment from "./Comment.vue";
 
 export default {
   name: "Posts",
   components: {
     SyncLoader,
+    Comment,
   },
   props: {
     user: {
@@ -581,10 +538,6 @@ export default {
 .tag-profile {
   height: 100%;
   min-height: calc(100vh - var(--profile-header-height));
-}
-
-.max-w-comment {
-  max-width: 90%;
 }
 
 </style>

@@ -53,4 +53,16 @@ export default {
       payload.content
     );
   },
+
+  commentLike({ getters }, payload) {
+    return axiosInstance.post(
+      `/posts/${payload.postId}/comments/${payload.commentId}/likes`
+    );
+  },
+
+  commentUnlike({ getters }, payload) {
+    return axiosInstance.delete(
+      `/posts/${payload.postId}/comments/${payload.commentId}/likes`
+    );
+  },
 };
