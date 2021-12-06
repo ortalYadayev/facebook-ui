@@ -128,6 +128,7 @@
                   class="text-white p-0.5"
                 />
               </div>
+
               <p v-if="post.likeAuth && post.likesCount - 1 > 1">
                 {{ post.likesCount - 1 }} likes and you
               </p>
@@ -188,7 +189,6 @@
           >
             <Comment
               :items="post.comments"
-              :post-id="post.id"
             />
           </div>
           <button
@@ -327,6 +327,16 @@ export default {
           post.likeAuth = likeAuth;
           post.likesCount = post.likes.length;
           post.commentsCount = post.comments.length;
+
+          post.comments.forEach((comment) => {
+            likeAuth = false;
+            comment.likes.forEach((like) => {
+              if (like.user.id === store.state.user.id) {
+                likeAuth = true;
+              }
+            })
+            comment.likeAuth = likeAuth;
+          });
 
           commentsOfPosts[i] = reactive({
             comments: [...post.comments],
@@ -471,7 +481,12 @@ export default {
         });
         payloadComments[index].content = '';
 
+        console.log(response.data)
+
         response.data.commentFormat = getMessageDateService(response.data);
+        response.data.likeAuth = false;
+        response.data.likes = [];
+
         commentsOfPosts[index].comments.push(response.data);
         posts.value[index].comments.push(response.data);
         posts.value[index].commentsCount++;

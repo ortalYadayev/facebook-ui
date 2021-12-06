@@ -55,14 +55,10 @@ export default {
   },
 
   commentLike({ getters }, payload) {
-    return axiosInstance.post(
-      `/posts/${payload.postId}/comments/${payload.commentId}/likes`
-    );
+    return axiosInstance.post(`/comments/${payload.commentId}/likes`);
   },
 
   commentUnlike({ getters }, payload) {
-    return axiosInstance.delete(
-      `/posts/${payload.postId}/comments/${payload.commentId}/likes`
-    );
+    return axiosInstance.delete(`/comments/${payload.commentId}/likes`);
   },
 };

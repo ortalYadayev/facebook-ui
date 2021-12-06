@@ -39,7 +39,7 @@
             <button
               @click="like(index)"
               class="hover:underline"
-              :class="likeAuth[index] ? 'text-primary' : ''"
+              :class="item.likeAuth ? 'text-primary' : ''"
             >
               like
             </button>
@@ -68,46 +68,31 @@ export default {
       type: Array,
       required: true
     },
-    postId: {
-      type: Number,
-      required: true
-    },
   },
   setup(props) {
     const store = useStore();
 
-    const likeAuth = ref([]);
-
-    for (let i = 0; i < props.items.length; i++) {
-      likeAuth[i] = ref(props.items[i].likeAuth);
-    }
-
     return {
       store,
-      likeAuth,
       like,
     }
 
     async function like(index) {
-      console.log(`postId: ${props.postId},
-          commentId: ${props.items[index].id}`)
       try {
-        if (!likeAuth.value[index]) {
+        if (!props.items[index].likeAuth) {
           await store.dispatch('commentLike', {
-            postId: props.postId,
             commentId: props.items[index].id,
           });
 
-          likeAuth.value[index] = true;
-          // props.items[index].likesCount++;
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].likeAuth = true;
         } else {
           await store.dispatch('commentUnlike', {
-            postId: props.postId,
             commentId: props.items[index].id,
           });
 
-          likeAuth.value[index] = false;
-          // props.items[index].likesCount--;
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].likeAuth = false;
         }
       } catch (error) {
         if (error.response.status === 404) {
