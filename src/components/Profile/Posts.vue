@@ -318,19 +318,19 @@ export default {
 
           let likeAuth = false;
 
-          post.likes.forEach((like) => {
+          post.postLikes.forEach((like) => {
             if (like.user.id === store.state.user.id) {
               likeAuth = true;
             }
           });
 
           post.likeAuth = likeAuth;
-          post.likesCount = post.likes.length;
+          post.likesCount = post.postLikes.length;
           post.commentsCount = post.comments.length;
 
           post.comments.forEach((comment) => {
             likeAuth = false;
-            comment.likes.forEach((like) => {
+            comment.commentLikes.forEach((like) => {
               if (like.user.id === store.state.user.id) {
                 likeAuth = true;
               }
@@ -390,7 +390,7 @@ export default {
         response.data.likesCount = 0;
         response.data.commentsCount = 0;
         response.data.comments = [];
-        response.data.likes = [];
+        response.data.postLikes = [];
         response.data.postFormat = getMessageDateService(response.data);
 
         posts.value.unshift(response.data);
@@ -485,7 +485,7 @@ export default {
 
         response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
-        response.data.likes = [];
+        response.data.commentLikes = [];
 
         commentsOfPosts[index].comments.push(response.data);
         posts.value[index].comments.push(response.data);
