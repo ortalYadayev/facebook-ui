@@ -128,22 +128,13 @@
                   class="text-white p-0.5"
                 />
               </div>
-
-              <p v-if="post.likeAuth && post.likesCount - 1 > 1">
-                {{ post.likesCount - 1 }} likes and you
-              </p>
-              <p v-if="post.likeAuth && post.likesCount - 1 === 1">
-                {{ post.likesCount - 1 }} like and you
-              </p>
-              <p v-if="post.likeAuth && post.likesCount === 1">
-                you
-              </p>
-              <p v-if="!post.likeAuth && post.likesCount > 1">
-                {{ post.likesCount }} likes
-              </p>
-              <p v-if="!post.likeAuth && post.likesCount === 1">
-                {{ post.likesCount }} like
-              </p>
+              {{ post.likeAuth ? 'you' : '' }}
+              {{
+                post.likesCount > 1 && post.likeAuth ? `and ${post.likesCount - 1} like` : ''
+              }}{{ post.likesCount > 2 && post.likeAuth ? 's' : '' }}
+              {{
+                !post.likeAuth ? `${post.likesCount} like` : ''
+              }}{{ !post.likeAuth && post.likesCount > 1 ? 's' : '' }}
             </div>
             <button
               v-if="post.commentsCount > 0"
@@ -156,7 +147,7 @@
                   class="text-white p-0.5"
                 />
               </div>
-              {{ post.commentsCount }} comments
+              {{ post.commentsCount }} comment{{ post.commentsCount > 1 ? 's' : '' }}
             </button>
           </div>
         </div>
@@ -196,6 +187,10 @@
             @click="moreComments(index)"
             class="text-lg mb-2 hover:underline"
           >
+            <fa-icon
+              icon="caret-down"
+              class="mr-1"
+            />
             show more comments
           </button>
           <div class="flex items-center">
@@ -315,34 +310,39 @@ export default {
 
         for (let i = 0; i < response.data.length; i++) {
           const post = response.data[i];
-
           let likeAuth = false;
 
-          post.postLikes.forEach((like) => {
+          post.likes.forEach((like) => {
             if (like.user.id === store.state.user.id) {
               likeAuth = true;
             }
           });
 
           post.likeAuth = likeAuth;
-          post.likesCount = post.postLikes.length;
+          post.likesCount = post.likes.length;
           post.commentsCount = post.comments.length;
-
-          post.comments.forEach((comment) => {
-            likeAuth = false;
-            comment.commentLikes.forEach((like) => {
-              if (like.user.id === store.state.user.id) {
-                likeAuth = true;
-              }
-            })
-            comment.likeAuth = likeAuth;
-          });
 
           commentsOfPosts[i] = reactive({
             comments: [...post.comments],
             showComments: false,
             opened: true,
           })
+
+          for (let j = 0; j < post.comments.length; j++) {
+            const comment = post.comments[j];
+            // post.comments.forEach(comment => {
+            likeAuth = false;
+            comment.likes.forEach((like) => {
+              if (like.user.id === store.state.user.id) {
+                likeAuth = true;
+              }
+            })
+            comment.likeAuth = likeAuth;
+
+            commentsOfPosts[i].comments[j].comments = comment.comments;
+            commentsOfPosts[i].comments[j].commentsCount = comment.comments.length;
+            commentsOfPosts[i].comments[j].likesCount = comment.likes.length;
+          }
 
           if (post.comments.length > 5) {
             commentsOfPosts[i].showComments = true;
@@ -361,7 +361,6 @@ export default {
 
           post.postFormat = getMessageDateService(post);
         }
-
         posts.value = response.data;
 
         isLoadingOfPosts.value = false;
@@ -390,7 +389,7 @@ export default {
         response.data.likesCount = 0;
         response.data.commentsCount = 0;
         response.data.comments = [];
-        response.data.postLikes = [];
+        response.data.likes = [];
         response.data.postFormat = getMessageDateService(response.data);
 
         posts.value.unshift(response.data);
@@ -481,17 +480,14 @@ export default {
         });
         payloadComments[index].content = '';
 
-        console.log(response.data)
-
         response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
-        response.data.commentLikes = [];
+        response.data.likes = [];
 
         commentsOfPosts[index].comments.push(response.data);
         posts.value[index].comments.push(response.data);
         posts.value[index].commentsCount++;
       } catch (error) {
-        console.log(`error: ${error}`)
         if (error.response.status === 422) {
           errors.comment = error.response.data[0].message;
         }

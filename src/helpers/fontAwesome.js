@@ -10,6 +10,7 @@ import {
   faUserTimes,
   faThumbsUp,
   faComments,
+  faCaretDown,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -32,6 +33,7 @@ library.add({
   faUserTimes,
   faThumbsUp,
   faComments,
+  faCaretDown,
 
   // Regular f-a
   faComment,

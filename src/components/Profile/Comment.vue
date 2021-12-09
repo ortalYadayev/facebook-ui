@@ -3,55 +3,86 @@
     <div
       v-for="(item, index) in items"
       :key="index"
-      class="flex items-center justify-between py-1"
+      class="mb-2"
     >
-      <div class="max-w-comment flex">
-        <router-link
-          :to="{ name: 'Profile', params: { username: store.state.user.username } }"
-          class="mt-2"
+      <BoxComment :comment="item" />
+      <div class="text-xs ml-9">
+        <button
+          @click="like(index)"
+          class="hover:underline"
+          :class="item.likeAuth ? 'text-primary' : ''"
         >
-          <img
-            v-if="store.state.user.profilePicturePath"
-            :src="store.state.user.profilePicturePath"
-            :alt="store.state.user.firstName"
-            class="hover:opacity-90 h-6 w-6 rounded-full"
+          like
+        </button>
+        <label
+          :for="commentsOfComments[index].commentId"
+          class="hover:underline mx-3"
+        >comment</label>
+        {{ item.commentFormat }}
+        <span class="text-blue-500 font-bold">
+          {{ item.likesCount }} likes
+          {{ item.commentsCount }} comments
+        </span>
+      </div>
+      <div class="mb-1 ml-8">
+        <button
+          @click="openOrCloseComments(index)"
+          v-if="item.commentsCount > 0 && commentsOfComments[index].showComments"
+          class="hover:underline mb-1"
+        >
+          {{ item.commentsCount }} comment{{ item.commentsCount > 1 ? 's' : '' }}
+        </button>
+        <div v-if="item.comments.length > 0">
+          <div
+            v-for="(comment, commentIdx) in item.comments"
+            :key="commentIdx"
+            class="my-2"
           >
-          <img
-            v-else
-            src="../../assets/images/user.png"
-            alt="user icon"
-            class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full"
-          >
-        </router-link>
-        <div class="max-w-comment flex flex-col mx-2 break-words">
-          <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
-            <router-link
-              :to="{ name: 'Profile', params: { username: store.state.user.username } }"
-              class="font-bold hover:underline"
-            >
-              {{ item.user.firstName }} {{ item.user.lastName }}
-            </router-link>
-            <span>
-              {{ item.content }}
-            </span>
-          </div>
-          <div class="text-xs">
-            <button
-              @click="like(index)"
-              class="hover:underline"
-              :class="item.likeAuth ? 'text-primary' : ''"
-            >
-              like
-            </button>
-            <button class="hover:underline mx-3">
-              comment
-            </button>
-            {{ item.commentFormat }}
+            <BoxComment :comment="comment" />
+            <div class="text-xs ml-9">
+              <button
+                @click="like(commentIdx)"
+                class="hover:underline"
+                :class="item.likeAuth ? 'text-primary' : ''"
+              >
+                like
+              </button>
+              <label
+                :for="commentsOfComments[index].commentId"
+                class="hover:underline mx-3"
+              >comment</label>
+              {{ item.commentFormat }}
+              <span class="text-blue-500 font-bold">
+                {{ item.likesCount }} likes
+                {{ item.commentsCount }} comments
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="">
-        ...
+        <div class="flex items-center">
+          <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+            <img
+              v-if="store.state.user.profilePicturePath"
+              :src="store.state.user.profilePicturePath"
+              :alt="store.state.user.firstName"
+              class="hover:opacity-90 h-6 w-6 rounded-full mr-2"
+            >
+            <img
+              v-else
+              src="../../assets/images/user.png"
+              alt="user icon"
+              class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full mr-2"
+            >
+          </router-link>
+          <input
+            type="text"
+            :id="commentsOfComments[index].commentId"
+            @keyup.enter="addComment(index)"
+            class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
+            placeholder="Type Your Comment"
+            v-model="payloadComments[index].content"
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -59,7 +90,10 @@
 
 <script>
 import {useStore} from "vuex";
-import {ref} from "vue";
+import {reactive, watchEffect} from "vue";
+import getMessageDateService from "../../helpers/getMessageDate";
+import {useRouter} from "vue-router";
+import BoxComment from "../BoxComment.vue";
 
 export default {
   name: "Comment",
@@ -69,12 +103,80 @@ export default {
       required: true
     },
   },
+  components: {
+    BoxComment,
+  },
   setup(props) {
     const store = useStore();
+    const router = useRouter();
+
+    const payloadComments = reactive([]);
+    const commentsOfComments = reactive([]);
+
+    for (let i = 0; i < props.items.length; i++) {
+      // eslint-disable-next-line vue/no-setup-props-destructure
+      const mainComment = props.items[i];
+
+      payloadComments[i] = reactive({
+        content: '',
+      })
+
+      commentsOfComments[i] = reactive({
+        comments: [...mainComment.comments],
+        showComments: true,
+        opened: false,
+        commentId: mainComment.id,
+      })
+      mainComment.comments = [];
+    }
+
+    watchEffect(() => {
+      if (props.items.length > payloadComments.length) {
+        payloadComments.push(reactive({
+          content: '',
+        }));
+      }
+    })
 
     return {
       store,
+      router,
+      payloadComments,
+      commentsOfComments,
+      addComment,
       like,
+      openOrCloseComments,
+      moreComments,
+    }
+
+    async function addComment(index) {
+      console.log(props.items[index])
+
+      try {
+        const response = await store.dispatch('commentOnComment', {
+          commentId: props.items[index].id,
+          content: payloadComments[index],
+        });
+        payloadComments[index].content = '';
+
+        response.data.commentFormat = getMessageDateService(response.data);
+        response.data.likeAuth = false;
+        response.data.comments = [];
+        response.data.likes = [];
+        response.data.postFormat = getMessageDateService(response.data);
+
+        // commentsOfComments[index].comments.push(response.data);
+        // posts.value[index].comments.push(response.data);
+        // posts.value[index].commentsCount++;
+      } catch (error) {
+        if (error.response.status === 422) {
+          // errors.comment = error.response.data[0].message;
+          console.log(error)
+        }
+        // if (error.response.status === 404) {
+        //   await router.push({name: "NotFound"});
+        // }
+      }
     }
 
     async function like(index) {
@@ -99,6 +201,38 @@ export default {
           await $router.push({name: "NotFound"});
         }
       }
+    }
+
+    async function openOrCloseComments(index) {
+      if (commentsOfComments[index].opened === true) {
+        commentsOfComments[index].opened = false;
+        commentsOfComments[index].showComments = true;
+        return;
+      }
+
+      await moreComments(index);
+    }
+
+    async function moreComments(index) {
+      commentsOfComments[index].opened = true;
+
+      const lengthStart = props.items[index].comments.length;
+      let lengthEnd = lengthStart + 5;
+      const lengthComments = commentsOfComments[index].comments.length;
+
+      if (lengthComments <= lengthEnd) {
+        lengthEnd = lengthComments;
+        commentsOfComments[index].showComments = false;
+      }
+
+      for (let i = lengthComments - lengthEnd; i < lengthComments - lengthStart; i++) {
+        commentsOfComments[index].comments[i].commentFormat = getMessageDateService(commentsOfComments[index].comments[i]);
+      }
+
+      // eslint-disable-next-line vue/no-mutating-props
+      props.items[index].comments.unshift(...commentsOfComments[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
+
+      console.log(props.items[index].comments)
     }
   }
 }

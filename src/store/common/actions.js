@@ -61,4 +61,11 @@ export default {
   commentUnlike({ getters }, payload) {
     return axiosInstance.delete(`/comments/${payload.commentId}/likes`);
   },
+
+  commentOnComment({ getters }, payload) {
+    return axiosInstance.post(
+      `/comments/${payload.commentId}/comments`,
+      payload.content
+    );
+  },
 };
