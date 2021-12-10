@@ -15,14 +15,11 @@
           like
         </button>
         <label
+          @click="openText(index)"
           :for="commentsOfComments[index].commentId"
           class="hover:underline mx-3"
         >comment</label>
         {{ item.commentFormat }}
-        <span class="text-blue-500 font-bold">
-          {{ item.likesCount }} likes
-          {{ item.commentsCount }} comments
-        </span>
       </div>
       <div class="mb-1 ml-8">
         <button
@@ -42,25 +39,25 @@
             <BoxComment :comment="comment" />
             <div class="text-xs ml-9">
               <button
-                @click="like(commentIdx)"
+                @click="commentLike(index, commentIdx)"
                 class="hover:underline"
                 :class="comment.likeAuth ? 'text-primary' : ''"
               >
                 like
               </button>
               <label
+                @click="openText(index)"
                 :for="commentsOfComments[index].commentId"
                 class="hover:underline mx-3"
               >comment</label>
               {{ comment.commentFormat }}
-              <span class="text-blue-500 font-bold">
-                {{ comment.likesCount }} likes
-                {{ comment.commentsCount }} comments
-              </span>
             </div>
           </div>
         </div>
-        <div class="flex items-center">
+        <div
+          v-if="commentsOfComments[index].openText"
+          class="flex items-center"
+        >
           <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
             <img
               v-if="store.state.user.profilePicturePath"
@@ -126,6 +123,7 @@ export default {
 
         commentsOfComments.push(reactive({
           comments: [...mainComment.comments],
+          openText: false,
           showComments: true,
           opened: false,
           commentId: mainComment.id,
@@ -140,8 +138,10 @@ export default {
       commentsOfComments,
       addComment,
       like,
+      commentLike,
       openOrCloseComments,
       moreComments,
+      openText,
     }
 
     async function preparation() {
@@ -155,6 +155,7 @@ export default {
 
         commentsOfComments[i] = reactive({
           comments: [...mainComment.comments],
+          openText: false,
           showComments: true,
           opened: false,
           commentId: mainComment.id,
@@ -163,7 +164,7 @@ export default {
       }
     }
 
-    async function addComment(index) {
+    async function addComment(id, index) {
       try {
         const response = await store.dispatch('commentOnComment', {
           commentId: props.items[index].id,
@@ -171,9 +172,7 @@ export default {
         });
         payloadComments[index].content = '';
 
-        const m = getMessageDateService(response.data);
-        console.log(m)
-        response.data.commentFormat = m;
+        response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
         response.data.comments = [];
         response.data.likes = [];
@@ -224,6 +223,34 @@ export default {
       }
     }
 
+    async function commentLike(index, commendIndex) {
+      try {
+        if (!props.items[index].comments[commendIndex].likeAuth) {
+          await store.dispatch('commentLike', {
+            commentId: props.items[index].comments[commendIndex].id,
+          });
+
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].comments[commendIndex].likeAuth = true;
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].comments[commendIndex].likesCount++;
+        } else {
+          await store.dispatch('commentUnlike', {
+            commentId: props.items[index].comments[commendIndex].id,
+          });
+
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].comments[commendIndex].likeAuth = false;
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].comments[commendIndex].likesCount--;
+        }
+      } catch (error) {
+        if (error.response.status === 404) {
+          await $router.push({name: "NotFound"});
+        }
+      }
+    }
+
     async function openOrCloseComments(index) {
       if (commentsOfComments[index].opened === true) {
         commentsOfComments[index].opened = false;
@@ -254,6 +281,10 @@ export default {
       props.items[index].comments.unshift(...commentsOfComments[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
 
       console.log(props.items[index].comments)
+    }
+
+    async function openText(index) {
+      commentsOfComments[index].openText = true;
     }
   }
 }

@@ -338,6 +338,20 @@ export default {
             })
             comment.likeAuth = likeAuth;
 
+            comment.comments.forEach(commentOn => {
+              likeAuth = false;
+              commentOn.likes.forEach((like) => {
+                if (like.user.id === store.state.user.id) {
+                  likeAuth = true;
+                }
+              });
+
+              commentOn.likeAuth = likeAuth;
+              commentOn.likesCount = commentOn.likes.length;
+              // commentOn.commendsCount = 0;
+              commentOn.commentFormat = getMessageDateService(commentOn);
+            })
+
             commentsOfPosts[i].comments[j].comments = comment.comments;
             commentsOfPosts[i].comments[j].commentsCount = comment.comments.length;
             commentsOfPosts[i].comments[j].likesCount = comment.likes.length;
