@@ -330,7 +330,6 @@ export default {
 
           for (let j = 0; j < post.comments.length; j++) {
             const comment = post.comments[j];
-            // post.comments.forEach(comment => {
             likeAuth = false;
             comment.likes.forEach((like) => {
               if (like.user.id === store.state.user.id) {
@@ -483,6 +482,9 @@ export default {
         response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
         response.data.likes = [];
+        response.data.likesCount = 0;
+        response.data.commentsCount = 0;
+        response.data.comments = [];
 
         commentsOfPosts[index].comments.push(response.data);
         posts.value[index].comments.push(response.data);

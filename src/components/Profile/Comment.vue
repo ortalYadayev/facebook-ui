@@ -30,6 +30,7 @@
           v-if="item.commentsCount > 0 && commentsOfComments[index].showComments"
           class="hover:underline mb-1"
         >
+          <fa-icon icon="caret-down" />
           {{ item.commentsCount }} comment{{ item.commentsCount > 1 ? 's' : '' }}
         </button>
         <div v-if="item.comments.length > 0">
@@ -43,7 +44,7 @@
               <button
                 @click="like(commentIdx)"
                 class="hover:underline"
-                :class="item.likeAuth ? 'text-primary' : ''"
+                :class="comment.likeAuth ? 'text-primary' : ''"
               >
                 like
               </button>
@@ -51,10 +52,10 @@
                 :for="commentsOfComments[index].commentId"
                 class="hover:underline mx-3"
               >comment</label>
-              {{ item.commentFormat }}
+              {{ comment.commentFormat }}
               <span class="text-blue-500 font-bold">
-                {{ item.likesCount }} likes
-                {{ item.commentsCount }} comments
+                {{ comment.likesCount }} likes
+                {{ comment.commentsCount }} comments
               </span>
             </div>
           </div>
@@ -113,27 +114,21 @@ export default {
     const payloadComments = reactive([]);
     const commentsOfComments = reactive([]);
 
-    for (let i = 0; i < props.items.length; i++) {
-      // eslint-disable-next-line vue/no-setup-props-destructure
-      const mainComment = props.items[i];
-
-      payloadComments[i] = reactive({
-        content: '',
-      })
-
-      commentsOfComments[i] = reactive({
-        comments: [...mainComment.comments],
-        showComments: true,
-        opened: false,
-        commentId: mainComment.id,
-      })
-      mainComment.comments = [];
-    }
+    preparation();
 
     watchEffect(() => {
       if (props.items.length > payloadComments.length) {
         payloadComments.push(reactive({
           content: '',
+        }));
+
+        const mainComment = props.items[props.items.length - 1];
+
+        commentsOfComments.push(reactive({
+          comments: [...mainComment.comments],
+          showComments: true,
+          opened: false,
+          commentId: mainComment.id,
         }));
       }
     })
@@ -149,9 +144,26 @@ export default {
       moreComments,
     }
 
-    async function addComment(index) {
-      console.log(props.items[index])
+    async function preparation() {
+      for (let i = 0; i < props.items.length; i++) {
+        // eslint-disable-next-line vue/no-setup-props-destructure
+        const mainComment = props.items[i];
 
+        payloadComments[i] = reactive({
+          content: '',
+        })
+
+        commentsOfComments[i] = reactive({
+          comments: [...mainComment.comments],
+          showComments: true,
+          opened: false,
+          commentId: mainComment.id,
+        })
+        mainComment.comments = [];
+      }
+    }
+
+    async function addComment(index) {
       try {
         const response = await store.dispatch('commentOnComment', {
           commentId: props.items[index].id,
@@ -159,23 +171,28 @@ export default {
         });
         payloadComments[index].content = '';
 
-        response.data.commentFormat = getMessageDateService(response.data);
+        const m = getMessageDateService(response.data);
+        console.log(m)
+        response.data.commentFormat = m;
         response.data.likeAuth = false;
         response.data.comments = [];
         response.data.likes = [];
-        response.data.postFormat = getMessageDateService(response.data);
+        response.data.commentsCount = 0;
+        response.data.likesCount = 0;
 
-        // commentsOfComments[index].comments.push(response.data);
-        // posts.value[index].comments.push(response.data);
-        // posts.value[index].commentsCount++;
+        commentsOfComments[index].comments.push(response.data);
+        // eslint-disable-next-line vue/no-mutating-props
+        props.items[index].comments.push(response.data);
+        // eslint-disable-next-line vue/no-mutating-props
+        props.items[index].commentsCount++;
       } catch (error) {
         if (error.response.status === 422) {
-          // errors.comment = error.response.data[0].message;
+          errors.comment = error.response.data[0].message;
           console.log(error)
         }
-        // if (error.response.status === 404) {
-        //   await router.push({name: "NotFound"});
-        // }
+        if (error.response.status === 404) {
+          await router.push({name: "NotFound"});
+        }
       }
     }
 
@@ -188,6 +205,8 @@ export default {
 
           // eslint-disable-next-line vue/no-mutating-props
           props.items[index].likeAuth = true;
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].likesCount++;
         } else {
           await store.dispatch('commentUnlike', {
             commentId: props.items[index].id,
@@ -195,6 +214,8 @@ export default {
 
           // eslint-disable-next-line vue/no-mutating-props
           props.items[index].likeAuth = false;
+          // eslint-disable-next-line vue/no-mutating-props
+          props.items[index].likesCount--;
         }
       } catch (error) {
         if (error.response.status === 404) {
