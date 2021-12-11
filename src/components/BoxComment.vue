@@ -3,7 +3,7 @@
     <div class="max-w-comment flex">
       <router-link
         :to="{ name: 'Profile', params: { username: comment.user.username } }"
-        class="mt-2"
+        class="mt-2 mr-2"
       >
         <img
           v-if="comment.user.profilePicturePath"
@@ -18,21 +18,21 @@
           class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full"
         >
       </router-link>
-      <div class="max-w-comment flex">
-        <div class="mx-2 break-words">
-          <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
-            <router-link
-              :to="{ name: 'Profile', params: { username: comment.user.username } }"
-              class="font-bold hover:underline"
-            >
-              {{ comment.user.firstName }} {{ comment.user.lastName }}
-            </router-link>
-            <span>
-              {{ comment.content }}
-            </span>
-          </div>
+      <div class="max-w-comment break-words flex-1">
+        <div class="flex flex-col rounded-3xl bg-gray-rgb px-4 py-2">
+          <router-link
+            :to="{ name: 'Profile', params: { username: comment.user.username } }"
+            class="font-bold hover:underline"
+          >
+            {{ comment.user.firstName }} {{ comment.user.lastName }}
+          </router-link>
+          <span>
+            {{ comment.content }}
+          </span>
         </div>
-        <div class="-ml-10 -mb-2 flex items-end">
+      </div>
+      <div class="flex items-end">
+        <div class="-ml-7 -mb-2">
           <div class="flex items-center justify-center text-sm rounded-full px-1 bg-white shadow-lg">
             <div class="bg-primary rounded-full w-4 h-4 flex items-center justify-center mr-1">
               <fa-icon
@@ -45,7 +45,8 @@
         </div>
       </div>
     </div>
-    <div class="">
+
+    <div class="ml-2">
       ...
     </div>
   </div>

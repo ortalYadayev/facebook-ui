@@ -164,7 +164,8 @@ export default {
       }
     }
 
-    async function addComment(id, index) {
+    async function addComment(index) {
+      console.log('hi')
       try {
         const response = await store.dispatch('commentOnComment', {
           commentId: props.items[index].id,
