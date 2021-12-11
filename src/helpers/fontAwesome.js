@@ -11,6 +11,8 @@ import {
   faThumbsUp,
   faComments,
   faCaretDown,
+  faReply,
+  faEllipsisV,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -34,6 +36,8 @@ library.add({
   faThumbsUp,
   faComments,
   faCaretDown,
+  faReply,
+  faEllipsisV,
 
   // Regular f-a
   faComment,

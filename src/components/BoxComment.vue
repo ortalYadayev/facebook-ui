@@ -31,23 +31,31 @@
           </span>
         </div>
       </div>
-      <div class="flex items-end">
-        <div class="-ml-7 -mb-2">
-          <div class="flex items-center justify-center text-sm rounded-full px-1 bg-white shadow-lg">
-            <div class="bg-primary rounded-full w-4 h-4 flex items-center justify-center mr-1">
-              <fa-icon
-                icon="thumbs-up"
-                class="text-white p-0.5"
-              />
+      <transition name="slide-fade">
+        <div
+          v-if="comment.likesCount > 0"
+          class="flex items-end"
+        >
+          <div class="-ml-7 -mb-2">
+            <div class="flex items-center justify-center text-sm rounded-full px-1 bg-white shadow-lg">
+              <div class="bg-primary rounded-full w-4 h-4 flex items-center justify-center mr-1">
+                <fa-icon
+                  icon="thumbs-up"
+                  class="text-white p-0.5"
+                />
+              </div>
+              {{ comment.likesCount }}
             </div>
-            {{ comment.likesCount }}
           </div>
         </div>
-      </div>
+      </transition>
     </div>
 
-    <div class="ml-2">
-      ...
+    <div class="ml-2 rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-rgb">
+      <fa-icon
+        icon="ellipsis-v"
+        class="fa-sm"
+      />
     </div>
   </div>
 </template>
@@ -65,7 +73,20 @@ export default {
 </script>
 
 <style scoped>
+
 .max-w-comment {
   max-width: 90%;
 }
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.4s ease-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(110%);
+  opacity: 0;
+}
+
 </style>

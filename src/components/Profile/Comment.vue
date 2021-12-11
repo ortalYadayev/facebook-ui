@@ -25,9 +25,12 @@
         <button
           @click="openOrCloseComments(index)"
           v-if="item.commentsCount > 0 && commentsOfComments[index].showComments"
-          class="hover:underline mb-1"
+          class="hover:underline"
         >
-          <fa-icon icon="caret-down" />
+          <fa-icon
+            icon="reply"
+            class="fa-flip-vertical fa-xs"
+          />
           {{ item.commentsCount }} comment{{ item.commentsCount > 1 ? 's' : '' }}
         </button>
         <div v-if="item.comments.length > 0">
