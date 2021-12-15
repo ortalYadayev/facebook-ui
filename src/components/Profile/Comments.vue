@@ -211,6 +211,7 @@ export default {
           postId: props.postId,
         });
 
+        isLoading.value.push(false);
         payloadComments.push(reactive({
           content: '',
         }));

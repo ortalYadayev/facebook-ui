@@ -71,144 +71,146 @@
         :color="color"
         :size="size"
       />
-      <div
-        v-for="(post, index) in posts"
-        :key="index"
-        class="box w-body-post border-t border-primary divide-y divide-gray-300"
-      >
-        <div class="flex items-center mb-2">
-          <router-link :to="{ name: 'Profile', params: { username: user.username } }">
-            <img
-              v-if="user.profilePictureUrl"
-              :src="user.profilePictureUrl"
-              :alt="user.firstName"
-              class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
-            >
-            <img
-              v-else
-              src="../../assets/images/user.png"
-              alt="user icon"
-              class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
-            >
-          </router-link>
-          <div class="flex-1">
-            <div class="text-lg font-bold">
-              <router-link
-                :to="{ name: 'Profile', params: { username: user.username } }"
-                class="hover:underline"
-              >
-                {{ user.firstName }} {{ user.lastName }}
-              </router-link>
-              >
-              <router-link
-                :to="{ name: 'Profile', params: { username: user.username } }"
-                class="hover:underline"
-              >
-                {{ user.firstName }} {{ user.lastName }}
-              </router-link>
-            </div>
-            <div class="text-sm">
-              {{ post.postFormat }}
-            </div>
-          </div>
-        </div>
-        <div class="py-2 break-words">
-          {{ post.content }}
-          <div
-            class="flex justify-between mt-2"
-            :class="post.commentsCount > 0 ? 'flex-row-reverse': ''"
-          >
-            <button
-              v-if="post.commentsCount > 0"
-              class="flex items-center text-right hover:underline"
-              @click="openOrCloseComments(index)"
-            >
-              <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
-                <fa-icon
-                  icon="comments"
-                  class="text-white p-0.5"
-                />
-              </div>
-              {{ post.commentsCount }} comment{{ post.commentsCount > 1 ? 's' : '' }}
-            </button>
-            <div
-              class="flex items-center"
-            >
-              <div
-                v-if="post.likes.length > 0"
-                class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
-              >
-                <fa-icon
-                  icon="thumbs-up"
-                  class="text-white p-0.5"
-                />
-              </div>
-              {{ post.likeMessage }}
-            </div>
-          </div>
-        </div>
-        <div class="py-2 flex">
-          <button
-            @click="like(index)"
-            class="rounded-md hover:bg-gray-rgb w-1/2 py-1 mr-1"
-            :class="post.likeAuth ? 'text-primary' : ''"
-          >
-            <fa-icon
-              icon="thumbs-up"
-              class="mr-1"
-            />
-            like
-          </button>
-          <label
-            for="comment"
-            class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1 ml-1"
-          >
-            <fa-icon
-              :icon="['far', 'comment']"
-              class="mr-1"
-            />
-            comment
-          </label>
-        </div>
-        <div class="pt-2">
-          <Comments
-            :comments-count="post.commentsCount"
-            :post-id="post.id"
-          />
-          <button
-            v-if="showComments[index]"
-            @click="moreComments(index)"
-            class="text-lg mb-2 hover:underline"
-          >
-            <fa-icon
-              icon="caret-down"
-              class="mr-1"
-            />
-            show more comments
-          </button>
-          <div class="flex items-center">
-            <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+      <div class="flex flex-col-reverse">
+        <div
+          v-for="(post, index) in posts"
+          :key="index"
+          class="box w-body-post border-t border-primary divide-y divide-gray-300"
+        >
+          <div class="flex items-center mb-2">
+            <router-link :to="{ name: 'Profile', params: { username: user.username } }">
               <img
-                v-if="store.state.user.profilePicturePath"
-                :src="store.state.user.profilePicturePath"
-                :alt="store.state.user.firstName"
-                class="hover:opacity-90 h-6 w-6 rounded-full mr-2"
+                v-if="user.profilePictureUrl"
+                :src="user.profilePictureUrl"
+                :alt="user.firstName"
+                class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
               >
               <img
                 v-else
                 src="../../assets/images/user.png"
                 alt="user icon"
-                class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full mr-2"
+                class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
               >
             </router-link>
-            <input
-              type="text"
-              id="comment"
-              @keyup.enter="addComment(index)"
-              class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
-              placeholder="Type Your Comment"
-              v-model="payloadComments[index].content"
+            <div class="flex-1">
+              <div class="text-lg font-bold">
+                <router-link
+                  :to="{ name: 'Profile', params: { username: user.username } }"
+                  class="hover:underline"
+                >
+                  {{ user.firstName }} {{ user.lastName }}
+                </router-link>
+                >
+                <router-link
+                  :to="{ name: 'Profile', params: { username: user.username } }"
+                  class="hover:underline"
+                >
+                  {{ user.firstName }} {{ user.lastName }}
+                </router-link>
+              </div>
+              <div class="text-sm">
+                {{ post.postFormat }}
+              </div>
+            </div>
+          </div>
+          <div class="py-2 break-words">
+            {{ post.content }}
+            <div
+              class="flex justify-between mt-2"
+              :class="post.commentsCount > 0 ? 'flex-row-reverse': ''"
             >
+              <button
+                v-if="post.commentsCount > 0"
+                class="flex items-center text-right hover:underline"
+                @click="openOrCloseComments(index)"
+              >
+                <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
+                  <fa-icon
+                    icon="comments"
+                    class="text-white p-0.5"
+                  />
+                </div>
+                {{ post.commentsCount }} comment{{ post.commentsCount > 1 ? 's' : '' }}
+              </button>
+              <div
+                class="flex items-center"
+              >
+                <div
+                  v-if="post.likes.length > 0"
+                  class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
+                >
+                  <fa-icon
+                    icon="thumbs-up"
+                    class="text-white p-0.5"
+                  />
+                </div>
+                {{ post.likeMessage }}
+              </div>
+            </div>
+          </div>
+          <div class="py-2 flex">
+            <button
+              @click="like(index)"
+              class="rounded-md hover:bg-gray-rgb w-1/2 py-1 mr-1"
+              :class="post.likeAuth ? 'text-primary' : ''"
+            >
+              <fa-icon
+                icon="thumbs-up"
+                class="mr-1"
+              />
+              like
+            </button>
+            <label
+              for="comment"
+              class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1 ml-1"
+            >
+              <fa-icon
+                :icon="['far', 'comment']"
+                class="mr-1"
+              />
+              comment
+            </label>
+          </div>
+          <div class="pt-2">
+            <Comments
+              :comments-count="post.commentsCount"
+              :post-id="post.id"
+            />
+            <button
+              v-if="showComments[index]"
+              @click="moreComments(index)"
+              class="text-lg mb-2 hover:underline"
+            >
+              <fa-icon
+                icon="caret-down"
+                class="mr-1"
+              />
+              show more comments
+            </button>
+            <div class="flex items-center">
+              <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
+                <img
+                  v-if="store.state.user.profilePicturePath"
+                  :src="store.state.user.profilePicturePath"
+                  :alt="store.state.user.firstName"
+                  class="hover:opacity-90 h-6 w-6 rounded-full mr-2"
+                >
+                <img
+                  v-else
+                  src="../../assets/images/user.png"
+                  alt="user icon"
+                  class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full mr-2"
+                >
+              </router-link>
+              <input
+                type="text"
+                id="comment"
+                @keyup.enter="addComment(index)"
+                class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
+                placeholder="Type Your Comment"
+                v-model="payloadComments[index].content"
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -369,17 +371,16 @@ export default {
 
         response.data.likeAuth = false;
         response.data.likeMessage = '';
-        // response.data.likesCount = 0;
         response.data.commentsCount = 0;
         response.data.comments = [];
         response.data.likes = [];
         response.data.postFormat = getMessageDateService(response.data);
 
-        posts.value.unshift(response.data);
+        posts.value.push(response.data);
 
-        showComments.unshift(false);
+        showComments.push(false);
 
-        payloadComments.unshift(reactive({
+        payloadComments.push(reactive({
           content: '',
         }));
 
@@ -445,7 +446,7 @@ export default {
       //   showComments[index].comments[i].commentFormat = getMessageDateService(showComments[index].comments[i]);
       // }
       //
-      // posts.value[index].comments.unshift(...showComments[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
+      // posts.value[index].comments.push(...showComments[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
     }
 
     async function openOrCloseComments(index) {
