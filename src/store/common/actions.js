@@ -79,4 +79,8 @@ export default {
   getComments({ getters }, payload) {
     return axiosInstance.get(`/posts/${payload.postId}/comments`);
   },
+
+  getLastComment({ getters }, payload) {
+    return axiosInstance.get(`/posts/${payload.postId}/comments/1`);
+  },
 };

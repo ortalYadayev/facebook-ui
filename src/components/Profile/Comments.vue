@@ -125,37 +125,20 @@ export default {
     const router = useRouter();
 
     const isLoading = ref([]);
-    console.log(isLoading.value)
     const color = ref('rgb(24, 119, 241)');
     const size = ref('6px');
 
     const payloadComments = reactive([]);
     const commentsOfComments = reactive([]);
     let comments = reactive([]);
-    let count = ref(0)
-
-    const errors = reactive({
-      content: '',
-    });
+    let count = ref()
 
     preparation();
 
     watchEffect(() => {
       if (count.value < props.commentsCount) {
-        console.log('new comment - need continue')
-      }
-
-      if (comments.length > payloadComments.length) {
-        payloadComments.push(reactive({
-          content: '',
-        }));
-
-        commentsOfComments.push(reactive({
-          commentsNow: [],
-          openText: false,
-          showComments: false,
-          // commentId: mainComment.id,
-        }));
+        getLastComment();
+        count.value++;
       }
     })
 
@@ -179,6 +162,9 @@ export default {
       try {
         const response = await store.dispatch('getComments', {postId: props.postId});
         count.value = response.data.count;
+        if (!response.data.comments) {
+          return;
+        }
 
         response.data.comments.forEach(comment => {
           payloadComments.push(reactive({
@@ -186,7 +172,6 @@ export default {
           }))
 
           isLoading.value.push(false);
-
           let likeAuth = false;
 
           comment.likes.forEach((like) => {
@@ -214,11 +199,35 @@ export default {
           }))
         })
 
-        if (response.data.comments.length === 0) {
-          return;
-        }
-
         comments.push(...response.data.comments);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function getLastComment() {
+      try {
+        const response = await store.dispatch('getLastComment', {
+          postId: props.postId,
+        });
+
+        payloadComments.push(reactive({
+          content: '',
+        }));
+
+        response.data.commentFormat = getMessageDateService(response.data);
+        response.data.likeAuth = false;
+        response.data.commentsCount = 0;
+
+        commentsOfComments.push(reactive({
+          skip: 0,
+          openText: false,
+          showComments: false,
+          page: 1,
+          commentId: response.data.id,
+        }))
+
+        comments.push(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -278,8 +287,6 @@ export default {
     }
 
     async function commentLike(index, commentIndex) {
-      console.log(comments[index].comments[commentIndex])
-
       try {
         if (!comments[index].comments[commentIndex].likeAuth) {
           const response = await store.dispatch('commentLike', {
