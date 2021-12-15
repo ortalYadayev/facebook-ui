@@ -115,27 +115,9 @@
         <div class="py-2 break-words">
           {{ post.content }}
           <div
-            class="flex mt-2"
-            :class="post.likesCount === 0 ? 'justify-end' : 'justify-between'"
+            class="flex justify-between mt-2"
+            :class="post.commentsCount > 0 ? 'flex-row-reverse': ''"
           >
-            <div
-              v-if="post.likesCount > 0"
-              class="flex items-center"
-            >
-              <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
-                <fa-icon
-                  icon="thumbs-up"
-                  class="text-white p-0.5"
-                />
-              </div>
-              {{ post.likeAuth ? 'you' : '' }}
-              {{
-                post.likesCount > 1 && post.likeAuth ? `and ${post.likesCount - 1} like` : ''
-              }}{{ post.likesCount > 2 && post.likeAuth ? 's' : '' }}
-              {{
-                !post.likeAuth ? `${post.likesCount} like` : ''
-              }}{{ !post.likeAuth && post.likesCount > 1 ? 's' : '' }}
-            </div>
             <button
               v-if="post.commentsCount > 0"
               class="flex items-center text-right hover:underline"
@@ -149,6 +131,20 @@
               </div>
               {{ post.commentsCount }} comment{{ post.commentsCount > 1 ? 's' : '' }}
             </button>
+            <div
+              class="flex items-center"
+            >
+              <div
+                v-if="post.likes.length > 0"
+                class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
+              >
+                <fa-icon
+                  icon="thumbs-up"
+                  class="text-white p-0.5"
+                />
+              </div>
+              {{ post.likeMessage }}
+            </div>
           </div>
         </div>
         <div class="py-2 flex">
@@ -175,15 +171,12 @@
           </label>
         </div>
         <div class="pt-2">
-          <div
-            v-if="commentsOfPosts[index].opened"
-          >
-            <Comment
-              :items="post.comments"
-            />
-          </div>
+          <Comments
+            :comments-count="post.commentsCount"
+            :post-id="post.id"
+          />
           <button
-            v-if="commentsOfPosts[index].showComments"
+            v-if="showComments[index]"
             @click="moreComments(index)"
             class="text-lg mb-2 hover:underline"
           >
@@ -230,13 +223,13 @@ import useVuelidate from '@vuelidate/core';
 import {required, minLength, maxLength, helpers} from '@vuelidate/validators';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import getMessageDateService from "../../helpers/getMessageDate";
-import Comment from "./Comment.vue";
+import Comments from "./Comments.vue";
 
 export default {
   name: "Posts",
   components: {
     SyncLoader,
-    Comment,
+    Comments,
   },
   props: {
     user: {
@@ -271,7 +264,7 @@ export default {
     const v$ = useVuelidate(rules, payload);
 
     const payloadComments = reactive([]);
-    const commentsOfPosts = reactive([]);
+    const showComments = reactive([]);
 
     let posts = ref([]);
 
@@ -281,7 +274,7 @@ export default {
       store,
       payload,
       payloadComments,
-      commentsOfPosts,
+      showComments,
       props,
       errors,
       v$,
@@ -311,68 +304,44 @@ export default {
         for (let i = 0; i < response.data.length; i++) {
           const post = response.data[i];
           let likeAuth = false;
+          let likeMessage = '';
 
           post.likes.forEach((like) => {
             if (like.user.id === store.state.user.id) {
               likeAuth = true;
+              if (post.likes.length - 1 > 1) {
+                likeMessage = `${post.likes.length - 1} likes and `;
+              } else if (post.likes.length - 1 === 1) {
+                likeMessage = `${post.likes.length - 1} like and `;
+              }
+              likeMessage += 'you';
             }
           });
 
-          post.likeAuth = likeAuth;
-          post.likesCount = post.likes.length;
-          post.commentsCount = post.comments.length;
-
-          commentsOfPosts[i] = reactive({
-            comments: [...post.comments],
-            showComments: false,
-            opened: true,
-          })
-
-          for (let j = 0; j < post.comments.length; j++) {
-            const comment = post.comments[j];
-            likeAuth = false;
-            comment.likes.forEach((like) => {
-              if (like.user.id === store.state.user.id) {
-                likeAuth = true;
-              }
-            })
-            comment.likeAuth = likeAuth;
-
-            comment.comments.forEach(commentOn => {
-              likeAuth = false;
-              commentOn.likes.forEach((like) => {
-                if (like.user.id === store.state.user.id) {
-                  likeAuth = true;
-                }
-              });
-
-              commentOn.likeAuth = likeAuth;
-              commentOn.likesCount = commentOn.likes.length;
-              // commentOn.commendsCount = 0;
-              commentOn.commentFormat = getMessageDateService(commentOn);
-            })
-
-            commentsOfPosts[i].comments[j].comments = comment.comments;
-            commentsOfPosts[i].comments[j].commentsCount = comment.comments.length;
-            commentsOfPosts[i].comments[j].likesCount = comment.likes.length;
+          if (!likeAuth) {
+            if (post.likes.length > 1) {
+              likeMessage = `${post.likes.length} likes`
+            } else if (post.likes.length === 1) {
+              likeMessage = `${post.likes.length} like`
+            }
           }
+
+          post.likeAuth = likeAuth;
+          post.likeMessage = likeMessage;
+          post.commentsCount = post.comments.length;
+          post.postFormat = getMessageDateService(post);
 
           if (post.comments.length > 5) {
-            commentsOfPosts[i].showComments = true;
-            commentsOfPosts[i].opened = false;
-
-            post.comments = [];
+            showComments[i] = true;
           } else {
-            post.comments.forEach(comment => {
-              comment.commentFormat = getMessageDateService(comment);
-            })
+            showComments[i] = false;
           }
+          post.comments = [];
 
           payloadComments[i] = reactive({
             content: '',
           })
 
-          post.postFormat = getMessageDateService(post);
         }
         posts.value = response.data;
 
@@ -399,7 +368,8 @@ export default {
         const response = await store.dispatch('post', payload);
 
         response.data.likeAuth = false;
-        response.data.likesCount = 0;
+        response.data.likeMessage = '';
+        // response.data.likesCount = 0;
         response.data.commentsCount = 0;
         response.data.comments = [];
         response.data.likes = [];
@@ -407,11 +377,7 @@ export default {
 
         posts.value.unshift(response.data);
 
-        commentsOfPosts.unshift(reactive({
-          comments: [],
-          showComments: false,
-          opened: true,
-        }));
+        showComments.unshift(false);
 
         payloadComments.unshift(reactive({
           content: '',
@@ -432,19 +398,29 @@ export default {
     async function like(index) {
       try {
         if (!posts.value[index].likeAuth) {
-          await store.dispatch('like', {
+          const response = await store.dispatch('like', {
             postId: posts.value[index].id,
           });
 
           posts.value[index].likeAuth = true;
-          posts.value[index].likesCount++;
+          if (posts.value[index].likes.length > 1) {
+            posts.value[index].likeMessage += ' and ';
+          }
+          posts.value[index].likeMessage += 'you';
+          posts.value[index].likes.push(response.data);
+
         } else {
           await store.dispatch('unlike', {
             postId: posts.value[index].id,
           });
 
           posts.value[index].likeAuth = false;
-          posts.value[index].likesCount--;
+          posts.value[index].likes = posts.value[index].likes.filter(like => like.user.id !== store.state.user.id)
+
+          if (posts.value[index].likes.length > 1) {
+            posts.value[index].likeMessage = posts.value[index].likeMessage.replace(' and ', '');
+          }
+          posts.value[index].likeMessage = posts.value[index].likeMessage.replace('you', '');
         }
       } catch (error) {
         if (error.response.status === 404) {
@@ -454,29 +430,30 @@ export default {
     }
 
     async function moreComments(index) {
-      commentsOfPosts[index].opened = true;
-
-      const lengthStart = posts.value[index].comments.length;
-      let lengthEnd = lengthStart + 5;
-      const lengthComments = commentsOfPosts[index].comments.length;
-
-      if (lengthComments <= lengthEnd) {
-        lengthEnd = lengthComments;
-        commentsOfPosts[index].showComments = false;
-      }
-
-      for (let i = lengthComments - lengthEnd; i < lengthComments - lengthStart; i++) {
-        commentsOfPosts[index].comments[i].commentFormat = getMessageDateService(commentsOfPosts[index].comments[i]);
-      }
-
-      posts.value[index].comments.unshift(...commentsOfPosts[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
+      // showComments[index].opened = true;
+      //
+      // const lengthStart = posts.value[index].comments.length;
+      // let lengthEnd = lengthStart + 5;
+      // const lengthComments = showComments[index].comments.length;
+      //
+      // if (lengthComments <= lengthEnd) {
+      //   lengthEnd = lengthComments;
+      //   showComments[index].showComments = false;
+      // }
+      //
+      // for (let i = lengthComments - lengthEnd; i < lengthComments - lengthStart; i++) {
+      //   showComments[index].comments[i].commentFormat = getMessageDateService(showComments[index].comments[i]);
+      // }
+      //
+      // posts.value[index].comments.unshift(...showComments[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
     }
 
     async function openOrCloseComments(index) {
-      if (commentsOfPosts[index].opened === true) {
-        commentsOfPosts[index].opened = false;
-        commentsOfPosts[index].showComments = true;
-        posts.value[index].comments = [];
+      if (showComments[index].opened === true) {
+        // showComments[index].opened = false;
+        showComments[index].showComments = true;
+        // posts.value[index].comments = [];
+
         return;
       }
 
@@ -484,25 +461,22 @@ export default {
     }
 
     async function addComment(index) {
-      commentsOfPosts[index].opened = true;
-
       try {
         const response = await store.dispatch('comment', {
           postId: posts.value[index].id,
           content: payloadComments[index],
         });
+
         payloadComments[index].content = '';
 
-        response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
-        response.data.likes = [];
-        response.data.likesCount = 0;
         response.data.commentsCount = 0;
+        response.data.likes = [];
         response.data.comments = [];
+        response.data.commentFormat = getMessageDateService(response.data);
 
-        commentsOfPosts[index].comments.push(response.data);
-        posts.value[index].comments.push(response.data);
         posts.value[index].commentsCount++;
+        posts.value[index].comments.push(response.data);
       } catch (error) {
         if (error.response.status === 422) {
           errors.comment = error.response.data[0].message;

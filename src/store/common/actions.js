@@ -10,7 +10,7 @@ export default {
   },
 
   getPosts({ getters }, payload) {
-    return axiosInstance.get(`users/${payload.userId}/posts`);
+    return axiosInstance.get(`/users/${payload.userId}/posts`);
   },
 
   search({ getters }, payload) {
@@ -67,5 +67,16 @@ export default {
       `/comments/${payload.commentId}/comments`,
       payload.content
     );
+  },
+
+  getCommentsOnComment({ getters }, payload) {
+    return axiosInstance.get(
+      `/comments/${payload.commentId}/comments/5/page/${payload.page}/skip/${payload.skip}`,
+      payload.content
+    );
+  },
+
+  getComments({ getters }, payload) {
+    return axiosInstance.get(`/posts/${payload.postId}/comments`);
   },
 };

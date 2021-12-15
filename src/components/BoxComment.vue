@@ -33,7 +33,7 @@
       </div>
       <transition name="slide-fade">
         <div
-          v-if="comment.likesCount > 0"
+          v-if="comment.likes.length > 0"
           class="flex items-end"
         >
           <div class="-ml-7 -mb-2">
@@ -44,7 +44,7 @@
                   class="text-white p-0.5"
                 />
               </div>
-              {{ comment.likesCount }}
+              {{ comment.likes.length }}
             </div>
           </div>
         </div>
