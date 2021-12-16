@@ -172,12 +172,15 @@
             </label>
           </div>
           <div class="pt-2">
-            <Comments
-              :comments-count="post.commentsCount"
-              :post-id="post.id"
-            />
+            <div v-if="comments[index].opened">
+              <Comments
+                :show="{show: comments[index].show, skip: comments[index].skip, page: comments[index].page}"
+                :comments-count="post.commentsCount"
+                :post-id="post.id"
+              />
+            </div>
             <button
-              v-if="showComments[index]"
+              v-if="comments[index].show"
               @click="moreComments(index)"
               class="text-lg mb-2 hover:underline"
             >
@@ -266,7 +269,7 @@ export default {
     const v$ = useVuelidate(rules, payload);
 
     const payloadComments = reactive([]);
-    const showComments = reactive([]);
+    const comments = reactive([]);
 
     let posts = ref([]);
 
@@ -276,7 +279,7 @@ export default {
       store,
       payload,
       payloadComments,
-      showComments,
+      comments,
       props,
       errors,
       v$,
@@ -330,15 +333,24 @@ export default {
 
           post.likeAuth = likeAuth;
           post.likeMessage = likeMessage;
-          post.commentsCount = post.comments.length;
           post.postFormat = getMessageDateService(post);
 
-          if (post.comments.length > 5) {
-            showComments[i] = true;
+          if (post.commentsCount > 5) {
+            comments[i] = reactive({
+              skip: 0,
+              show: true,
+              opened: true,
+              page: 0,
+            });
+            comments[i].opened = false;
           } else {
-            showComments[i] = false;
+            comments[i] = reactive({
+              skip: 0,
+              show: false,
+              opened: true,
+              page: 1,
+            });
           }
-          post.comments = [];
 
           payloadComments[i] = reactive({
             content: '',
@@ -375,7 +387,14 @@ export default {
         response.data.postFormat = getMessageDateService(response.data);
 
         posts.value.push(response.data);
-        showComments.push(false);
+        comments.push(reactive({
+          skip: 0,
+          show: false,
+          opened: true,
+          more: true,
+          page: 1,
+        }));
+
         payloadComments.push(reactive({
           content: '',
         }));
@@ -429,32 +448,25 @@ export default {
     }
 
     async function moreComments(index) {
-      // showComments[index].opened = true;
-      //
-      // const lengthStart = posts.value[index].comments.length;
-      // let lengthEnd = lengthStart + 5;
-      // const lengthComments = showComments[index].comments.length;
-      //
-      // if (lengthComments <= lengthEnd) {
-      //   lengthEnd = lengthComments;
-      //   showComments[index].showComments = false;
-      // }
-      //
-      // for (let i = lengthComments - lengthEnd; i < lengthComments - lengthStart; i++) {
-      //   showComments[index].comments[i].commentFormat = getMessageDateService(showComments[index].comments[i]);
-      // }
-      //
-      // posts.value[index].comments.push(...showComments[index].comments.slice(lengthComments - lengthEnd, lengthComments - lengthStart));
+      comments[index].opened = true;
+
+      comments[index].page++;
+      if (posts.value[index].commentsCount < comments[index].page * 5 + comments[index].skip) {
+        comments[index].show = false;
+      }
     }
 
     async function openOrCloseComments(index) {
-      if (showComments[index].opened === true) {
-        // showComments[index].opened = false;
-        showComments[index].showComments = true;
-        // posts.value[index].comments = [];
+      if (comments[index].opened) {
+        comments[index].opened = false;
+        comments[index].show = true;
+        comments[index].skip = 0;
+        comments[index].page = 0;
 
         return;
       }
+
+      comments[index].opened = true;
 
       await moreComments(index);
     }
@@ -470,12 +482,12 @@ export default {
 
         response.data.likeAuth = false;
         response.data.commentsCount = 0;
-        response.data.likes = [];
-        response.data.comments = [];
+        response.data.page = null;
         response.data.commentFormat = getMessageDateService(response.data);
 
         posts.value[index].commentsCount++;
-        posts.value[index].comments.push(response.data);
+
+        comments[index].skip++;
       } catch (error) {
         if (error.response.status === 422) {
           errors.comment = error.response.data[0].message;
