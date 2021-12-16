@@ -372,14 +372,10 @@ export default {
         response.data.likeAuth = false;
         response.data.likeMessage = '';
         response.data.commentsCount = 0;
-        response.data.comments = [];
-        response.data.likes = [];
         response.data.postFormat = getMessageDateService(response.data);
 
         posts.value.push(response.data);
-
         showComments.push(false);
-
         payloadComments.push(reactive({
           content: '',
         }));
@@ -403,11 +399,14 @@ export default {
             postId: posts.value[index].id,
           });
 
-          posts.value[index].likeAuth = true;
+          if (response.status === 200) {
+            return;
+          }
           if (posts.value[index].likes.length > 1) {
             posts.value[index].likeMessage += ' and ';
           }
           posts.value[index].likeMessage += 'you';
+          posts.value[index].likeAuth = true;
           posts.value[index].likes.push(response.data);
 
         } else {
@@ -415,13 +414,12 @@ export default {
             postId: posts.value[index].id,
           });
 
-          posts.value[index].likeAuth = false;
-          posts.value[index].likes = posts.value[index].likes.filter(like => like.user.id !== store.state.user.id)
-
           if (posts.value[index].likes.length > 1) {
             posts.value[index].likeMessage = posts.value[index].likeMessage.replace(' and ', '');
           }
           posts.value[index].likeMessage = posts.value[index].likeMessage.replace('you', '');
+          posts.value[index].likeAuth = false;
+          posts.value[index].likes = posts.value[index].likes.filter(like => like.user.id !== store.state.user.id)
         }
       } catch (error) {
         if (error.response.status === 404) {
@@ -482,6 +480,9 @@ export default {
         if (error.response.status === 422) {
           errors.comment = error.response.data[0].message;
         }
+        if (error.response.status === 404) {
+          await $router.push({name: "NotFound"});
+        }
       }
     }
 
@@ -489,7 +490,6 @@ export default {
       v$.value[key].$reset();
       delete errors[key];
     }
-
   }
 }
 

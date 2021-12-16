@@ -269,6 +269,11 @@ export default {
             commentId: comments[index].id,
           });
 
+
+          if (response.status === 200) {
+            return;
+          }
+
           comments[index].likeAuth = true;
           comments[index].likes.push(response.data);
         } else {
