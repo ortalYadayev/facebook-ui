@@ -71,13 +71,13 @@ export default {
 
   getCommentsOnComment({ getters }, payload) {
     return axiosInstance.get(
-      `/comments/${payload.commentId}/comments/${payload.take}/page/${payload.page}/skip/${payload.skip}`
+      `/comments/${payload.commentId}/comments/5/page/${payload.page}/skip/${payload.skip}`
     );
   },
 
   getComments({ getters }, payload) {
     return axiosInstance.get(
-      `/posts/${payload.postId}/comments/${payload.take}/page/${payload.page}/skip/${payload.skip}`
+      `/posts/${payload.postId}/comments/5/page/${payload.page}/skip/${payload.skip}`
     );
   },
 

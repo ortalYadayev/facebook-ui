@@ -173,14 +173,11 @@ export default {
     }
 
     async function preparation() {
-      const first = props.commentsCount - props.show.skip - (props.show.page - 1) * 5;
-
       try {
         const response = await store.dispatch('getComments', {
           postId: props.postId,
           page: props.show.page,
           skip: props.show.skip,
-          take: first > 5 ? 5 : first,
         });
         if (!response.data.count) {
           countOfComments.value = 0;
@@ -351,7 +348,6 @@ export default {
           commentId: comments[index].id,
           page: commentsOfComments[index].page,
           skip: commentsOfComments[index].skip,
-          take: 5,
         });
 
         commentsOfComments[index].page = response.data.nextPage;
