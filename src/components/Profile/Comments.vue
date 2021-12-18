@@ -23,26 +23,28 @@
           {{ comment.commentFormat }}
         </div>
         <div class="mb-1 ml-8">
-          <div
-            v-for="(commentOn, commentIdx) in comment.comments"
-            :key="commentIdx"
-            class="my-2"
-          >
-            <BoxComment :comment="commentOn" />
-            <div class="text-xs ml-9">
-              <button
-                @click="commentLike(index, commentIdx)"
-                class="hover:underline"
-                :class="commentOn.likeAuth ? 'text-primary' : ''"
-              >
-                like
-              </button>
-              <label
-                @click="openText(index)"
-                class="hover:underline mx-3"
-                :for="commentsOfComments[index].commentId"
-              >comment</label>
-              {{ commentOn.commentFormat }}
+          <div class="flex flex-col-reverse">
+            <div
+              v-for="(commentOn, commentIdx) in comment.comments"
+              :key="commentIdx"
+              class="my-2"
+            >
+              <BoxComment :comment="commentOn" />
+              <div class="text-xs ml-9">
+                <button
+                  @click="commentLike(index, commentIdx)"
+                  class="hover:underline"
+                  :class="commentOn.likeAuth ? 'text-primary' : ''"
+                >
+                  like
+                </button>
+                <label
+                  @click="openText(index)"
+                  class="hover:underline mx-3"
+                  :for="commentsOfComments[index].commentId"
+                >comment</label>
+                {{ commentOn.commentFormat }}
+              </div>
             </div>
           </div>
           <button
@@ -145,9 +147,9 @@ export default {
     watchEffect(() => {
       if (countOfComments.value < props.commentsCount) {
         getLastComment();
-        countOfComments.value++;
+        countOfComments.value = props.commentsCount;
       }
-      
+
       if (props.show.page !== page.value) {
         page.value = props.show.page;
         preparation();
@@ -180,6 +182,10 @@ export default {
           skip: props.show.skip,
           take: first > 5 ? 5 : first,
         });
+        if (!response.data.count) {
+          countOfComments.value = 0;
+          return;
+        }
         countOfComments.value = response.data.count;
 
         if (!response.data.comments) {
@@ -236,6 +242,7 @@ export default {
         response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
         response.data.commentsCount = 0;
+        response.data.comments = [];
 
         commentsOfComments.unshift(reactive({
           skip: 0,
@@ -264,10 +271,9 @@ export default {
 
         response.data.commentFormat = getMessageDateService(response.data);
         response.data.likeAuth = false;
-        response.data.comments = [];
         response.data.likes = [];
 
-        comments[index].comments.push(response.data);
+        comments[index].comments.unshift(response.data);
         commentsOfComments[index].skip++;
 
         isLoading.value[index] = false;
@@ -345,7 +351,9 @@ export default {
           commentId: comments[index].id,
           page: commentsOfComments[index].page,
           skip: commentsOfComments[index].skip,
+          take: 5,
         });
+
         commentsOfComments[index].page = response.data.nextPage;
         comments[index].comments.push(...response.data.comments);
 
@@ -364,7 +372,6 @@ export default {
 
           comment.commentFormat = getMessageDateService(comment);
           comment.likeAuth = likeAuth;
-          comment.commentsCount = comment.comments.length;
         });
       } catch (error) {
         console.log(error)

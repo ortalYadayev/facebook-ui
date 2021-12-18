@@ -161,7 +161,7 @@
               like
             </button>
             <label
-              for="comment"
+              :for="post.id"
               class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1 ml-1"
             >
               <fa-icon
@@ -207,7 +207,7 @@
               </router-link>
               <input
                 type="text"
-                id="comment"
+                :id="post.id"
                 @keyup.enter="addComment(index)"
                 class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
                 placeholder="Type Your Comment"
@@ -391,7 +391,6 @@ export default {
           skip: 0,
           show: false,
           opened: true,
-          more: true,
           page: 1,
         }));
 
@@ -451,7 +450,8 @@ export default {
       comments[index].opened = true;
 
       comments[index].page++;
-      if (posts.value[index].commentsCount < comments[index].page * 5 + comments[index].skip) {
+
+      if (posts.value[index].commentsCount <= comments[index].page * 5 + comments[index].skip) {
         comments[index].show = false;
       }
     }
@@ -467,7 +467,6 @@ export default {
       }
 
       comments[index].opened = true;
-
       await moreComments(index);
     }
 
@@ -484,6 +483,8 @@ export default {
         response.data.commentsCount = 0;
         response.data.page = null;
         response.data.commentFormat = getMessageDateService(response.data);
+
+        comments[index].opened = true;
 
         posts.value[index].commentsCount++;
 

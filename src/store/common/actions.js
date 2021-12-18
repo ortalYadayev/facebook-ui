@@ -71,8 +71,7 @@ export default {
 
   getCommentsOnComment({ getters }, payload) {
     return axiosInstance.get(
-      `/comments/${payload.commentId}/comments/5/page/${payload.page}/skip/${payload.skip}`,
-      payload.content
+      `/comments/${payload.commentId}/comments/${payload.take}/page/${payload.page}/skip/${payload.skip}`
     );
   },
 
