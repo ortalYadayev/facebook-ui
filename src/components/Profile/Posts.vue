@@ -66,157 +66,154 @@
       <div class="box w-body-post flex justify-center text-xl font-bold border-t border-primary">
         Posts
       </div>
-      <sync-loader
-        :loading="isLoadingOfPosts"
-        :color="color"
-        :size="size"
-      />
-      <div class="flex flex-col-reverse">
-        <div
-          v-for="(post, index) in posts"
-          :key="index"
-          class="box w-body-post border-t border-primary divide-y divide-gray-300"
-        >
-          <div class="flex items-center mb-2">
-            <router-link :to="{ name: 'Profile', params: { username: user.username } }">
+      <div
+        v-for="(post, index) in posts"
+        :key="index"
+        class="box w-body-post border-t border-primary divide-y divide-gray-300"
+      >
+        <div class="flex items-center mb-2">
+          <router-link :to="{ name: 'Profile', params: { username: user.username } }">
+            <img
+              v-if="user.profilePictureUrl"
+              :src="user.profilePictureUrl"
+              :alt="user.firstName"
+              class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
+            >
+            <img
+              v-else
+              src="../../assets/images/user.png"
+              alt="user icon"
+              class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
+            >
+          </router-link>
+          <div class="flex-1">
+            <div class="text-lg font-bold">
+              <router-link
+                :to="{ name: 'Profile', params: { username: user.username } }"
+                class="hover:underline"
+              >
+                {{ user.firstName }} {{ user.lastName }}
+              </router-link>
+              >
+              <router-link
+                :to="{ name: 'Profile', params: { username: user.username } }"
+                class="hover:underline"
+              >
+                {{ user.firstName }} {{ user.lastName }}
+              </router-link>
+            </div>
+            <div class="text-sm">
+              {{ post.postFormat }}
+            </div>
+          </div>
+        </div>
+        <div class="py-2 break-words">
+          {{ post.content }}
+          <div
+            class="flex justify-between mt-2"
+            :class="post.commentsCount > 0 ? 'flex-row-reverse': ''"
+          >
+            <button
+              v-if="post.commentsCount > 0"
+              class="flex items-center text-right hover:underline"
+              @click="openOrCloseComments(index)"
+            >
+              <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
+                <fa-icon
+                  icon="comments"
+                  class="text-white p-0.5"
+                />
+              </div>
+              {{ post.commentsCount }} comment{{ post.commentsCount > 1 ? 's' : '' }}
+            </button>
+            <div
+              class="flex items-center"
+            >
+              <div
+                v-if="post.likes.length > 0"
+                class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
+              >
+                <fa-icon
+                  icon="thumbs-up"
+                  class="text-white p-0.5"
+                />
+              </div>
+              {{ post.likeMessage }}
+            </div>
+          </div>
+        </div>
+        <div class="py-2 flex">
+          <button
+            @click="like(index)"
+            class="rounded-md hover:bg-gray-rgb w-1/2 py-1 mr-1"
+            :class="post.likeAuth ? 'text-primary' : ''"
+          >
+            <fa-icon
+              icon="thumbs-up"
+              class="mr-1"
+            />
+            like
+          </button>
+          <label
+            :for="post.id"
+            class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1 ml-1"
+          >
+            <fa-icon
+              :icon="['far', 'comment']"
+              class="mr-1"
+            />
+            comment
+          </label>
+        </div>
+        <div class="pt-2">
+          <div v-if="comments[index].opened">
+            <Comments
+              :show="{show: comments[index].show, skip: comments[index].skip, page: comments[index].page}"
+              :comments-count="post.commentsCount"
+              :post-id="post.id"
+            />
+          </div>
+          <button
+            v-if="comments[index].show"
+            @click="moreComments(index)"
+            class="text-lg mb-2 hover:underline"
+          >
+            <fa-icon
+              icon="caret-down"
+              class="mr-1"
+            />
+            show more comments
+          </button>
+          <div class="flex items-center">
+            <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
               <img
-                v-if="user.profilePictureUrl"
-                :src="user.profilePictureUrl"
-                :alt="user.firstName"
-                class="hover:opacity-90 h-9 w-9 rounded-full mr-2"
+                v-if="store.state.user.profilePicturePath"
+                :src="store.state.user.profilePicturePath"
+                :alt="store.state.user.firstName"
+                class="hover:opacity-90 h-6 w-6 rounded-full mr-2"
               >
               <img
                 v-else
                 src="../../assets/images/user.png"
                 alt="user icon"
-                class="hover:opacity-90 bg-gray-rgb h-9 w-9 rounded-full mr-2"
+                class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full mr-2"
               >
             </router-link>
-            <div class="flex-1">
-              <div class="text-lg font-bold">
-                <router-link
-                  :to="{ name: 'Profile', params: { username: user.username } }"
-                  class="hover:underline"
-                >
-                  {{ user.firstName }} {{ user.lastName }}
-                </router-link>
-                >
-                <router-link
-                  :to="{ name: 'Profile', params: { username: user.username } }"
-                  class="hover:underline"
-                >
-                  {{ user.firstName }} {{ user.lastName }}
-                </router-link>
-              </div>
-              <div class="text-sm">
-                {{ post.postFormat }}
-              </div>
-            </div>
-          </div>
-          <div class="py-2 break-words">
-            {{ post.content }}
-            <div
-              class="flex justify-between mt-2"
-              :class="post.commentsCount > 0 ? 'flex-row-reverse': ''"
+            <input
+              type="text"
+              :id="post.id"
+              @keyup.enter="addComment(index)"
+              class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
+              placeholder="Type Your Comment"
+              v-model="payloadComments[index].content"
             >
-              <button
-                v-if="post.commentsCount > 0"
-                class="flex items-center text-right hover:underline"
-                @click="openOrCloseComments(index)"
-              >
-                <div class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1">
-                  <fa-icon
-                    icon="comments"
-                    class="text-white p-0.5"
-                  />
-                </div>
-                {{ post.commentsCount }} comment{{ post.commentsCount > 1 ? 's' : '' }}
-              </button>
-              <div
-                class="flex items-center"
-              >
-                <div
-                  v-if="post.likes.length > 0"
-                  class="bg-primary rounded-full w-5 h-5 flex items-center justify-center mr-1"
-                >
-                  <fa-icon
-                    icon="thumbs-up"
-                    class="text-white p-0.5"
-                  />
-                </div>
-                {{ post.likeMessage }}
-              </div>
-            </div>
-          </div>
-          <div class="py-2 flex">
-            <button
-              @click="like(index)"
-              class="rounded-md hover:bg-gray-rgb w-1/2 py-1 mr-1"
-              :class="post.likeAuth ? 'text-primary' : ''"
-            >
-              <fa-icon
-                icon="thumbs-up"
-                class="mr-1"
-              />
-              like
-            </button>
-            <label
-              :for="post.id"
-              class="rounded-md text-center hover:bg-gray-rgb w-1/2 py-1 ml-1"
-            >
-              <fa-icon
-                :icon="['far', 'comment']"
-                class="mr-1"
-              />
-              comment
-            </label>
-          </div>
-          <div class="pt-2">
-            <div v-if="comments[index].opened">
-              <Comments
-                :show="{show: comments[index].show, skip: comments[index].skip, page: comments[index].page}"
-                :comments-count="post.commentsCount"
-                :post-id="post.id"
-              />
-            </div>
-            <button
-              v-if="comments[index].show"
-              @click="moreComments(index)"
-              class="text-lg mb-2 hover:underline"
-            >
-              <fa-icon
-                icon="caret-down"
-                class="mr-1"
-              />
-              show more comments
-            </button>
-            <div class="flex items-center">
-              <router-link :to="{ name: 'Profile', params: { username: store.state.user.username } }">
-                <img
-                  v-if="store.state.user.profilePicturePath"
-                  :src="store.state.user.profilePicturePath"
-                  :alt="store.state.user.firstName"
-                  class="hover:opacity-90 h-6 w-6 rounded-full mr-2"
-                >
-                <img
-                  v-else
-                  src="../../assets/images/user.png"
-                  alt="user icon"
-                  class="hover:opacity-90 bg-gray-rgb h-6 w-6 rounded-full mr-2"
-                >
-              </router-link>
-              <input
-                type="text"
-                :id="post.id"
-                @keyup.enter="addComment(index)"
-                class="flex-1 rounded-3xl bg-gray-rgb px-4 py-2"
-                placeholder="Type Your Comment"
-                v-model="payloadComments[index].content"
-              >
-            </div>
           </div>
         </div>
       </div>
+      <InfiniteLoading
+        :posts="posts"
+        @infinite="load"
+      />
     </div>
   </div>
 </template>
@@ -229,12 +226,15 @@ import {required, minLength, maxLength, helpers} from '@vuelidate/validators';
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import getMessageDateService from "../../helpers/getMessageDate";
 import Comments from "./Comments.vue";
+import InfiniteLoading from "v3-infinite-loading";
+import "v3-infinite-loading/lib/style.css";
 
 export default {
   name: "Posts",
   components: {
     SyncLoader,
     Comments,
+    InfiniteLoading,
   },
   props: {
     user: {
@@ -245,7 +245,6 @@ export default {
   setup(props) {
     const store = useStore();
 
-    const isLoadingOfPosts = ref(false);
     const isLoading = ref(false);
     const color = ref('rgb(24, 119, 241)');
     const size = ref('10px');
@@ -272,8 +271,8 @@ export default {
     const comments = reactive([]);
 
     let posts = ref([]);
-
-    getPosts();
+    let page = ref(1);
+    let skip = ref(0);
 
     return {
       store,
@@ -284,10 +283,10 @@ export default {
       errors,
       v$,
       posts,
-      isLoadingOfPosts,
       isLoading,
       color,
       size,
+      load,
       addPost,
       like,
       moreComments,
@@ -296,72 +295,74 @@ export default {
       resetErrors,
     };
 
-    async function getPosts() {
-      isLoadingOfPosts.value = true;
-
+    async function load($state) {
       try {
-        const response = await store.dispatch('getPosts', {userId: props.user.id});
-        if (response.data.length === 0) {
-          isLoadingOfPosts.value = false;
-          return;
-        }
+        const response = await store.dispatch('getPosts', {
+          userId: props.user.id, page: page.value, skip: skip.value
+        });
 
-        for (let i = 0; i < response.data.length; i++) {
-          const post = response.data[i];
-          let likeAuth = false;
-          let likeMessage = '';
+        if (response.data.length < 10) {
+          $state.complete();
+        } else {
+          for (let i = 0; i < response.data.length; i++) {
+            const post = response.data[i];
+            let likeAuth = false;
+            let likeMessage = '';
 
-          post.likes.forEach((like) => {
-            if (like.user.id === store.state.user.id) {
-              likeAuth = true;
-              if (post.likes.length - 1 > 1) {
-                likeMessage = `${post.likes.length - 1} likes and `;
-              } else if (post.likes.length - 1 === 1) {
-                likeMessage = `${post.likes.length - 1} like and `;
+            post.likes.forEach((like) => {
+              if (like.user.id === store.state.user.id) {
+                likeAuth = true;
+                if (post.likes.length - 1 > 1) {
+                  likeMessage = `${post.likes.length - 1} likes and `;
+                } else if (post.likes.length - 1 === 1) {
+                  likeMessage = `${post.likes.length - 1} like and `;
+                }
+                likeMessage += 'you';
               }
-              likeMessage += 'you';
-            }
-          });
-
-          if (!likeAuth) {
-            if (post.likes.length > 1) {
-              likeMessage = `${post.likes.length} likes`
-            } else if (post.likes.length === 1) {
-              likeMessage = `${post.likes.length} like`
-            }
-          }
-
-          post.likeAuth = likeAuth;
-          post.likeMessage = likeMessage;
-          post.postFormat = getMessageDateService(post);
-
-          if (post.commentsCount > 5) {
-            comments[i] = reactive({
-              skip: 0,
-              show: true,
-              opened: true,
-              page: 0,
             });
-            comments[i].opened = false;
-          } else {
-            comments[i] = reactive({
-              skip: 0,
-              show: false,
-              opened: true,
-              page: 1,
-            });
+
+            if (!likeAuth) {
+              if (post.likes.length > 1) {
+                likeMessage = `${post.likes.length} likes`
+              } else if (post.likes.length === 1) {
+                likeMessage = `${post.likes.length} like`
+              }
+            }
+
+            post.likeAuth = likeAuth;
+            post.likeMessage = likeMessage;
+            post.postFormat = getMessageDateService(post);
+
+            if (post.commentsCount > 5) {
+              comments[i] = reactive({
+                skip: 0,
+                show: true,
+                opened: false,
+                page: 0,
+              });
+              // comments[i].opened = false;
+            } else {
+              comments[i] = reactive({
+                skip: 0,
+                show: false,
+                opened: true,
+                page: 1,
+              });
+            }
+
+            payloadComments[i] = reactive({
+              content: '',
+            })
+
           }
+          posts.value = response.data;
 
-          payloadComments[i] = reactive({
-            content: '',
-          })
-
+          $state.loaded();
         }
-        posts.value = response.data;
-
-        isLoadingOfPosts.value = false;
+        page.value++;
       } catch (error) {
-        isLoadingOfPosts.value = false;
+        console.log(error)
+        $state.error();
       }
     }
 
@@ -381,6 +382,7 @@ export default {
       try {
         const response = await store.dispatch('post', payload);
 
+
         response.data.likeAuth = false;
         response.data.likeMessage = '';
         response.data.commentsCount = 0;
@@ -399,6 +401,8 @@ export default {
         }));
 
         payload.content = '';
+
+        skip.value++;
 
         isLoading.value = false;
       } catch (error) {
@@ -481,14 +485,17 @@ export default {
 
         response.data.likeAuth = false;
         response.data.commentsCount = 0;
-        response.data.page = null;
         response.data.commentFormat = getMessageDateService(response.data);
 
-        comments[index].opened = true;
+        if (comments[index].opened) {
+          comments[index].skip++;
+        } else {
+          comments[index].opened = true;
+          comments[index].page = 1;
+        }
 
         posts.value[index].commentsCount++;
 
-        comments[index].skip++;
       } catch (error) {
         if (error.response.status === 422) {
           errors.comment = error.response.data[0].message;

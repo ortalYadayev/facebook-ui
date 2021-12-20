@@ -10,7 +10,10 @@ export default {
   },
 
   getPosts({ getters }, payload) {
-    return axiosInstance.get(`/users/${payload.userId}/posts`);
+    return axiosInstance.post(`/users/${payload.userId}/posts`, {
+      page: payload.page,
+      skip: payload.skip,
+    });
   },
 
   search({ getters }, payload) {
