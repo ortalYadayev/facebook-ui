@@ -73,15 +73,17 @@ export default {
   },
 
   getCommentsOnComment({ getters }, payload) {
-    return axiosInstance.get(
-      `/comments/${payload.commentId}/comments/5/page/${payload.page}/skip/${payload.skip}`
-    );
+    return axiosInstance.post(`/comments/${payload.commentId}/comments/5`, {
+      page: payload.page,
+      skip: payload.skip,
+    });
   },
 
   getComments({ getters }, payload) {
-    return axiosInstance.get(
-      `/posts/${payload.postId}/comments/5/page/${payload.page}/skip/${payload.skip}`
-    );
+    return axiosInstance.post(`/posts/${payload.postId}/comments/5`, {
+      page: payload.page,
+      skip: payload.skip,
+    });
   },
 
   getLastComment({ getters }, payload) {

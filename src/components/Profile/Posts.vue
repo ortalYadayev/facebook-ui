@@ -340,7 +340,6 @@ export default {
                 opened: false,
                 page: 0,
               });
-              // comments[i].opened = false;
             } else {
               comments[i] = reactive({
                 skip: 0,
