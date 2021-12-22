@@ -20,6 +20,15 @@ export default {
     commit('setUser', request.data.user);
   },
 
+  async logout({ getters, commit }, payload) {
+    if (!getters.isLoggedIn) {
+      return;
+    }
+
+    commit('removeToken');
+    commit('removeUser');
+  },
+
   async getAuthUser({ getters, commit }) {
     if (!getters.isLoggedIn) {
       return;

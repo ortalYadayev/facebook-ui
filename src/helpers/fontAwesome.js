@@ -13,6 +13,7 @@ import {
   faCaretDown,
   faReply,
   faEllipsisV,
+  faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -38,6 +39,7 @@ library.add({
   faCaretDown,
   faReply,
   faEllipsisV,
+  faSignOutAlt,
 
   // Regular f-a
   faComment,
