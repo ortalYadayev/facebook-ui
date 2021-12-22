@@ -4,7 +4,7 @@ import router from './router';
 import store from './store';
 
 // Font Awesome
-import './helpers/font_awesome';
+import './helpers/fontAwesome';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 store.dispatch('getAuthUser');

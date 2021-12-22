@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import { useStore } from "vuex";
-import { ref, watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import {useStore} from "vuex";
+import {ref, watchEffect} from "vue";
+import {useRouter} from "vue-router";
 import SignedHeaderProfile from "../components/SignedHeaderProfile.vue";
 import Posts from "../components/Profile/Posts.vue";
 import About from "../components/Profile/About.vue";
@@ -66,7 +66,7 @@ export default {
     const color = ref('rgb(24, 119, 241)');
     const size = ref('20px');
 
-    const user = ref(  {
+    const user = ref({
       id: '',
       email: '',
       lastName: '',
@@ -76,14 +76,13 @@ export default {
       profilePictureUrl: '',
       statusFriend: {
         status: '',
-        idRequest: Number,
+        requestId: Number,
         sentBy: Number,
       },
       isAuth: false,
     });
 
     watchEffect(() => {
-      console.log(user.value.username)
       if (props.username !== user.value.username) {
         getUser();
       }
@@ -120,7 +119,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 
 .profile-header {
   height: var(--profile-header-height);

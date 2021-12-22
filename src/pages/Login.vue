@@ -78,10 +78,10 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
-import { useStore } from 'vuex';
+import {reactive, ref} from 'vue';
+import {useStore} from 'vuex';
 import useVuelidate from '@vuelidate/core'
-import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
+import {required, email, minLength, maxLength, helpers} from '@vuelidate/validators'
 import router from "../router";
 import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 
@@ -114,8 +114,8 @@ export default {
       },
       password: {
         required: helpers.withMessage('Password is required', required),
-        minLength: helpers.withMessage(({ $params }) => `Minimum ${$params.min} characters required.`, minLength(8)),
-        maxLength: helpers.withMessage(({ $params }) => `Maximum ${$params.max} characters required.`, maxLength(255)),
+        minLength: helpers.withMessage(({$params}) => `Minimum ${$params.min} characters required.`, minLength(8)),
+        maxLength: helpers.withMessage(({$params}) => `Maximum ${$params.max} characters required.`, maxLength(255)),
       },
     };
 
@@ -142,7 +142,7 @@ export default {
       isLoading.value = true;
       try {
         await store.dispatch('login', payload);
-        await router.push({ name: "Home" });
+        await router.push({name: "Home"});
 
         isLoading.value = false;
       } catch (error) {

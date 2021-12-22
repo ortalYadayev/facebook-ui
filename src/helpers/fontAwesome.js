@@ -8,6 +8,12 @@ import {
   faPen,
   faUserCheck,
   faUserTimes,
+  faThumbsUp,
+  faComments,
+  faCaretDown,
+  faReply,
+  faEllipsisV,
+  faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -28,6 +34,12 @@ library.add({
   faPen,
   faUserCheck,
   faUserTimes,
+  faThumbsUp,
+  faComments,
+  faCaretDown,
+  faReply,
+  faEllipsisV,
+  faSignOutAlt,
 
   // Regular f-a
   faComment,
