@@ -334,27 +334,26 @@ export default {
             post.postFormat = getMessageDateService(post);
 
             if (post.commentsCount > 5) {
-              comments[i] = reactive({
+              comments.push(reactive({
                 skip: 0,
                 show: true,
                 opened: false,
                 page: 0,
-              });
+              }));
             } else {
-              comments[i] = reactive({
+              comments.push(reactive({
                 skip: 0,
                 show: false,
                 opened: true,
                 page: 1,
-              });
+              }));
             }
 
-            payloadComments[i] = reactive({
+            payloadComments.push(reactive({
               content: '',
-            })
-
+            }));
           }
-          posts.value = response.data;
+          posts.value.push(...response.data);
 
           $state.loaded();
         }
